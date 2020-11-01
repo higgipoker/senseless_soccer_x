@@ -20,7 +20,6 @@ void Menu::handle_input (const sf::Event& event) {
         break;
     default:
         break;
-
     }
 }
 void Menu::update() {

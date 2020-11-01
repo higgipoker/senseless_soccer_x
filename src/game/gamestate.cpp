@@ -17,6 +17,16 @@ void Gamestate::frame() {
             } else {
                 handle_input (event);
             }
+
+            switch (event.type) {
+            case sf::Event::KeyPressed :
+                if (event.key.code ==  sf::Keyboard::Escape) {
+                    window.close();
+                }
+                break;
+            default:
+                break;
+            }
         }
     }
 
