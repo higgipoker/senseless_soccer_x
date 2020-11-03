@@ -1,6 +1,6 @@
 #pragma once
 #include "gamestate.h"
-#include "menu.h"
+#include "../menu/menu.h"
 #include "../input/gamepad.h"
 #include <SFML/Graphics.hpp>
 

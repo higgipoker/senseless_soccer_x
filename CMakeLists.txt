@@ -43,7 +43,10 @@ add_executable(senseless_soccer3
     src/main.cpp
     src/game/game.cpp
     src/game/gamestate.cpp
-    src/game/menu.cpp
+    src/menu/menu.cpp
+    src/menu/widget.cpp
+    src/menu/button.cpp
+    src/menu/page.cpp
     src/input/gamepad.cpp
 )
 if(CMAKE_COMPILER_IS_GNUCXX)

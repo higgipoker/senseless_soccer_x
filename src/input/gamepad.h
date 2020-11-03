@@ -1,11 +1,14 @@
 #pragma once
+#include "input.h"
 #include <SFML/System/Vector2.hpp>
 namespace ss {
-enum class GamepadEvent {ButtonPressed, ButtonReleased };
+
 class Gamepad {
 public:
     Gamepad();
+    void update();
     sf::Vector2f getLeftAnalogDirection();
 private:
+
 };
 }
