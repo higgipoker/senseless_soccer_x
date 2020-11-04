@@ -12,4 +12,10 @@ void Page::setSize (const sf::Vector2f& s) {
 void Page::draw_self() {
     // draw a background here
 }
+void Page::onHighlight(){
+    
+}
+void Page::onUnHighlight(){
+    
+}
 }

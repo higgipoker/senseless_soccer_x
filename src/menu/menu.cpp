@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "page.h"
+#include "animation_flash.h"
 #include <SFML/Window/Event.hpp>
 #include <iostream>
 namespace ss {
@@ -7,6 +8,12 @@ namespace ss {
 Menu::Menu (sf::RenderWindow& wnd) : Gamestate (wnd) {
     // every menu has a defualt first page
     pages.push_back (std::move (std::make_unique<Page> (wnd)));
+}
+
+Menu::~Menu() {
+    for (auto& anim : animations) {
+        delete anim;
+    }
 }
 
 void Menu::start() {
@@ -19,7 +26,6 @@ void Menu::handle_input (const sf::Event& event) {
     switch (event.type) {
     case sf::Event::KeyPressed :
         if (event.key.code ==  sf::Keyboard::Escape) {
-            std::cout << "ESC" << std::endl;
         }
         break;
     default:
@@ -27,6 +33,8 @@ void Menu::handle_input (const sf::Event& event) {
     }
 }
 void Menu::update() {
+    for (auto& anim : animations)
+        anim->update();
 }
 
 void Menu::draw() {
@@ -36,6 +44,10 @@ void Menu::draw() {
 }
 
 void Menu::addwidget (std::unique_ptr<Widget> w, int page) {
+    if (pages.size() == 1 && pages[page]->childCount() == 0) {
+        Animation* f = new AnimationFlash (*w);
+        animations.push_back (f);
+    }
     pages[page]->addChild (std::move (w));
 }
 }

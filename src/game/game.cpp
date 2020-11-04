@@ -5,12 +5,20 @@
 #include <memory>
 
 namespace ss {
+std::unique_ptr<Widget> make_button (sf::RenderWindow& wnd, const sf::Vector2f& pos, const sf::Color& col) {
+    std::unique_ptr<Widget> btn = std::make_unique<Button> (wnd, col);
+    btn->setPosition (pos);
+    return btn;
+}
+
 void Game::init() {
     std::cout << __FUNCTION__  << std::endl;
     window.setFramerateLimit (60);
-    std::unique_ptr<Widget> btn1 = std::make_unique<Button>(window);
-    btn1->setPosition({100,100});
-    menu.addwidget(std::move(btn1));
+
+    menu.addwidget (make_button (window, {100, 100}, sf::Color::Blue));
+    menu.addwidget (make_button (window, {100, 200}, sf::Color::Red));
+    menu.addwidget (make_button (window, {100, 300}, sf::Color::Green));
+    menu.addwidget (make_button (window, {100, 300}, sf::Color::Yellow));
 }
 
 void Game::run() {
