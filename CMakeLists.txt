@@ -30,6 +30,7 @@ endif (WIN32)
 
 if (UNIX)
     add_definitions(-std=c++17)
+    list(APPEND flags "-j8")
 endif (UNIX)
 
 # --------------------------------------------------
