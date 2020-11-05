@@ -14,7 +14,7 @@ Button::Button (sf::RenderWindow& wnd, const sf::Color& bg_col, const sf::Color&
 
     // test font
     std::filesystem::path path (std::filesystem::current_path());
-    std::string fontpath = path.string() + "/fonts/arial_bold.ttf";
+    std::string fontpath = path.string() + "/../fonts/arial_bold.ttf";
     if (!font.loadFromFile (fontpath)) {
         std::cout << "could not load font: " << fontpath << std::endl;
     }
