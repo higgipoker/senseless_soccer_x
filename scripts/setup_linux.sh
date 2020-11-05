@@ -7,12 +7,12 @@ if [ -z "$BUILD_TYPE" ]
     BUILD_TYPE="debug"
 fi
 
-tr [a-z] [A-Z] < $BUILD_TYPE
+BUILD_TYPE=${BUILD_TYPE^^}
 
 if [ "$BUILD_TYPE" = "RELEASE" ]; then
-    BUILD_TYPE = "Release"
+    BUILD_TYPE="Release"
 else
-    BUILD_TYPE = "Debug"
+    BUILD_TYPE="Debug"
 fi
 
 BUILD_DIR="build_"$BUILD_TYPE
@@ -21,4 +21,12 @@ cd ..;
 mkdir $BUILD_DIR;
 cd $BUILD_DIR;
 cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
+
+# copy sfml libs
+mkdir ../bin
+mkdir ../bin/$BUILD_TYPE
+cp -rvf ../libs/sfml/$BUILD_TYPE/* ../bin/$BUILD_TYPE/
+
+#copy resources
+cp -rvf ../fonts ../bin/$BUILD_TYPE/
 
