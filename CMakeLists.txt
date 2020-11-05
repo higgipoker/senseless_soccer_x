@@ -5,7 +5,7 @@ project(senseless_soccer3)
 # --------------------------------------------------
 # environment variables
 # --------------------------------------------------
-set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin)
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/bin/${CMAKE_BUILD_TYPE})
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
@@ -18,11 +18,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 # --------------------------------------------------
 # lib dirs
 # --------------------------------------------------
-link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../lib)
+link_directories(${CMAKE_BINARY_DIR})
 
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
+set(CMAKE_CXX_COMPILER "/usr/bin/g++-8")
 if (WIN32)
     add_definitions(-std:c++latest)
 endif (WIN32)
@@ -63,9 +64,10 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 # link libs
 # --------------------------------------------------
 find_package(OpenGL)
-#target_link_libraries (senseless_soccer3 -fsanitize=address)
 target_link_libraries (senseless_soccer3 -pthread)
+target_link_libraries (senseless_soccer3 -lstdc++fs)
 target_link_libraries (senseless_soccer3 ${OPENGL_gl_LIBRARY})
+
 target_link_libraries (senseless_soccer3 sfml-graphics)
 target_link_libraries (senseless_soccer3 sfml-window)
 target_link_libraries (senseless_soccer3 sfml-system)
