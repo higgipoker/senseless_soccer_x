@@ -23,24 +23,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sfml/include)
 link_directories(${CMAKE_BINARY_DIR})
 
 # --------------------------------------------------
-# compiler flags
-# --------------------------------------------------
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++-10")
-if (WIN32)
-    add_definitions(-std:c++latest)
-endif (WIN32)
-
-if (UNIX)
-    add_definitions(-std=c++17)
-    list(APPEND flags "-j8")
-endif (UNIX)
-
-# --------------------------------------------------
-# linker flags
-# --------------------------------------------------
-#SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
-
-# --------------------------------------------------
 # build files
 # --------------------------------------------------
 add_executable(senseless_soccer3
@@ -53,6 +35,18 @@ add_executable(senseless_soccer3
     src/menu/page.cpp
     src/input/gamepad.cpp
 )
+# --------------------------------------------------
+# compiler flags
+# --------------------------------------------------
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++-10")
+if (WIN32)
+    add_definitions(-std:c++latest)
+endif (WIN32)
+
+if (UNIX)
+    add_definitions(-std=c++17)
+    list(APPEND flags "-j8")
+endif (UNIX)
 if(CMAKE_COMPILER_IS_GNUCXX)
   target_compile_options(senseless_soccer3 PRIVATE
     -Werror
@@ -64,6 +58,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 # --------------------------------------------------
+# linker flags
+# --------------------------------------------------
+#SET(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -fsanitize=address")
+# --------------------------------------------------
 # link libs
 # --------------------------------------------------
 find_package(OpenGL)
@@ -74,3 +72,10 @@ target_link_libraries (senseless_soccer3 ${OPENGL_gl_LIBRARY})
 target_link_libraries (senseless_soccer3 sfml-graphics)
 target_link_libraries (senseless_soccer3 sfml-window)
 target_link_libraries (senseless_soccer3 sfml-system)
+
+# --------------------------------------------------
+# cpack
+# --------------------------------------------------
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "KK") #required
+include(CPack)
