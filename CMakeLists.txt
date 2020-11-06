@@ -14,16 +14,18 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # --------------------------------------------------
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sfml/include)
+
 
 # --------------------------------------------------
-# lib dirs
+# link dirs
 # --------------------------------------------------
 link_directories(${CMAKE_BINARY_DIR})
 
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-set(CMAKE_CXX_COMPILER "/usr/bin/g++-8")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++-10")
 if (WIN32)
     add_definitions(-std:c++latest)
 endif (WIN32)

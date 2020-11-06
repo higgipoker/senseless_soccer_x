@@ -25,7 +25,7 @@ cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE ..
 # copy sfml libs
 mkdir ../bin
 mkdir ../bin/$BUILD_TYPE
-cp -rvf ../libs/sfml/* ../bin/$BUILD_TYPE/
+cp -rvf ../sfml/lib/* ../bin/$BUILD_TYPE/
 
 #copy resources
 cp -rvf ../fonts ../bin/$BUILD_TYPE/

@@ -7,7 +7,7 @@ namespace ss {
 
 Menu::Menu (sf::RenderWindow& wnd) : Gamestate (wnd) {
     // every menu has a defualt first page
-    pages.push_back (std::move (std::make_unique<Page> (wnd)));
+    pages.push_back (std::make_unique<Page> (wnd));
 }
 
 Menu::~Menu() {

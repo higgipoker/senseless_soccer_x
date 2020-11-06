@@ -8,7 +8,7 @@ namespace ss {
 class Button : public Widget {
 public:
     Button (sf::RenderWindow& wnd, const sf::Color &bg_col = sf::Color::Blue, const sf::Color& out_col = sf::Color::Black);
-    virtual ~Button() final = default;
+    virtual ~Button() = default;
     void draw_self() final override;
     void setPosition (const sf::Vector2f& p) override;
     void setSize (const sf::Vector2f& s) override;
