@@ -1,6 +1,8 @@
 #include "gamestate.h"
 #include <SFML/Window/Event.hpp>
 namespace ss {
+namespace game {
+    
 Gamestate::Gamestate (sf::RenderWindow& wnd) : window (wnd) {
 }
 
@@ -42,4 +44,5 @@ void Gamestate::frame() {
     window.display();
 }
 
-}
+}// namepsace game
+}// namespace ss

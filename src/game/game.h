@@ -5,15 +5,18 @@
 #include <SFML/Graphics.hpp>
 
 namespace ss {
-class Game{
+namespace game {
+class Game {
 public:
-   void init();
-   void run();
-   void end();
+    explicit Game (sf::RenderWindow& wnd) : window (wnd) {};
+    void init();
+    void run();
+    void end();
 private:
-    sf::RenderWindow window{sf::VideoMode(800, 600), "Senseless Soccer"};
+    sf::RenderWindow& window;
     Menu menu{window};
-    Gamestate &gamestate{menu};
+    Gamestate& gamestate{menu};
     Gamepad gamepad;
-};    
+};
+}// namespace game
 }// namespace ss

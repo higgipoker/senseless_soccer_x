@@ -12,8 +12,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON )
 # --------------------------------------------------
 # include dirs
 # --------------------------------------------------
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
+# include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/sfml/include)
 
 
@@ -38,7 +38,6 @@ add_executable(senseless_soccer3
 # --------------------------------------------------
 # compiler flags
 # --------------------------------------------------
-set(CMAKE_CXX_COMPILER "/usr/bin/clang++-10")
 if (WIN32)
     add_definitions(-std:c++latest)
 endif (WIN32)
@@ -69,13 +68,8 @@ target_link_libraries (senseless_soccer3 -pthread)
 target_link_libraries (senseless_soccer3 -lstdc++fs)
 target_link_libraries (senseless_soccer3 ${OPENGL_gl_LIBRARY})
 
-target_link_libraries (senseless_soccer3 sfml-graphics)
-target_link_libraries (senseless_soccer3 sfml-window)
 target_link_libraries (senseless_soccer3 sfml-system)
+target_link_libraries (senseless_soccer3 sfml-window)
+target_link_libraries (senseless_soccer3 sfml-graphics)
 
-# --------------------------------------------------
-# cpack
-# --------------------------------------------------
-set(CPACK_GENERATOR "DEB")
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "KK") #required
-include(CPack)
+

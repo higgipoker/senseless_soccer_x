@@ -6,6 +6,8 @@
 #include <memory>
 
 namespace ss {
+namespace game {
+    
 constexpr int DefaultPage = 0;
 class Menu : public Gamestate {
 public:
@@ -23,4 +25,6 @@ private:
     std::vector<std::unique_ptr<Page>> pages;
     std::vector<Animation*> animations;
 };
-}
+
+} // namespace game
+} // namepsace ss

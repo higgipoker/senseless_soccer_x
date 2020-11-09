@@ -6,15 +6,17 @@ namespace ss {
 
 const int TEXT_BUFFER = 5;
 
-Button::Button (sf::RenderWindow& wnd, const sf::Color& bg_col, const sf::Color& out_col) : Widget (wnd), bg_color (bg_col), outline_color (out_col) {
+Button::Button (sf::RenderWindow& wnd, const MenuEvent evt,  const std::string& capt, const sf::Color& bg_col, const sf::Color& out_col) : Widget (wnd), event(evt), bg_color (bg_col), outline_color (out_col), caption (capt) {
     btn_rect.setSize ({500, 60});
     btn_rect.setFillColor (bg_color);
-    btn_rect.setOutlineColor (outline_color);
+    btn_rect.setOutlineColor (bg_color);
     btn_rect.setOutlineThickness (outline_size);
+
 
     // test font
     std::filesystem::path path (std::filesystem::current_path());
-    std::string fontpath = path.string() + "/fonts/arial_bold.ttf";
+    std::string fontpath = path.string() + "/fonts/swos2.ttf";
+    std::cout << fontpath << std::endl;
     if (!font.loadFromFile (fontpath)) {
         std::cout << "could not load font: " << fontpath << std::endl;
     }
@@ -23,13 +25,16 @@ Button::Button (sf::RenderWindow& wnd, const sf::Color& bg_col, const sf::Color&
     text.setString (caption);
     text.setCharacterSize (24);
     text.setFillColor (caption_color);
-    text.setOutlineThickness (2);
-    text.setOutlineColor (sf::Color::Black);
+    text_shadow.setFont (font);
+    text_shadow.setString (caption);
+    text_shadow.setCharacterSize (24);
+    text_shadow.setFillColor (sf::Color::Black);
     align_caption();
 }
 
 void Button::draw_self() {
     window.draw (btn_rect);
+    window.draw (text_shadow);
     window.draw (text);
 }
 
@@ -41,6 +46,7 @@ void Button::setSize (const sf::Vector2f& s) {
 void Button::setPosition (const sf::Vector2f& p) {
     btn_rect.setPosition (p);
     text.setPosition (btn_rect.getPosition());
+    text_shadow.setPosition (btn_rect.getPosition());
     align_caption();
 }
 
@@ -57,6 +63,9 @@ void Button::align_caption() {
         ,
         (btn_rect.getPosition().y + btn_rect.getSize().y / 2 - text.getCharacterSize() / 4)
     });
+    text_shadow.setOrigin (text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
+    text_shadow.setPosition (text.getPosition());
+    text_shadow.move({shadow_offset, shadow_offset});
 }
 
 void Button::size_caption() {
@@ -64,15 +73,14 @@ void Button::size_caption() {
         caption = caption.substr (0, caption.size() - 3) + ".";
         text.setString (caption);
     }
+    text_shadow.setString (caption);
 }
 
-void Button::onHighlight(){
-  btn_rect.setOutlineColor(sf::Color::White); 
+void Button::onHighlight() {
+    btn_rect.setOutlineColor(sf::Color::White);
 }
 
-void Button::onUnHighlight(){
-    btn_rect.setOutlineColor(sf::Color::Black);
+void Button::onUnHighlight() {
+    btn_rect.setOutlineColor(bg_color);
 }
 }
-
-

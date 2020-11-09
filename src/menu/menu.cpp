@@ -4,6 +4,7 @@
 #include <SFML/Window/Event.hpp>
 #include <iostream>
 namespace ss {
+namespace game {
 
 Menu::Menu (sf::RenderWindow& wnd) : Gamestate (wnd) {
     // every menu has a defualt first page
@@ -50,4 +51,5 @@ void Menu::addwidget (std::unique_ptr<Widget> w, int page) {
     }
     pages[page]->addChild (std::move (w));
 }
-}
+} // namesace game
+} // namespace ss
