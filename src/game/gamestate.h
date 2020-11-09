@@ -5,13 +5,16 @@
 
 namespace ss {
 namespace game {
-
+enum class State{Main_Menu, Match};
 class Gamestate {
 public:
     Gamestate (sf::RenderWindow& wnd);
     virtual void start() = 0;
     virtual void frame() final;
     virtual void end() = 0;
+    
+    virtual bool stateOver(){return false;}
+    virtual State nextState(){return State::Main_Menu;}
 
 protected:
     virtual void handle_input (const sf::Event& evt) = 0;

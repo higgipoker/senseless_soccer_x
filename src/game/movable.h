@@ -3,22 +3,22 @@
 namespace ss {
 namespace game {
 
+class Entity;
 class Movable {
+
 public:
-    // ------------------------------------------------------------
-    // construct / destruct
-    // ------------------------------------------------------------
-                Movable() = default;
-    explicit    Movable(const sf::Vector3f initial_position);
-    
+    void update(){};
     // ------------------------------------------------------------
     // methods
     // ------------------------------------------------------------
     inline void         setPosition (const sf::Vector3f pos);
-    inline sf::Vector3f getPosition () const {return position;}
-    void update(const float dt);
-   
+    inline sf::Vector3f getPosition () const {
+        return position;
+    }
+    void update (const float dt);
+
 private:
+    Entity* entity = nullptr;
     // ------------------------------------------------------------
     // members
     // ------------------------------------------------------------
@@ -32,24 +32,24 @@ private:
     float cross_section = 1.0F;
     // TODO air density chould come from outside
     float air_density = 0.1F;
-    
+
     struct {
         sf::Vector3f kinetic;
         sf::Vector3f rotation;
-        
-        void reset(){
+
+        void reset() {
             kinetic.x = kinetic.y = kinetic.z = 0;
             rotation.x = rotation.y = rotation.z = 0;
         }
     } forces;
-    
+
     bool effected_by_gravity = false;
-    
+
     // ------------------------------------------------------------
     // functions
     // ------------------------------------------------------------
-    void            euler       (float dt);
-    sf::Vector3f    integrate   (const float dt);
+    void            euler (float dt);
+    sf::Vector3f    integrate (const float dt);
 };
 
 } // namespace game
