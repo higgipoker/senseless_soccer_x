@@ -15,6 +15,7 @@ std::unique_ptr<Widget> make_button (sf::RenderWindow& wnd, const MenuEvent evt,
 }
 
 Menu::Menu (sf::RenderWindow& wnd) : Gamestate (wnd) {
+    name = "menu";
     // every menu has a defualt first page
     pages.push_back (std::make_unique<Page> (wnd));
 
@@ -37,14 +38,24 @@ void Menu::start() {
 void Menu::end() {
 }
 
-void Menu::handle_input (const sf::Event& event) {
-    switch (event.type) {
-    case sf::Event::KeyPressed :
-        if (event.key.code ==  sf::Keyboard::Escape) {
+void Menu::handle_input () {
+    if (window.hasFocus()) {
+        sf::Event event;
+        while (window.pollEvent (event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+            }
+
+            switch (event.type) {
+            case sf::Event::KeyPressed :
+                if (event.key.code ==  sf::Keyboard::Escape) {
+                    window.close();
+                }
+                break;
+            default:
+                break;
+            }
         }
-        break;
-    default:
-        break;
     }
 }
 void Menu::update() {

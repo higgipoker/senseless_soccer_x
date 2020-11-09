@@ -17,12 +17,14 @@ public:
     virtual State nextState(){return State::Main_Menu;}
 
 protected:
-    virtual void handle_input (const sf::Event& evt) = 0;
+    virtual void handle_input () = 0;
     virtual void update() = 0;
     virtual void draw() = 0;
 
     sf::RenderWindow& window;
     sf::Color clear_color{sf::Color::Black};
+    
+    std::string name = "unset";
 };
 } // namespace game
 } // namespace ss

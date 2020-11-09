@@ -17,7 +17,7 @@ public:
     void end() override;
     void addwidget (std::unique_ptr<Widget> w, int page = DefaultPage);
 protected:
-    void handle_input (const sf::Event& event) override;
+    void handle_input () override;
     void update() override;
     void draw() override;
 

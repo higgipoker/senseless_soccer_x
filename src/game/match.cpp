@@ -7,7 +7,7 @@
 namespace ss {
 namespace game {
 
-void Match::handle_input (const sf::Event& evt) {
+void Match::handle_input () {
     for (auto& controller : controllers) {
         controller.update();
     }

@@ -9,15 +9,17 @@ namespace ss {
 namespace game {
 const size_t MAX_ENTITIES  = 100;
 const size_t MAX_CONTROLLERS = 30;
-class Match : public Gamestate{
+class Match : public Gamestate {
 public:
-    explicit Match (sf::RenderWindow& wnd) : Gamestate (wnd) {};
-   
+    explicit Match (sf::RenderWindow& wnd) : Gamestate (wnd) {
+        name = "match";
+    }
+
     void start() override {};
     void end() override {};
-     void handle_input (const sf::Event& evt) override;
-     void update() override;
-     void draw() override;
+    void handle_input () override;
+    void update() override;
+    void draw() override;
 private:
     std::array<Movable, MAX_ENTITIES> movables;
     std::array<Renderable, MAX_ENTITIES> renderables;

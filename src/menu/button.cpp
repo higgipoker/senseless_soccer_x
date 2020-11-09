@@ -16,7 +16,6 @@ Button::Button (sf::RenderWindow& wnd, const MenuEvent evt,  const std::string& 
     // test font
     std::filesystem::path path (std::filesystem::current_path());
     std::string fontpath = path.string() + "/fonts/swos2.ttf";
-    std::cout << fontpath << std::endl;
     if (!font.loadFromFile (fontpath)) {
         std::cout << "could not load font: " << fontpath << std::endl;
     }
