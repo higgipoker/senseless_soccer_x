@@ -1,7 +1,7 @@
 #pragma once
-#include "movable.h"
-#include "renderable.h"
-#include "controllable.h"
+#include "Movable.h"
+#include "Renderable.h"
+#include "Controllable.h"
 
 namespace ss {
 namespace game {

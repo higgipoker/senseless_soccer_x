@@ -1,4 +1,4 @@
-#include "gamepad.h"
+#include "Gamepad.h"
 #include <SFML/Window/Joystick.hpp>
 namespace ss {
 

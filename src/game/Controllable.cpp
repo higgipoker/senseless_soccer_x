@@ -1,5 +1,5 @@
-#include "controllable.h"
-#include "entity.h"
+#include "Controllable.h"
+#include "Entity.h"
 namespace ss {
 namespace game {
 void Controllable::update() {

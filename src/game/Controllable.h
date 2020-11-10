@@ -1,5 +1,5 @@
 #pragma once
-#include "../input/gamepad.h"
+#include "../input/Gamepad.h"
 namespace ss {
 namespace game {
 

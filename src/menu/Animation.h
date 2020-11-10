@@ -1,5 +1,5 @@
 #pragma once
-#include "widget.h"
+#include "Widget.h"
 
 namespace ss {
 class Animation {

@@ -1,8 +1,8 @@
-#include "menu.h"
-#include "page.h"
-#include "animation_flash.h"
+#include "Menu.h"
+#include "Page.h"
+#include "AnimationFlash.h"
 #include "events.h"
-#include "button.h"
+#include "Button.h"
 #include <SFML/Window/Event.hpp>
 #include <iostream>
 namespace ss {

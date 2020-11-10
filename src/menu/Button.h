@@ -1,5 +1,5 @@
 #pragma once
-#include "widget.h"
+#include "Widget.h"
 #include "events.h"
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Font.hpp>

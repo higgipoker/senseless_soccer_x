@@ -1,7 +1,7 @@
 #pragma once
-#include "../game/gamestate.h"
-#include "page.h"
-#include "animation.h"
+#include "../game/Gamestate.h"
+#include "Page.h"
+#include "Animation.h"
 #include "../input/input.h"
 #include <memory>
 

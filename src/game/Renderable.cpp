@@ -1,5 +1,5 @@
-#include "renderable.h"
-#include "entity.h"
+#include "Renderable.h"
+#include "Entity.h"
 namespace ss {
 namespace game {
 }// namespace game

@@ -1,4 +1,4 @@
-#include "widget.h"
+#include "Widget.h"
 
 namespace ss {
 void Widget::addChild (std::unique_ptr<Widget> child) {

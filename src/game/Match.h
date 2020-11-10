@@ -1,8 +1,8 @@
 #pragma once
-#include "gamestate.h"
-#include "../menu/menu.h"
-#include "../input/gamepad.h"
-#include "entity.h"
+#include "Gamestate.h"
+#include "../menu/Menu.h"
+#include "../input/Gamepad.h"
+#include "Entity.h"
 #include <SFML/Graphics.hpp>
 
 namespace ss {

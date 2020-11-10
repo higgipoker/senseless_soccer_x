@@ -1,5 +1,5 @@
 #pragma once
-#include "animation.h"
+#include "Animation.h"
 
 namespace ss {
     class AnimationFlash : public Animation {

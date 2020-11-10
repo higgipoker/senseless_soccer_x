@@ -1,5 +1,5 @@
-#include "match.h"
-#include "../menu/button.h"
+#include "Match.h"
+#include "../menu/Button.h"
 
 #include <iostream>
 #include <memory>

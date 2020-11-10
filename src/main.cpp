@@ -1,6 +1,6 @@
-#include "game/gamestate.h"
-#include "menu/menu.h"
-#include "game/match.h"
+#include "game/Gamestate.h"
+#include "menu/Menu.h"
+#include "game/Match.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
