@@ -1,32 +1,43 @@
-#include "Match.h"
-#include "../menu/Button.h"
-
+#include "Match.hpp"
 #include <iostream>
-#include <memory>
 
 namespace ss {
 namespace game {
+Match::Match (sf::RenderWindow& wnd) : engine (wnd) {
+    MatchResources::init();
+    engine.addSprite(&MatchResources::match_sprite);
 
-void Match::handle_input () {
-    for (auto& controller : controllers) {
-        controller.update();
-    }
-    for (auto& controllable : controllables) {
-        controllable.update();
+}
+void Match::init(){
+   // set up the players, match parameters etc here 
+    finished = false;
+}
+
+void Match::exit(){
+  // do any cleanup, reporting etc here   
+}
+
+void Match::play() {
+    while (!finished) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q)){
+            finished = true;
+        }
+        update();
+        if (engine.paused) {
+            // do pause menu here
+        } else {
+            engine.frame();
+        }
     }
 }
 
 void Match::update() {
-    for (auto& movable : movables) {
-        movable.update();
+    current_state->step();
+    if (current_state->finished()) {
+        current_state->stop();
+        current_state->changeState (*this);
+        current_state->start();
     }
 }
-
-void Match::draw() {
-    for (auto& renderable : renderables) {
-        renderable.update();
-    }
-}
-
 }// namespace game
 }// namespace ss

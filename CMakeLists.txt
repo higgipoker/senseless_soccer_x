@@ -27,17 +27,27 @@ link_directories(${CMAKE_BINARY_DIR})
 # --------------------------------------------------
 add_executable(senseless_soccer3
     src/main.cpp
-    src/game/Match.cpp
+    src/game/Engine.cpp
     src/game/Entity.cpp
     src/game/Controllable.cpp
     src/game/Movable.cpp
     src/game/Renderable.cpp
     src/game/Gamestate.cpp
+    src/game/Match.cpp
+    src/game/MatchState.cpp
+    src/game/MatchPlay.cpp
+    src/game/match_resources.cpp
+    src/graphics/Sprite.cpp
+    src/graphics/TileMap.cpp
+    src/graphics/Texture.cpp
     src/menu/Menu.cpp
     src/menu/Widget.cpp
     src/menu/Button.cpp
     src/menu/Page.cpp
+    src/input/InputDevice.cpp
+    src/input/Keyboard.cpp
     src/input/Gamepad.cpp
+    
 )
 # --------------------------------------------------
 # compiler flags

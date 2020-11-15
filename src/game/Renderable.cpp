@@ -1,6 +1,6 @@
-#include "Renderable.h"
-#include "Entity.h"
+#include "Renderable.hpp"
 namespace ss {
-namespace game {
-}// namespace game
+    void Renderable::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+        
+    }
 } // namespace ss

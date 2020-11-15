@@ -5,16 +5,28 @@
 
 namespace ss {
 namespace game {
-enum class State{Main_Menu, Match};
+
+struct SerializedState {
+    char footer[32];
+    char header[32];
+    char data [1024];
+};
+
 class Gamestate {
 public:
     Gamestate (sf::RenderWindow& wnd);
     virtual void start() = 0;
     virtual void frame() final;
     virtual void end() = 0;
-    
-    virtual bool stateOver(){return false;}
-    virtual State nextState(){return State::Main_Menu;}
+
+    virtual bool stateOver() {
+        return false;
+    }
+    virtual SerializedState save() {
+        SerializedState state;
+        return state;
+    }
+    virtual void restore (const SerializedState state) {};
 
 protected:
     virtual void handle_input () = 0;
@@ -23,7 +35,7 @@ protected:
 
     sf::RenderWindow& window;
     sf::Color clear_color{sf::Color::Black};
-    
+
     std::string name = "unset";
 };
 } // namespace game

@@ -1,36 +1,35 @@
-#include "game/Gamestate.h"
-#include "menu/Menu.h"
-#include "game/Match.h"
+#include "game/Gamestate.hpp"
+#include "menu/Menu.hpp"
+#include "input/Gamepad.hpp"
+#include "game/Match.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
 using namespace ss;
 using namespace game;
 
-sf::RenderWindow window (sf::VideoMode{800, 600}, "Senseless Soccer");
-Menu menu (window);
-Match match (window);
-Gamestate* gamestate = &menu;
-
-void changeState (Gamestate* gamestate) {
-    gamestate->end();
-    switch (gamestate->nextState()) {
-    case State::Main_Menu:
-        gamestate = &menu;
-        break;
-    case State::Match:
-        gamestate = &match;
-        break;
-    }
-    gamestate->start();
-}
 int main() {
     std::cout << "Senseless soccer started" << std::endl;
+    sf::RenderWindow window (sf::VideoMode{1280, 720}, "Senseless Soccer");
+    Gamepad gamepad;
+    Menu menu (window, gamepad);
+    Match match (window);
     window.setFramerateLimit (60);
+
     while (window.isOpen()) {
-        gamestate->frame();
-        if (gamestate->stateOver()) {
-            changeState (gamestate);
+        switch (menu.frame()) {
+        case MenuEvent::Exit:
+            window.close();
+            break;
+        case MenuEvent::Friendly:
+            match.init();
+            match.play();
+            match.exit();
+            menu.waitForNoKey();
+            break;
+        case MenuEvent::None:
+        default:
+            break;
         }
     }
     std::cout << "Senseless Soccer finished" << std::endl;

@@ -1,6 +1,6 @@
-#include "Movable.h"
-#include "../math/math.h"
-#include "../math/vector.h"
+#include "Movable.hpp"
+#include "../math/math.hpp"
+#include "../math/vector.hpp"
 
 namespace ss {
 namespace game {

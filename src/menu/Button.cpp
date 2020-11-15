@@ -1,4 +1,5 @@
-#include "Button.h"
+#include "Button.hpp"
+#include "Menu.hpp"
 #include <filesystem>
 #include <iostream>
 
@@ -6,12 +7,25 @@ namespace ss {
 
 const int TEXT_BUFFER = 5;
 
-Button::Button (sf::RenderWindow& wnd, const MenuEvent evt,  const std::string& capt, const sf::Color& bg_col, const sf::Color& out_col) : Widget (wnd), event(evt), bg_color (bg_col), outline_color (out_col), caption (capt) {
-    btn_rect.setSize ({500, 60});
+Button::Button (sf::RenderWindow& wnd,
+                const MenuEvent evt,
+                const std::string& capt,
+                const sf::Vector2f pos,
+                const sf::Color& bg_col,
+                const sf::Color& out_col)
+    : Widget (wnd), event (evt), bg_color (bg_col), outline_color (out_col), caption (capt) {
+    btn_rect.setPosition (pos);
+    btn_rect.setSize ({500, 50});
     btn_rect.setFillColor (bg_color);
-    btn_rect.setOutlineColor (bg_color);
+    btn_rect.setOutlineColor (outline_color);
     btn_rect.setOutlineThickness (outline_size);
 
+    shadow_rect.setPosition (pos);
+    shadow_rect.setSize ({500, 50});
+    shadow_rect.setFillColor ({0, 0, 0, 100});
+    shadow_rect.setOutlineColor({0,0,0,100});
+    shadow_rect.setOutlineThickness (outline_size);
+    shadow_rect.move(4, 4);
 
     // test font
     std::filesystem::path path (std::filesystem::current_path());
@@ -31,7 +45,24 @@ Button::Button (sf::RenderWindow& wnd, const MenuEvent evt,  const std::string& 
     align_caption();
 }
 
+MenuEvent Button::action() {
+    std::cout << "pressed " << caption << std::endl;
+    return event;
+}
+
+void Button::update_self() {
+    if (context->mouse_moved) {
+        sf::FloatRect hitrect{btn_rect.getGlobalBounds() };
+        sf::Vector2f mouse{static_cast<float> (context->mouse_position.x), static_cast<float> (context->mouse_position.y) };
+        if (hitrect.contains (mouse)) {
+            has_mouse = true;
+        } else if (has_mouse) {
+            has_mouse = false;
+        }
+    }
+}
 void Button::draw_self() {
+    window.draw (shadow_rect);
     window.draw (btn_rect);
     window.draw (text_shadow);
     window.draw (text);
@@ -49,6 +80,23 @@ void Button::setPosition (const sf::Vector2f& p) {
     align_caption();
 }
 
+void Button::setAlpha (const sf::Uint8 a) {
+    sf::Color col = bg_color;
+    col.a = a;
+    btn_rect.setFillColor (col);
+
+    col = caption_color;
+    col.a = a;
+    text.setFillColor (col);
+
+    col = sf::Color::Black;
+    col.a = a;
+    text_shadow.setFillColor (col);
+
+
+    Widget::setAlpha (a);
+}
+
 void Button::setCaption (const std::string& c) {
     caption = c;
     align_caption();
@@ -64,7 +112,7 @@ void Button::align_caption() {
     });
     text_shadow.setOrigin (text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
     text_shadow.setPosition (text.getPosition());
-    text_shadow.move({shadow_offset, shadow_offset});
+    text_shadow.move ({shadow_offset, shadow_offset});
 }
 
 void Button::size_caption() {
@@ -76,10 +124,12 @@ void Button::size_caption() {
 }
 
 void Button::onHighlight() {
-    btn_rect.setOutlineColor(sf::Color::White);
+    btn_rect.setOutlineColor (sf::Color::White);
+    highlighted = true;
 }
 
 void Button::onUnHighlight() {
-    btn_rect.setOutlineColor(bg_color);
+    btn_rect.setOutlineColor (outline_color);
+    highlighted = false;
 }
 }

@@ -29,4 +29,5 @@ cp -rvf ../sfml/lib/* ../bin/$BUILD_TYPE/
 
 #copy resources
 cp -rvf ../fonts ../bin/$BUILD_TYPE/
+cp -rvf ../gfx ../bin/$BUILD_TYPE/
 

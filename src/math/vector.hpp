@@ -1,5 +1,5 @@
 #pragma once
-#include "math.h"
+#include "math.hpp"
 #include <SFML/System/Vector3.hpp>
 #include <cmath>
 

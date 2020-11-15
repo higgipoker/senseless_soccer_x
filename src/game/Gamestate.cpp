@@ -1,4 +1,4 @@
-#include "Gamestate.h"
+#include "Gamestate.hpp"
 #include <SFML/Window/Event.hpp>
 namespace ss {
 namespace game {
