@@ -38,6 +38,7 @@ add_executable(senseless_soccer3
     src/game/MatchPlay.cpp
     src/game/match_resources.cpp
     src/graphics/Sprite.cpp
+    src/graphics/SpriteAnimation.cpp
     src/graphics/TileMap.cpp
     src/graphics/Texture.cpp
     src/menu/Menu.cpp

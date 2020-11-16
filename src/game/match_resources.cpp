@@ -10,6 +10,8 @@ namespace game {
 bool MatchResources::inited = false;
 Sprite MatchResources::match_sprite;
 sf::RenderTexture MatchResources::match_texture;
+sf::Vector2f MatchResources::player1_origin;
+sf::Vector2f MatchResources::player2_origin;
 
 void MatchResources::init() {
     if (inited) return;
@@ -83,6 +85,9 @@ void MatchResources::init() {
     ball_sprite.move (0, player_shadow_sprite.getGlobalBounds().top + player_shadow_sprite.getLocalBounds().height);
     grass_sprite.move (0, ball_sprite.getGlobalBounds().top + ball_sprite.getLocalBounds().height);
     lines_sprite.move (0, grass_sprite.getGlobalBounds().top + grass_sprite.getLocalBounds().height);
+    
+    player1_origin = home_team_sprite.getPosition();
+    player2_origin = away_team_sprite.getPosition();
 
     // draw stuff to the mega texture
     match_texture.clear ({0, 0, 0, 0});
@@ -111,5 +116,14 @@ KitPalette MatchResources::makeStandardBlueKit() {
     };
 }
 
+SpriteDefinition MatchResources::getPlayerSpriteDef(int which ){
+    SpriteDefinition def(match_texture.getTexture());
+    def.texture_origin = which == 0? player1_origin : player2_origin;
+    def.spritesheet_cols = 7;
+    def.total_frames = 16;
+    def.frame_width = 64;
+    def.frame_height = 64;
+    return def;
 }
-}
+} // namespace game
+} // namespace ss

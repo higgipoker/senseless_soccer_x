@@ -10,8 +10,10 @@ namespace game {
 Engine::Engine (sf::RenderWindow& wnd) : window (wnd) {
 }
 
-void Engine::addSprite(Sprite* sprite){
-    sprites[number_sprites++] = sprite;
+int Engine::addSprite(const SpriteDefinition& def){
+    int return_id = number_sprites++;
+    sprites[return_id].init(def);
+    return return_id;
 }
 
 void Engine::frame() {
@@ -39,7 +41,11 @@ void Engine::draw() {
     window.clear(sf::Color::Magenta);
     window.draw (pitch);
     for(size_t i=0; i< number_sprites; ++i){
-        window.draw(*sprites[i]);
+        animations[i].update();
+        sprites[animations[i].anim_def.entity_id].setFrame(animations[i].act_frame);
+    }
+    for(size_t i=0; i< number_sprites; ++i){
+        window.draw(sprites[i]);
     }
     window.display();
 }
