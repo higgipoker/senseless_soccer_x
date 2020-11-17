@@ -28,6 +28,6 @@ public:
 private:
     bool on = true;
     int ticks = 0;
-    int ticks_per_flash = 10;
+    int ticks_per_flash = 7;
 };
 }

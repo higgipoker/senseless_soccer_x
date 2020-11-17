@@ -19,7 +19,7 @@ void Movable::update (const float dt) {
             position.z = velocity.z = 0;
         }
     }
-    integrate (dt);
+    euler (dt);
 
     // damp velocity
     if (Math::less_than (Vector::magnitude (velocity), TOL)) {
