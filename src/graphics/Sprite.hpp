@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
+#include <array>
 
 namespace ss {
 struct SpriteDefinition {
