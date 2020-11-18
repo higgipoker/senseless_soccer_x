@@ -24,11 +24,11 @@ bool InputDevice::fireDown() {
     return buttonmask & mask_a;
 }
 
-void InputDevice::attachListener (InputListener& in_listener) {
+void InputDevice::attachListener (Controllable& in_listener) {
     listeners.insert (&in_listener);
 }
 
-void InputDevice::detatchListener (InputListener& in_listener) {
+void InputDevice::detatchListener (Controllable& in_listener) {
     auto it = listeners.find (&in_listener);
     if (it != listeners.end()) {
         listeners.erase (it);

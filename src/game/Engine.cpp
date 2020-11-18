@@ -6,46 +6,60 @@
 
 namespace ss {
 namespace game {
-    
+
+struct {
+    bool operator() (const Sprite* a, const Sprite* b) const {
+        return  a->z < b->z;
+    }
+} sprite_comparitor;
+
 Engine::Engine (sf::RenderWindow& wnd) : window (wnd) {
 }
 
-int Engine::addSprite(const SpriteDefinition& def){
-    int return_id = number_sprites++;
-    sprites[return_id].init(def);
-    return return_id;
+int Engine::addEntity (const SpriteDefinition& sprite_def) {
+    int id = number_entities++;
+    sprite_pool[id].init (sprite_def);
+    sprites.push_back (&sprite_pool[id]);
+    return id;
+}
+
+Sprite& Engine::getSprite (int id) {
+    return sprite_pool[id];
 }
 
 void Engine::frame() {
-    handle_input();
+    get_input();
     update();
     draw();
 }
 
-void Engine::handle_input () {
-    for(size_t i=0;i<number_controllers; ++i){
+void Engine::get_input () {
+    for (size_t i = 0; i < number_controllers; ++i) {
         controllers[i].update();
-    }
-    for(size_t i=0; 0<number_controllables; ++i){
-        controllables[i].update();
     }
 }
 
 void Engine::update() {
-    for(size_t i=0; i<number_movables; ++i){
-        movables[i].update();
+    for (size_t i = 0; i < number_entities; ++i) {
+        players[i].update();
     }
+    ball.update();
 }
 
 void Engine::draw() {
-    window.clear(sf::Color::Magenta);
+    window.clear (sf::Color::Magenta);
     window.draw (pitch);
-    for(size_t i=0; i< number_sprites; ++i){
+    
+    // update animations
+    for (size_t i = 0; i < number_entities; ++i) {
         animations[i].update();
-        sprites[animations[i].anim_def.entity_id].setFrame(animations[i].act_frame);
+        sprite_pool[i].setFrame(animations[i].act_frame);
     }
-    for(size_t i=0; i< number_sprites; ++i){
-        window.draw(sprites[i]);
+
+    // draw sprites
+    std::sort (sprites.begin(), sprites.end(), sprite_comparitor);
+    for (auto& sprite : sprites) {
+        window.draw (*sprite);
     }
     window.display();
 }

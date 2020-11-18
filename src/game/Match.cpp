@@ -7,13 +7,13 @@ namespace game {
 Match::Match (sf::RenderWindow& wnd) : engine (wnd) {
     MatchResources::init();
 //    engine.addSprite (&MatchResources::match_sprite);
-   int player_id = engine.addSprite(MatchResources::getPlayerSpriteDef());
+   int player_id = engine.addEntity(MatchResources::getPlayerSpriteDef());
    std::cout << "added player " << player_id << std::endl;
-   engine.getSPrite(player_id).setPosition({100, 100});
+   engine.getSprite(player_id).setPosition({100, 100});
    AnimationDefinition anim_def = player_animations::animation_run();
    anim_def.entity_id = player_id;
    engine.setAnimation(anim_def);
-   engine.getSPrite(player_id).setRotation(45);
+   engine.getSprite(player_id).setRotation(-45);
 }
 
 void Match::init() {

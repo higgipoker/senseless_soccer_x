@@ -125,5 +125,9 @@ SpriteDefinition MatchResources::getPlayerSpriteDef(int which ){
     def.frame_height = 64;
     return def;
 }
+
+int MatchResources::acquireSprite(){
+    return used_sprites++;
+}
 } // namespace game
 } // namespace ss

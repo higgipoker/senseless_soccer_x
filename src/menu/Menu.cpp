@@ -48,13 +48,13 @@ Menu::~Menu() {
     gamepad.detatchListener (*this);
 }
 
-void Menu::waitForNoKey(){
+void Menu::waitForNoKey() {
     sf::Event event;
     while (window.pollEvent (event));
 }
 
 MenuEvent Menu::frame() {
-    
+
     update_mouse();
     if (active_page) {
         active_widget = active_page->getActiveWidget();
@@ -111,7 +111,7 @@ void Menu::onInputEvent (const InputEvent in_event, const std::vector<int>& in_p
 
 void Menu::update_mouse() {
     sf::Vector2i m = sf::Mouse::getPosition (window);
-    mouse_position = window.mapPixelToCoords(m);   
+    mouse_position = window.mapPixelToCoords (m);
     if (mouse_position != last_mouse_position) {
         mouse_moved = true;
         mouse_mode = true;
@@ -153,7 +153,7 @@ void Menu::read_keyboard() {
                 active_page->left();
             } else if (event.key.code == sf::Keyboard::D) {
                 active_page->right();
-            } else if (event.key.code == sf::Keyboard::Enter) {
+            } else if (event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Space) {
                 if (active_widget) {
                     return_code = active_widget->action();
                 }

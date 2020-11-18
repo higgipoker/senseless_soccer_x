@@ -1,10 +1,12 @@
 #pragma once
+#include "Controllable.hpp"
 #include <SFML/Window/Event.hpp>
 #include <map>
 #include <set>
 #include <vector>
 
 namespace ss {
+
 const unsigned char mask_zero{0};        // 0000 0000
 const unsigned char mask_a{1 << 0};      // 0000 0001
 const unsigned char mask_b{1 << 1};      // 0000 0010
@@ -51,10 +53,12 @@ static std::map<InputEvent, std::string> event_to_string{
     {InputEvent::SingleTap, "SingleTap"},
     {InputEvent::DoubleTap, "DoubleTap"},
 };
-class InputListener {
+
+class Controllable {
 public:
-    virtual ~InputListener () = default;
+    virtual ~Controllable () = default;
     virtual void onInputEvent (const InputEvent in_event, const std::vector<int>& in_params) = 0;
+    void attachInput();
 
     static std::string toString (const InputEvent in_event) {
         return event_to_string.at (in_event);
@@ -65,16 +69,16 @@ class InputDevice {
 public:
     InputDevice () = default;
     virtual ~InputDevice () = default;
-    
+
     virtual void update () = 0;
-            bool up                 ();
-            bool down               ();
-            bool left               ();
-            bool right              ();
-            bool fireDown           ();
-            bool isButtonPressed    (const unsigned char in_which);
-            void attachListener     (InputListener& in_listener);
-            void detatchListener    (InputListener& in_listener);
+    bool up ();
+    bool down ();
+    bool left ();
+    bool right ();
+    bool fireDown ();
+    bool isButtonPressed (const unsigned char in_which);
+    void attachListener (Controllable& in_listener);
+    void detatchListener (Controllable& in_listener);
 
 protected:
     struct {
@@ -94,7 +98,7 @@ protected:
 
     void notify (const InputEvent in_event, const std::vector<int>& in_params);
 
-    std::set<InputListener*> listeners;
+    std::set<Controllable*> listeners;
 };
 
 }  // namespace Senseless

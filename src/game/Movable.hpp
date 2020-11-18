@@ -1,13 +1,14 @@
 #pragma once
+#include "../input/InputDevice.hpp"
 #include <SFML/System/Vector3.hpp>
 namespace ss {
 namespace game {
 
-class Entity;
 class Movable {
 
 public:
-    void update(){};
+    
+    void update() {};
     // ------------------------------------------------------------
     // methods
     // ------------------------------------------------------------
@@ -18,7 +19,6 @@ public:
     void update (const float dt);
 
 private:
-    Entity* entity = nullptr;
     // ------------------------------------------------------------
     // members
     // ------------------------------------------------------------
@@ -44,12 +44,13 @@ private:
     } forces;
 
     bool effected_by_gravity = false;
-
+    InputDevice *input = nullptr;
     // ------------------------------------------------------------
     // functions
     // ------------------------------------------------------------
     void            euler (float dt);
     sf::Vector3f    integrate (const float dt);
+    void            handle_input();
 };
 
 } // namespace game

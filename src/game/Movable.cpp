@@ -12,23 +12,23 @@ void Movable::setPosition (const sf::Vector3f pos) {
 
 void Movable::update (const float dt) {
     // bounce?
-    if (Math::less_than (velocity.z, 0) && Math::less_than (position.z, 0)) {
+    if (less_than (velocity.z, 0) &&  less_than (position.z, 0)) {
         velocity.z *= co_bounciness;
         // dampen for infinite bounce
-        if (Math::less_than (fabsf (position.z), TOL)) {
+        if (less_than (fabsf (position.z), TOL)) {
             position.z = velocity.z = 0;
         }
     }
     euler (dt);
 
     // damp velocity
-    if (Math::less_than (Vector::magnitude (velocity), TOL)) {
+    if (less_than (vec_magnitude (velocity), TOL)) {
         velocity.x = velocity.y = velocity.z = 0;
     }
 
     // decay spin
     forces.rotation *= co_spin_decay;
-    if (Math::abs_less_than (Vector::magnitude (forces.rotation), TOL)) {
+    if (abs_less_than (vec_magnitude (forces.rotation), TOL)) {
         forces.rotation.x = forces.rotation.y = forces.rotation.z = 0;
     }
 }
@@ -41,7 +41,7 @@ void Movable::euler (float dt) {
 }
 
 sf::Vector3f Movable::integrate (const float dt) {
-    if (Math::greater_than (position.z, 0) && effected_by_gravity) {
+    if (greater_than (position.z, 0) && effected_by_gravity) {
         // gravity
         sf::Vector3f gravity;
         gravity.z = -GRAVITATIONAL_CONSTANT;
@@ -49,16 +49,16 @@ sf::Vector3f Movable::integrate (const float dt) {
 
         // air drag = (air density * co_drag * cross section area) / 2 in the opposite direction to velocity
         sf::Vector3f drag = velocity;
-        Vector::reverse (drag);
-        Vector::normalize (drag);
+        drag = vec_reversed (drag);
+        drag = vec_normalized (drag);
         drag = drag * (air_density * co_air_friction * (PI * cross_section * cross_section) / 2);
         forces.kinetic += drag * dt;
 
     } else {
         // firction
-        if (Math::greater_than (Vector::magnitude2d (velocity), 0)) {
+        if (greater_than (vec_magnitude2d (velocity), 0)) {
             sf::Vector3f friction = velocity;
-            Vector::reverse (friction);
+            friction = vec_reversed (friction);
             friction = friction * co_friction;
             velocity = velocity + friction;
         }
@@ -72,3 +72,4 @@ sf::Vector3f Movable::integrate (const float dt) {
 
 } // namespace game
 } // namespace ss
+

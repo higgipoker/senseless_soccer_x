@@ -9,7 +9,7 @@ namespace ss {
 
 constexpr int DefaultPage = 0;
 
-class Menu : public InputListener {
+class Menu : public Controllable {
 public:
     Menu (sf::RenderWindow& wnd, Gamepad& controller);
     ~Menu();

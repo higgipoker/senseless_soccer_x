@@ -29,13 +29,14 @@ add_executable(senseless_soccer3
     src/main.cpp
     src/game/Engine.cpp
     src/game/Entity.cpp
-    src/game/Controllable.cpp
     src/game/Movable.cpp
     src/game/Renderable.cpp
     src/game/Gamestate.cpp
     src/game/Match.cpp
     src/game/MatchState.cpp
     src/game/MatchPlay.cpp
+    src/game/Player.cpp
+    src/game/Ball.cpp
     src/game/match_resources.cpp
     src/graphics/Sprite.cpp
     src/graphics/SpriteAnimation.cpp
