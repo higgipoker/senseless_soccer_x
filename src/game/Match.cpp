@@ -10,7 +10,6 @@ void add_player(Player& player, Engine& engine){
     player.id = engine.addPlayer();
     player.sprite = &engine.getSprite(player.id);
     player.sprite->setPosition({100, 100});
-//    player.sprite->configAnimation(0, anim_def);
     player.sprite->setActiveAnimation(0);
     player.sprite->setRotation(-45);
   }

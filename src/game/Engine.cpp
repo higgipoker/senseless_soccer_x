@@ -1,5 +1,6 @@
 #include "Engine.hpp"
 #include "match_resources.hpp"
+#include "player_animations.h"
 #include "../menu/Button.hpp"
 
 #include <iostream>
@@ -20,6 +21,7 @@ Engine::Engine (sf::RenderWindow& wnd) : window (wnd) {
 int Engine::addPlayer () {
     int id = number_players++;
     sprite_pool[id].init (MatchResources::getPlayerSpriteDef());
+    sprite_pool[id].configAnimation(0, player_animations::animation_run());
     sprites.push_back (&sprite_pool[id]);
     return id;
 }
