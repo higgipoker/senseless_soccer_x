@@ -1,4 +1,5 @@
 #include "Engine.hpp"
+#include "match_resources.hpp"
 #include "../menu/Button.hpp"
 
 #include <iostream>
@@ -16,9 +17,9 @@ struct {
 Engine::Engine (sf::RenderWindow& wnd) : window (wnd) {
 }
 
-int Engine::addEntity (const SpriteDefinition& sprite_def) {
-    int id = number_entities++;
-    sprite_pool[id].init (sprite_def);
+int Engine::addPlayer () {
+    int id = number_players++;
+    sprite_pool[id].init (MatchResources::getPlayerSpriteDef());
     sprites.push_back (&sprite_pool[id]);
     return id;
 }
@@ -40,7 +41,7 @@ void Engine::get_input () {
 }
 
 void Engine::update() {
-    for (size_t i = 0; i < number_entities; ++i) {
+    for (size_t i = 0; i < number_players; ++i) {
         players[i].update();
     }
     ball.update();
@@ -50,15 +51,10 @@ void Engine::draw() {
     window.clear (sf::Color::Magenta);
     window.draw (pitch);
     
-    // update animations
-    for (size_t i = 0; i < number_entities; ++i) {
-        animations[i].update();
-        sprite_pool[i].setFrame(animations[i].act_frame);
-    }
-
     // draw sprites
     std::sort (sprites.begin(), sprites.end(), sprite_comparitor);
     for (auto& sprite : sprites) {
+        sprite->animate();
         window.draw (*sprite);
     }
     window.display();

@@ -16,7 +16,6 @@ public:
     Widget* addwidget (std::unique_ptr<Widget> w, int page = DefaultPage);
     MenuEvent frame();
     void onInputEvent (const InputEvent in_event, const std::vector<int>& in_params) override;
-    void waitForNoKey();
 
     bool mouse_pressed = false;
     bool mouse_moved = false;

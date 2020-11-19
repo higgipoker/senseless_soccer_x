@@ -4,12 +4,12 @@ namespace ss {
 inline static constexpr float TOL = 0.01F;
 inline static constexpr float PI = static_cast<float> (M_PI);
 
-inline static constexpr float radians (float a) {
-    return a * (PI / 180.0F);
+inline static constexpr float radians (float degrees) {
+    return degrees * (PI / 180.0F);
 }
 
-inline static constexpr float degrees (float a) {
-    return a * (180.0F / PI);
+inline static constexpr float degrees (float radians) {
+    return radians * (180.0F / PI);
 }
 
 inline static bool equal (const float a, const float b, const float epsilon = TOL) {

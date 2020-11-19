@@ -20,7 +20,7 @@ inline static sf::Vector3f vec_reversed (const sf::Vector3f& vec) {
     return v;
 }
 
-inline static sf::Vector3f vec_normalized (sf::Vector3f& vec) {
+inline static sf::Vector3f vec_normalized (const sf::Vector3f& vec) {
     if (equal (vec_magnitude (vec), 0)) return vec;
 
     sf::Vector3f v = vec;
@@ -45,5 +45,11 @@ inline static sf::Vector3f vec_normalized (sf::Vector3f& vec) {
         v.z = 0;
     }
     return v;
+}
+
+inline static float vec_angle(const sf::Vector3f& vec){
+  sf::Vector3f normalized = vec_normalized(vec);
+  float rads = atan2f(normalized.x,  normalized.y);
+  return degrees(rads);
 }
 };

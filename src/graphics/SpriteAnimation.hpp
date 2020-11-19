@@ -8,7 +8,6 @@ const int MAX_ANIMATION_FRAMES = 32;
 class Sprite;
 
 struct AnimationDefinition {
-    int entity_id = 0;
     bool loop = false;
     int frames_per_frame = 0;
     int number_frames = 0;

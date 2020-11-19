@@ -36,4 +36,27 @@ void Sprite::setFrame (const int frame) {
     assert (frame < MAX_FRAMES);
     setTextureRect (frames[frame]);
 }
+
+void Sprite::configAnimation(const int id, const AnimationDefinition& anim_def){
+  animations[id].init(anim_def);
+}
+
+void Sprite::setActiveAnimation(const int id){
+  if(current_animation){
+    current_animation->stop();
+  }
+  current_animation = &animations[id];
+  current_animation->start();
+}
+
+void Sprite::animate(){
+  if(current_animation){
+    current_animation->update();
+    setFrame(current_animation->act_frame);
+    if(current_animation->running == false){
+      current_animation->stop();
+      current_animation = nullptr;
+    }
+  }
+}
 }

@@ -6,7 +6,6 @@
 #include "../input/Controllable.hpp"
 #include "../input/Gamepad.hpp"
 #include "../graphics/Sprite.hpp"
-#include "../graphics/SpriteAnimation.hpp"
 #include "../graphics/TileMap.hpp"
 
 #include <cassert>
@@ -20,13 +19,8 @@ class Engine {
 public:
     explicit Engine (sf::RenderWindow& wnd);
 
-    int addEntity (const SpriteDefinition& sprite_def);
+    int addPlayer ();
     Sprite& getSprite (int id);
-
-    inline void setAnimation (const AnimationDefinition& anim_def) {
-        animations[anim_def.entity_id].init (anim_def);
-        animations[anim_def.entity_id].start();
-    }
 
     void frame();
     bool paused = false;
@@ -39,11 +33,10 @@ private:
     std::vector<Sprite*>                        sprites;
     std::array<Sprite, MAX_ENTITIES>            sprite_pool;
     std::array<Player, MAX_ENTITIES>            players;
-    std::array<SpriteAnimation, MAX_ENTITIES>   animations;
     std::array<Gamepad, MAX_CONTROLLERS>        controllers;
 
 
-    size_t number_entities = 0;
+    size_t number_players = 0;
     size_t number_controllers = 0;
 
     void get_input();

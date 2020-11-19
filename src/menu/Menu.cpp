@@ -48,11 +48,6 @@ Menu::~Menu() {
     gamepad.detatchListener (*this);
 }
 
-void Menu::waitForNoKey() {
-    sf::Event event;
-    while (window.pollEvent (event));
-}
-
 MenuEvent Menu::frame() {
 
     update_mouse();

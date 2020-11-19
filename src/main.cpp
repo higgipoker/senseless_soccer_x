@@ -8,6 +8,11 @@
 using namespace ss;
 using namespace game;
 
+void wait_for_no_key(sf::RenderWindow &window){
+  static sf::Event event;
+  while (window.pollEvent(event));
+}
+
 int main() {
     std::cout << "Senseless soccer started" << std::endl;
     sf::RenderWindow window (sf::VideoMode{1280, 720}, "Senseless Soccer");
@@ -25,7 +30,7 @@ int main() {
             match.init();
             match.play();
             match.exit();
-            menu.waitForNoKey();
+            wait_for_no_key(window);
             break;
         case MenuEvent::None:
         default:

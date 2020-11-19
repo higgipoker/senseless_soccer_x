@@ -1,19 +1,24 @@
 #include "Match.hpp"
+#include "Player.hpp"
 #include "player_animations.h"
 #include <iostream>
 
 namespace ss {
 namespace game {
+
+void add_player(Player& player, Engine& engine){
+    player.id = engine.addPlayer();
+    player.sprite = &engine.getSprite(player.id);
+    player.sprite->setPosition({100, 100});
+//    player.sprite->configAnimation(0, anim_def);
+    player.sprite->setActiveAnimation(0);
+    player.sprite->setRotation(-45);
+  }
+
 Match::Match (sf::RenderWindow& wnd) : engine (wnd) {
-    MatchResources::init();
-//    engine.addSprite (&MatchResources::match_sprite);
-   int player_id = engine.addEntity(MatchResources::getPlayerSpriteDef());
-   std::cout << "added player " << player_id << std::endl;
-   engine.getSprite(player_id).setPosition({100, 100});
-   AnimationDefinition anim_def = player_animations::animation_run();
-   anim_def.entity_id = player_id;
-   engine.setAnimation(anim_def);
-   engine.getSprite(player_id).setRotation(-45);
+   MatchResources::init();
+   Player player1;
+   add_player(player1, engine);
 }
 
 void Match::init() {
