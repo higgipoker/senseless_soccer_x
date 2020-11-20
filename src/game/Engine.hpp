@@ -12,15 +12,18 @@
 
 namespace ss {
 namespace game {
-const size_t MAX_ENTITIES  = 100;
-const size_t MAX_CONTROLLERS = 30;
+
+const size_t MAX_SPRITES = 250;             // arbitrary, tweak later
+const size_t MAX_PLAYERS = 22 + 12 + 2 + 3; // players + subs + managers + referee/linesmen
+const size_t MAX_CONTROLLERS = 22;          // should never need more than one per player
 
 class Engine {
 public:
     explicit Engine (sf::RenderWindow& wnd);
 
     int addPlayer ();
-    Sprite& getSprite (int id);
+    Sprite* getSprite (size_t id);
+    Player* getPlayer(size_t id);
 
     void frame();
     bool paused = false;
@@ -28,13 +31,11 @@ public:
 private:
     sf::RenderWindow& window;
     TileMap pitch;
-
     Ball ball;
     std::vector<Sprite*>                        sprites;
-    std::array<Sprite, MAX_ENTITIES>            sprite_pool;
-    std::array<Player, MAX_ENTITIES>            players;
+    std::array<Sprite, MAX_SPRITES>             sprite_pool;
+    std::array<Player, MAX_PLAYERS>             players;
     std::array<Gamepad, MAX_CONTROLLERS>        controllers;
-
 
     size_t number_players = 0;
     size_t number_controllers = 0;

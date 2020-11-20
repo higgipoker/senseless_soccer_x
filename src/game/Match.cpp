@@ -6,18 +6,21 @@
 namespace ss {
 namespace game {
 
-void add_player(Player& player, Engine& engine){
-    player.id = engine.addPlayer();
-    player.sprite = &engine.getSprite(player.id);
-    player.sprite->setPosition({100, 100});
-    player.sprite->setActiveAnimation(0);
-    player.sprite->setRotation(-45);
+Player* add_player(Engine& engine){
+    int id = engine.addPlayer();
+    Player* player = engine.getPlayer(id);
+    player->id = id;
+    player->sprite = engine.getSprite(player->id);
+    player->sprite->setPosition({100, 100});
+    player->sprite->setActiveAnimation(0);
+    player->sprite->setRotation(-45);
+    return player;
   }
 
 Match::Match (sf::RenderWindow& wnd) : engine (wnd) {
    MatchResources::init();
-   Player player1;
-   add_player(player1, engine);
+   Player *player1 = add_player(engine);
+   std::cout << "add player with id: " << player1->id << std::endl;
 }
 
 void Match::init() {

@@ -126,8 +126,5 @@ SpriteDefinition MatchResources::getPlayerSpriteDef(int which ){
     return def;
 }
 
-int MatchResources::acquireSprite(){
-    return used_sprites++;
-}
 } // namespace game
 } // namespace ss

@@ -22,12 +22,19 @@ int Engine::addPlayer () {
     int id = number_players++;
     sprite_pool[id].init (MatchResources::getPlayerSpriteDef());
     sprite_pool[id].configAnimation(0, player_animations::animation_run());
-    sprites.push_back (&sprite_pool[id]);
+    Sprite* to_add = &sprite_pool[id];
+    sprites.push_back (to_add);
     return id;
 }
 
-Sprite& Engine::getSprite (int id) {
-    return sprite_pool[id];
+Sprite* Engine::getSprite (size_t id) {
+    assert(id<sprites.size());
+    return &sprite_pool[id];
+}
+
+Player* Engine::getPlayer(size_t id) {
+  assert(id<number_players);
+  return &players[id];
 }
 
 void Engine::frame() {
@@ -52,7 +59,7 @@ void Engine::update() {
 void Engine::draw() {
     window.clear (sf::Color::Magenta);
     window.draw (pitch);
-    
+
     // draw sprites
     std::sort (sprites.begin(), sprites.end(), sprite_comparitor);
     for (auto& sprite : sprites) {
