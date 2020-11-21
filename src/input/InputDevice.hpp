@@ -1,5 +1,4 @@
 #pragma once
-#include "Controllable.hpp"
 #include <SFML/Window/Event.hpp>
 #include <map>
 #include <set>
@@ -71,6 +70,7 @@ public:
     virtual ~InputDevice () = default;
 
     virtual void update () = 0;
+    virtual sf::Vector2f getAxisPosition() = 0;
     bool up ();
     bool down ();
     bool left ();

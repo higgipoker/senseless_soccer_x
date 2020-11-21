@@ -6,21 +6,26 @@
 namespace ss {
 namespace game {
 
-Player* add_player(Engine& engine){
+Player* add_player (Engine& engine) {
     int id = engine.addPlayer();
-    Player* player = engine.getPlayer(id);
+    Player* player = engine.getPlayer (id);
     player->id = id;
-    player->sprite = engine.getSprite(player->id);
-    player->sprite->setPosition({100, 100});
-    player->sprite->setActiveAnimation(0);
-    player->sprite->setRotation(-45);
+    player->sprite = engine.getSprite (player->id);
+    player->sprite->setPosition ({100, 100});
+
+    player->sprite->configAnimation (player_animations::ID_STAND, player_animations::animation_stand());
+    player->sprite->configAnimation (player_animations::ID_RUN, player_animations::animation_run());
+    player->sprite->setActiveAnimation (player_animations::ID_STAND);
+    int cid = engine.addController();
+//    engine.getController(cid)->type = ControllerType::Keyboard;
+    engine.attachController(cid, id);
     return player;
-  }
+}
 
 Match::Match (sf::RenderWindow& wnd) : engine (wnd) {
-   MatchResources::init();
-   Player *player1 = add_player(engine);
-   std::cout << "add player with id: " << player1->id << std::endl;
+    MatchResources::init();
+    Player* player1 = add_player (engine);
+    std::cout << "add player with id: " << player1->id << std::endl;
 }
 
 void Match::init() {

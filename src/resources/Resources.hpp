@@ -1,7 +1,13 @@
 #pragma once
+#include <iostream>
+#include <filesystem>
+#include <string>
 
-namespace ss{
-    namespace resources{
-        
-    }
+namespace ss {
+namespace resources {
+inline static std::string gfx_folder() {
+    static std::filesystem::path path (std::filesystem::current_path());
+    return path.string() + "/gfx/";
+}
+}
 }

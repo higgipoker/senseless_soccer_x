@@ -121,8 +121,8 @@ SpriteDefinition MatchResources::getPlayerSpriteDef(int which ){
     def.texture_origin = which == 0? player1_origin : player2_origin;
     def.spritesheet_cols = 7;
     def.total_frames = 16;
-    def.frame_width = 64;
-    def.frame_height = 64;
+    def.frame_width = 32;
+    def.frame_height = 32;
     return def;
 }
 

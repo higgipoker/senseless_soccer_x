@@ -28,4 +28,16 @@ inline static bool abs_less_than (const float a, const float b, const float epsi
     return (b - std::fabs (a)) >
            ( (std::fabs (a) < std::fabs (b) ? std::fabs (b) : std::fabs (a)) * epsilon);
 }
+
+inline static bool less_than_or_equal (const float a, const float b, const float epsilon = TOL) {
+    return ( (b - a) > ( (std::fabs (a) < std::fabs (b) ? std::fabs (b) : std::fabs (a)) * epsilon)) ||
+           (less_than (a, b, epsilon)
+           );
+}
+
+inline static bool greater_than_or_equal (const float a, const float b, const float epsilon = TOL) {
+    return ( (a - b) > ( (std::fabs (a) < std::fabs (b) ? std::fabs (b) : std::fabs (a)) * epsilon)) ||
+           (greater_than (a, b, epsilon)
+           );
+}
 };

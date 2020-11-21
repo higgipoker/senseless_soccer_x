@@ -36,6 +36,9 @@ add_executable(senseless_soccer3
     src/game/MatchState.cpp
     src/game/MatchPlay.cpp
     src/game/Player.cpp
+    src/game/PlayerState.cpp
+    src/game/PlayerStateStand.cpp
+    src/game/PlayerStateRun.cpp
     src/game/Ball.cpp
     src/game/match_resources.cpp
     src/graphics/Sprite.cpp
@@ -49,6 +52,11 @@ add_executable(senseless_soccer3
     src/input/InputDevice.cpp
     src/input/Keyboard.cpp
     src/input/Gamepad.cpp
+    src/input/Controller.cpp
+    src/input/KeyboardController.cpp
+    src/input/GamepadController.cpp
+    src/debug/DebugController.cpp
+    src/drawables/DrawableGamepad.cpp
     
 )
 # --------------------------------------------------
