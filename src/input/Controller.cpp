@@ -37,4 +37,49 @@ void Controller::unCalibrate() {
         gamepad.unCalibrate();
     }
 }
+
+bool Controller::up() {
+    bool ret = false;
+    switch (type) {
+    case ControllerType::Gamepad:
+        break;
+    case ControllerType::Keyboard:
+        break;
+    }
+    return ret;
+}
+
+bool Controller::down() {
+    bool ret = false;
+    switch (type) {
+    case ControllerType::Gamepad:
+        break;
+    case ControllerType::Keyboard:
+        break;
+    }
+    return ret;
+
+}
+
+bool Controller::left() {
+    bool ret = false;
+    switch (type) {
+    case ControllerType::Gamepad:
+        break;
+    case ControllerType::Keyboard:
+        break;
+    }
+    return ret;
+}
+
+bool Controller::right() {
+    bool ret = false;
+    switch (type) {
+    case ControllerType::Gamepad:
+        break;
+    case ControllerType::Keyboard:
+        break;
+    }
+    return ret;
+}
 } // namespace ss

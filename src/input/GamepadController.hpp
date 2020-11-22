@@ -26,6 +26,8 @@ public:
 private:
     size_t sf_joystick_index = 0;
     sf::Vector3f get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration);
+    
+    sf::Vector2f get_dpad_vector();
 
     float inner_activation_radius = 0.3f;
     float outer_activation_radius = 0.8f;

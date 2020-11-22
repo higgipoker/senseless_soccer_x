@@ -10,8 +10,7 @@ namespace ss {
 
 
 
-Menu::Menu (sf::RenderWindow& wnd, Gamepad& controller) : window (wnd), gamepad (controller), mainpage (wnd, this), calibratepage (wnd, this) {
-    gamepad.attachListener (*this);
+Menu::Menu (sf::RenderWindow& wnd, Controller& controller) : window (wnd), gamepad (controller), mainpage (wnd, this), calibratepage (wnd, this) {
     active_page = &mainpage;
 
     active_page->setAlpha (0);
@@ -23,7 +22,6 @@ Menu::Menu (sf::RenderWindow& wnd, Gamepad& controller) : window (wnd), gamepad 
 }
 
 Menu::~Menu() {
-    gamepad.detatchListener (*this);
 }
 
 MenuEvent Menu::run() {
@@ -99,12 +97,6 @@ void Menu::changePage (const Page_ID id) {
     active_animation.start();
 }
 
-void Menu::onInputEvent (const InputEvent in_event, const std::vector<int>& in_params) {
-    if (in_event == InputEvent::FireDown) {
-        fire_pressed = true;
-    }
-}
-
 void Menu::update_mouse() {
     sf::Vector2i m = sf::Mouse::getPosition (window);
     mouse_position = window.mapPixelToCoords (m);
@@ -172,30 +164,34 @@ void Menu::read_mouse() {
 
 void Menu::read_gamepad() {
     gamepad.update();
-    if (!gamepad_enabled) return;
-    if (!wait_for_gamepad()) {
-        if (gamepad.up()) {
-            mouse_mode = false;
-            active_page->up();
-            gamepad_wait = GAMEPAD_WAIT_TIME;
-        } else if (gamepad.down()) {
-            mouse_mode = false;
-            active_page->down();
-            gamepad_wait = GAMEPAD_WAIT_TIME;
-        } else if (gamepad.left()) {
-            mouse_mode = false;
-            active_page->left();
-            gamepad_wait = GAMEPAD_WAIT_TIME;
-        } else if (gamepad.right()) {
-            mouse_mode = false;
-            active_page->right();
-            gamepad_wait = GAMEPAD_WAIT_TIME;
-        }
-    }
-    if (fire_pressed) {
+    if (!gamepad_enabled || wait_for_gamepad()) return;
+
+    if (gamepad.state.dpad_vector.y < 0) {
         mouse_mode = false;
-        fire_pressed = false;
-        return_code = active_widget->action();
+        active_page->up();
+        gamepad_wait = GAMEPAD_WAIT_TIME;
+    } else if (gamepad.state.dpad_vector.y > 0) {
+        mouse_mode = false;
+        active_page->down();
+        gamepad_wait = GAMEPAD_WAIT_TIME;
+    } else if (gamepad.state.dpad_vector.x < 0) {
+        mouse_mode = false;
+        active_page->left();
+        gamepad_wait = GAMEPAD_WAIT_TIME;
+    } else if (gamepad.state.dpad_vector.x > 0) {
+        mouse_mode = false;
+        active_page->right();
+        gamepad_wait = GAMEPAD_WAIT_TIME;
+    }
+    if (gamepad.state.buttons[0].evt == ButtonEvent::Pressed) {
+        if (!waiting_for_js_button_up) {
+            waiting_for_js_button_up = true;
+            mouse_mode = false;
+            fire_pressed = false;
+            return_code = active_widget->action();
+        }
+    } else {
+        waiting_for_js_button_up = false;
     }
 }
 } // namespace ss

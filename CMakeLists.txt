@@ -48,6 +48,7 @@ add_executable(senseless_soccer3
     src/menu/Menu.cpp
     src/menu/Widget.cpp
     src/menu/Button.cpp
+    src/menu/WidgetLabel.cpp
     src/menu/Page.cpp
     src/menu/PageMain.cpp
     src/menu/PageCalibrate.cpp

@@ -3,7 +3,7 @@
 #include "PageCalibrate.hpp"
 #include "AnimationFlash.hpp"
 #include "AnimationFade.hpp"
-#include "../input/Gamepad.hpp"
+#include "../input/Controller.hpp"
 
 #include <memory>
 
@@ -11,12 +11,11 @@ namespace ss {
 
 enum struct Page_ID {Main, Calibrate};
 
-class Menu : public Controllable {
+class Menu {
 public:
-    Menu (sf::RenderWindow& wnd, Gamepad& controller);
+    Menu (sf::RenderWindow& wnd, Controller& controller);
     ~Menu();
     MenuEvent run();
-    void onInputEvent (const InputEvent in_event, const std::vector<int>& in_params) override;
     void changePage (const Page_ID id);
 
     bool mouse_pressed = false;
@@ -28,7 +27,7 @@ public:
 private:
     bool exit = false;
     sf::RenderWindow& window;
-    Gamepad& gamepad;
+    Controller& gamepad;
     MenuEvent return_code = MenuEvent::None;
     PageMain mainpage;
     PageCalibrate calibratepage;
@@ -53,6 +52,9 @@ private:
             return --gamepad_wait;
         return false;
     }
+    
+    // tmp will eventually be handled by controller internally
+    bool waiting_for_js_button_up = false;
 };
 
 } // namepsace ss

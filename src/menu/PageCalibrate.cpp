@@ -7,9 +7,9 @@
 namespace ss {
 
 PageCalibrate::PageCalibrate (sf::RenderWindow& wnd, Menu* ctx) : Page (wnd, ctx, Page_ID::Calibrate) {
-    Widget* button1 = addChild (make_button (window, MenuEvent::CalibrateDone,  "DONE",    {500, 250}, color_std));
-    Widget* button2 = addChild (make_button (window, MenuEvent::Exit,  "BACK",    {500, 310}, color_ext));
-    
+    Widget* button2 = addChild (make_button (window, MenuEvent::Exit,           "BACK",    {140, 600}, color_ext));
+    Widget* button1 = addChild (make_button (window, MenuEvent::CalibrateDone,  "DONE",    {660, 600}, color_std));
+
     button1->neighbours.below = button2;
     button2->neighbours.above = button1;
 
@@ -43,7 +43,7 @@ void PageCalibrate::onShow() {
     }
 }
 
-void PageCalibrate::onHide(){
+void PageCalibrate::onHide() {
     context->gamepad_enabled = true;
 }
 
@@ -65,8 +65,7 @@ void PageCalibrate::update() {
         break;
 
     case TestPhase::Extremities:
-       std::cout << gamepad_widget->controller.state.left_stick_vector.x << " , " << gamepad_widget->controller.state.left_stick_vector.y << std::endl; 
-        
+
         calibration.extremities.min.x = std::min (calibration.extremities.min.x, gamepad_widget->controller.state.left_stick_vector.x);
 
         calibration.extremities.min.y = std::min (calibration.extremities.min.y, gamepad_widget->controller.state.left_stick_vector.y);

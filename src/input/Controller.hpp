@@ -12,6 +12,10 @@ public:
     void update();
     ControllerType type = ControllerType::Gamepad;
     ControllerState state;
+    bool up();
+    bool down();
+    bool left();
+    bool right();
     void calibrate(const Calibration& left, const Calibration &right);
     bool isCalibrated();
     void init();

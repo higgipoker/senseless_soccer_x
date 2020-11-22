@@ -1,6 +1,7 @@
 #include "Match.hpp"
 #include "Player.hpp"
 #include "player_animations.h"
+#include <SFML/Window/Keyboard.hpp>
 #include <iostream>
 
 namespace ss {

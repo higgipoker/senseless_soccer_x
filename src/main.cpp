@@ -16,7 +16,7 @@ void wait_for_no_key (sf::RenderWindow& window) {
 int main() {
     std::cout << "Senseless soccer started" << std::endl;
     sf::RenderWindow window (sf::VideoMode{1280, 720}, "Senseless Soccer");
-    Gamepad gamepad;
+    Controller gamepad;
     Menu menu (window, gamepad);
     Match match (window);
     window.setFramerateLimit (60);

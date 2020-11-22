@@ -7,7 +7,7 @@
 namespace ss {
 using namespace sf;
 
-GamepadController::GamepadController(){
+GamepadController::GamepadController() {
     setSaneDefaults();
 }
 
@@ -17,24 +17,34 @@ void GamepadController::update (ControllerState& s) {
     s.left_stick_vector =  get_axis_vector (sf::Joystick::X, sf::Joystick::Y, left_stick_calibration);
     s.right_stick_vector = get_axis_vector (sf::Joystick::U, sf::Joystick::V, right_stick_calibration);
 
+    s.dpad_vector = get_dpad_vector();
 
-    // if stick is centered, check the dpad
-    if (s.left_stick_vector.x == 0 && s.left_stick_vector.y == 0) {
-        if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovX) < 0) {
-            s.left_stick_vector.x = -1;
-        }
-        if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovX) > 0) {
-            s.left_stick_vector.x = 1;
-        }
-        if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovY) < 0) {
-            s.left_stick_vector.y = -1;
-        }
-        if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovY) > 0) {
-            s.left_stick_vector.y = 1;
-        }
-
-        s.left_stick_vector = vec_normalized2d (s.left_stick_vector);
+    //tmp
+    if (Joystick::isButtonPressed (sf_joystick_index, 0)) {
+        s.buttons[0].evt = ButtonEvent::Pressed;
+    } else {
+        s.buttons[0].evt = ButtonEvent::None;
     }
+
+    /*
+        // if stick is centered, check the dpad
+        if (s.left_stick_vector.x == 0 && s.left_stick_vector.y == 0) {
+            if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovX) < 0) {
+                s.left_stick_vector.x = -1;
+            }
+            if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovX) > 0) {
+                s.left_stick_vector.x = 1;
+            }
+            if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovY) < 0) {
+                s.left_stick_vector.y = -1;
+            }
+            if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovY) > 0) {
+                s.left_stick_vector.y = 1;
+            }
+
+            s.left_stick_vector = vec_normalized2d (s.left_stick_vector);
+        }
+        */
 }
 
 sf::Vector3f GamepadController::get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration) {
@@ -64,13 +74,20 @@ sf::Vector3f GamepadController::get_axis_vector (const sf::Joystick::Axis axis1,
 
     return ret;
 }
+
+sf::Vector2f GamepadController::get_dpad_vector() {
+    sf::Vector2f dpad =
+    {sf::Joystick::getAxisPosition (sf_joystick_index, sf::Joystick::PovX),  sf::Joystick::getAxisPosition (sf_joystick_index, sf::Joystick::PovY) };
+    return dpad;
+}
+
 void GamepadController::setSaneDefaults() {
     calibrated = true;
     left_stick_calibration.at_rest.min = {10, 10};
-    left_stick_calibration.extremities.min = {0,0};
+    left_stick_calibration.extremities.min = {0, 0};
     left_stick_calibration.extremities.max = {100, 100};
     left_stick_calibration.range = {100, 100};
-    
+
     right_stick_calibration = left_stick_calibration;
 }
 
