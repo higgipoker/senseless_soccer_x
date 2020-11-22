@@ -3,59 +3,34 @@
 #include "AnimationFlash.hpp"
 #include "events.hpp"
 #include "Button.hpp"
+#include "PageMain.hpp"
 #include <SFML/Window/Event.hpp>
 #include <iostream>
 namespace ss {
 
-std::unique_ptr<Widget> make_button (sf::RenderWindow& wnd, const MenuEvent evt,  const std::string& caption, const sf::Vector2f& pos, const sf::Color& col) {
-    std::unique_ptr<Widget> btn = std::make_unique<Button> (wnd, evt, caption, pos, col);
-    return btn;
-}
 
-Menu::Menu (sf::RenderWindow& wnd, Gamepad& controller) : window (wnd), gamepad (controller) {
+
+Menu::Menu (sf::RenderWindow& wnd, Gamepad& controller) : window (wnd), gamepad (controller), mainpage (wnd, this), calibratepage (wnd, this) {
     gamepad.attachListener (*this);
-    // every menu has a defualt first page
-    pages.push_back (std::make_unique<Page> (wnd));
-    active_page = pages[0].get();
-
-    sf::Color color_std {0, 120, 10};
-    sf::Color color_ext {55, 0, 0};
-    float btn_x = window.getSize().x / 2 - 500 / 2;
-    Widget* button1 = addwidget (make_button (window, MenuEvent::Friendly, "FRIENDLY ", {btn_x, 250}, color_std));
-    Widget* button2 = addwidget (make_button (window, MenuEvent::Button2, "LEAGUE", {btn_x, 320}, color_std));
-    Widget* button3 = addwidget (make_button (window, MenuEvent::Button3, "CUP", {btn_x, 390}, color_std));
-    Widget* button4 = addwidget (make_button (window, MenuEvent::Button4, "CAREER", {btn_x, 460}, color_std));
-    Widget* button5 = addwidget (make_button (window, MenuEvent::Exit,    "EXIT", {btn_x, 530}, color_ext));
-
-    button1->neighbours.below = button2;
-    button2->neighbours.above = button1;
-
-    button2->neighbours.below = button3;
-    button3->neighbours.above = button2;
-
-    button3->neighbours.below = button4;
-    button4->neighbours.above = button3;
-
-    button4->neighbours.below = button5;
-    button5->neighbours.above = button4;
+    active_page = &mainpage;
 
     active_page->setAlpha (0);
     page_animation.changeTarget (active_page);
     page_animation.start();
+
+    active_animation.changeTarget (active_page->getActiveWidget());
+    active_animation.start();
 }
 
 Menu::~Menu() {
     gamepad.detatchListener (*this);
 }
 
-MenuEvent Menu::frame() {
-
-    update_mouse();
-    if (active_page) {
-        active_widget = active_page->getActiveWidget();
-
+MenuEvent Menu::run() {
+    while (!exit) {
         // input
         if (window.hasFocus()) {
+            update_mouse();
             read_keyboard();
             read_gamepad();
             read_mouse();
@@ -75,27 +50,53 @@ MenuEvent Menu::frame() {
         }
         active_animation.update();
 
-        // render
-        window.clear (sf::Color::Black);
-        if (active_page) {
-            active_page->draw();
+        switch (return_code) {
+        case  MenuEvent::Exit:
+            if (!last_page) {
+                exit = true;
+            } else {
+                changePage (last_page->id);
+            }
+            break;
+
+        case MenuEvent::Friendly:
+            return_code = MenuEvent::None;
+            return MenuEvent::Friendly;
+
+        case MenuEvent::Settings:
+            changePage (Page_ID::Calibrate);
+            break;
+
+        default:
+            active_page->handleMenuEvent (return_code);
+            break;
         }
+        return_code = MenuEvent::None;
+
+        // draw
+        window.clear (sf::Color::Black);
+        active_page->draw();
         window.display();
     }
-    MenuEvent ret = return_code;
-    return_code = MenuEvent::None;
-    return ret;
+    return  MenuEvent::Exit;
 }
 
-Widget* Menu::addwidget (std::unique_ptr<Widget> w, int page) {
-    Widget* widget =  pages[page]->addChild (std::move (w));
-    pages[page]->setContext (this);
-    widget->setContext (this);
-    if (pages.size() == 1 && pages[page]->childCount() == 1) {
-        active_animation.changeTarget (widget);
-        active_animation.start();
+void Menu::changePage (const Page_ID id) {
+    active_page->onHide();
+    switch (id) {
+    case Page_ID::Main:
+        last_page = nullptr;
+        active_page = &mainpage;
+        break;
+    case Page_ID::Calibrate:
+        last_page = &mainpage;
+        active_page = &calibratepage;
+        break;
     }
-    return widget;
+    active_page->onShow();
+    active_animation.stop();
+    active_animation.changeTarget (active_page->getActiveWidget());
+    active_animation.start();
 }
 
 void Menu::onInputEvent (const InputEvent in_event, const std::vector<int>& in_params) {
@@ -171,6 +172,7 @@ void Menu::read_mouse() {
 
 void Menu::read_gamepad() {
     gamepad.update();
+    if (!gamepad_enabled) return;
     if (!wait_for_gamepad()) {
         if (gamepad.up()) {
             mouse_mode = false;

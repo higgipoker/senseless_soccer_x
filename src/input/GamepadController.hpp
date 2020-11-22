@@ -1,25 +1,36 @@
 #pragma once
 #include "controller_tools.hpp"
 #include <SFML/Window/Joystick.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <iostream>
 
 namespace ss {
+
+
+
 class GamepadController {
 public:
+    GamepadController();
     void update (ControllerState& s);
+    void setSaneDefaults();
+    void calibrate (const Calibration& left, const Calibration& right);
+    void unCalibrate();
+    Calibration left_stick_calibration;
+    Calibration right_stick_calibration;
+
+    size_t thumbstick_threshold_x = 0;
+    size_t thumbstick_threshold_y = 0;
+
+    bool calibrated = false;
+
 private:
     size_t sf_joystick_index = 0;
-    size_t thumbstick_threshold_x = 6;
-    size_t thumbstick_threshold_y = 8;
-
-    sf::Vector3f get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2);
-
-    //debug
-    float max_x = 100;
-    float max_y = 100;
+    sf::Vector3f get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration);
 
     float inner_activation_radius = 0.3f;
     float outer_activation_radius = 0.8f;
+
+
 
 };
 }

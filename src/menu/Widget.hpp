@@ -13,7 +13,7 @@ public:
         return children.size();
     }
     virtual Widget* addChild (std::unique_ptr<Widget> child);
-    void update();
+    virtual void update();
     void draw();
     virtual MenuEvent action() {
         return MenuEvent::None;

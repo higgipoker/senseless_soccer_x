@@ -14,10 +14,10 @@
 namespace ss {
 namespace drawables {
 
-static constexpr float LEFT_STICK_X = 132;
-static constexpr float LEFT_STICK_Y = 104;
-static constexpr float RIGHT_STICK_X = 326;
-static constexpr float RIGHT_STICK_Y = 184;
+static constexpr float LEFT_STICK_X = 135;
+static constexpr float LEFT_STICK_Y = 153;
+static constexpr float RIGHT_STICK_X = 397;
+static constexpr float RIGHT_STICK_Y = 268;
 
 struct AnalogStick {
     void init (const sf::Vector2f& pos) {
@@ -26,9 +26,7 @@ struct AnalogStick {
         // init outer circle
         outer.setOrigin ({outer.getLocalBounds().width / 2, outer.getLocalBounds().height / 2});
         outer.setPosition (position);
-        outer.setFillColor (sf::Color::Black);
-        outer.setOutlineColor (sf::Color::Black);
-        outer.setOutlineThickness (2);
+        outer.setFillColor (sf::Color::Green);
 
         // init inner circle
         inner.setOrigin ({inner.getLocalBounds().width / 2, inner.getLocalBounds().height / 2});
@@ -50,7 +48,7 @@ struct AnalogStick {
         if (greater_than_or_equal (vec_magnitude2d (stick_vector), 0.9f)) {
             outer.setFillColor (sf::Color::Red);
         } else {
-            outer.setFillColor (sf::Color::Black);
+            outer.setFillColor (sf::Color::Green);
         }
 
         sf::Vector3f normalized = vec_normalized (stick_vector);
@@ -62,7 +60,7 @@ struct AnalogStick {
 
         origin.setPosition (line[1].position);
     }
-    sf::CircleShape outer{30, 30};
+    sf::CircleShape outer{46, 46};
     sf::CircleShape inner{15, 15};
     sf::CircleShape origin{32, 32};
     sf::Vector2f position;
@@ -77,7 +75,15 @@ public:
     void draw (sf::RenderTarget& target, sf::RenderStates states) const override;
     ControllerState* controller_state = nullptr;
     void setPosition (const sf::Vector2f& pos);
+    void setScale(float x, float y=0);
     void update();
+    sf::Vector2f getSize(){
+        sf::Vector2f act_size = bg.getSize();
+        act_size.x *= transformable.getScale().x;
+        act_size.y *= transformable.getScale().y;
+        return act_size;
+    }
+    bool suspended = false;
 private:
     AnalogStick left_stick;
     AnalogStick right_stick;

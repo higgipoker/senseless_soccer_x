@@ -49,13 +49,15 @@ add_executable(senseless_soccer3
     src/menu/Widget.cpp
     src/menu/Button.cpp
     src/menu/Page.cpp
+    src/menu/PageMain.cpp
+    src/menu/PageCalibrate.cpp
+    src/menu/GamepadWidget.cpp
     src/input/InputDevice.cpp
     src/input/Keyboard.cpp
     src/input/Gamepad.cpp
     src/input/Controller.cpp
     src/input/KeyboardController.cpp
     src/input/GamepadController.cpp
-    src/debug/DebugController.cpp
     src/drawables/DrawableGamepad.cpp
     
 )

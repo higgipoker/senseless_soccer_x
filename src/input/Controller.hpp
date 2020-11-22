@@ -12,6 +12,10 @@ public:
     void update();
     ControllerType type = ControllerType::Gamepad;
     ControllerState state;
+    void calibrate(const Calibration& left, const Calibration &right);
+    bool isCalibrated();
+    void init();
+    void unCalibrate();
 private:
     KeyboardController kb;
     GamepadController gamepad;
@@ -21,3 +25,4 @@ public:
 
 };
 }
+

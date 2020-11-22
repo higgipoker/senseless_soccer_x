@@ -9,18 +9,18 @@ namespace ss {
 
 class Button : public Widget {
 public:
-    Button (sf::RenderWindow& wnd, 
-            const MenuEvent evt, 
-            const std::string& capt, 
-            const sf::Vector2f pos, 
-            const sf::Color& bg_col = sf::Color::Blue, 
+    Button (sf::RenderWindow& wnd,
+            const MenuEvent evt,
+            const std::string& capt,
+            const sf::Vector2f pos,
+            const sf::Color& bg_col = sf::Color::Blue,
             const sf::Color& out_col = sf::Color (200, 200, 200, 50));
     virtual ~Button() = default;
     MenuEvent action() override;
     void setPosition (const sf::Vector2f& p) override;
     void setSize (const sf::Vector2f& s) override;
     void setCaption (const std::string& c);
-    void  setAlpha (const sf::Uint8 a) override;
+    void setAlpha (const sf::Uint8 a) override;
     void onHighlight() override;
     void onUnHighlight() override;
     MenuEvent event = MenuEvent::None;

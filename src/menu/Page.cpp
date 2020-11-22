@@ -5,7 +5,8 @@
 
 namespace ss {
 
-Page::Page (sf::RenderWindow& wnd) : Widget (wnd) {
+Page::Page (sf::RenderWindow& wnd, Menu* ctx, const Page_ID pid) : Widget (wnd), id(pid) {
+    context = ctx;
     std::filesystem::path path (std::filesystem::current_path());
     std::string imagepath = path.string() + "/gfx/bg1.png";
     if (!bg_texture.loadFromFile (imagepath)) {

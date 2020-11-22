@@ -1,6 +1,7 @@
 #pragma once
 #include "math.hpp"
 #include <SFML/System/Vector3.hpp>
+#include <SFML/System/Vector2.hpp>
 #include <cmath>
 #include <string>
 
@@ -9,8 +10,16 @@ inline static std::string vec_print (const sf::Vector3f& v) {
     return {std::to_string (v.x) + ", " + std::to_string (v.y) };
 }
 
+inline static std::string vec_print (const sf::Vector2f v) {
+    return {std::to_string (v.x) + ", " + std::to_string (v.y) };
+}
+
 inline static void vec_reset (sf::Vector3f& v) {
     v.x = v.y = v.z = 0;
+}
+
+inline static void vec_reset(sf::Vector2f& v){
+    v.x = v.y = 0;
 }
 
 inline static void vec_dampen (sf::Vector3f& v) {

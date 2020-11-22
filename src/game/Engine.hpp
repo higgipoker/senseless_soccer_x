@@ -6,7 +6,6 @@
 #include "../input/Controller.hpp"
 #include "../graphics/Sprite.hpp"
 #include "../graphics/TileMap.hpp"
-#include "../debug/DebugController.hpp"
 #include "../drawables/DrawableGamepad.hpp"
 
 

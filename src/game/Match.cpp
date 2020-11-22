@@ -40,7 +40,7 @@ void Match::exit() {
 void Match::play() {
     while (!finished) {
         // TODO debug
-        if (sf::Keyboard::isKeyPressed (sf::Keyboard::Q)) {
+        if (sf::Keyboard::isKeyPressed (sf::Keyboard::Escape)) {
             finished = true;
         }
         update();

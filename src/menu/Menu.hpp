@@ -1,35 +1,41 @@
 #pragma once
-#include "Page.hpp"
+#include "PageMain.hpp"
+#include "PageCalibrate.hpp"
 #include "AnimationFlash.hpp"
 #include "AnimationFade.hpp"
 #include "../input/Gamepad.hpp"
+
 #include <memory>
 
 namespace ss {
 
-constexpr int DefaultPage = 0;
+enum struct Page_ID {Main, Calibrate};
 
 class Menu : public Controllable {
 public:
     Menu (sf::RenderWindow& wnd, Gamepad& controller);
     ~Menu();
-    Widget* addwidget (std::unique_ptr<Widget> w, int page = DefaultPage);
-    MenuEvent frame();
+    MenuEvent run();
     void onInputEvent (const InputEvent in_event, const std::vector<int>& in_params) override;
+    void changePage (const Page_ID id);
 
     bool mouse_pressed = false;
     bool mouse_moved = false;
     sf::Vector2f mouse_position, last_mouse_position;
     bool mouse_mode = false;
+    bool gamepad_enabled = true;
 
 private:
+    bool exit = false;
     sf::RenderWindow& window;
     Gamepad& gamepad;
     MenuEvent return_code = MenuEvent::None;
-    std::vector<std::unique_ptr<Page>> pages;
+    PageMain mainpage;
+    PageCalibrate calibratepage;
     AnimationFlash active_animation;
     AnimationFade page_animation;
     Page* active_page = nullptr;
+    Page* last_page = nullptr;
     Widget* active_widget = nullptr;
     bool mouse_down = false;
     int gamepad_wait = 0;

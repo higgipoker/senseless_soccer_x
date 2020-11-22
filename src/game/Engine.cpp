@@ -2,6 +2,7 @@
 #include "match_resources.hpp"
 #include "player_animations.h"
 #include "../menu/Button.hpp"
+#include "../sfml/sfml_tools.hpp"
 
 #include <iostream>
 #include <memory>
@@ -53,7 +54,8 @@ void Engine::attachController (const size_t controller_id, const size_t player_i
     
 #ifndef NDEBUG
    debug_controller.controller_state = &controllers[controller_id].state; 
-   debug_controller.setPosition({100,0});
+   debug_controller.setPosition({100,400});
+   debug_controller.setScale(0.5f);
 #endif
 }
 
@@ -81,7 +83,7 @@ void Engine::update() {
 }
 
 void Engine::draw() {
-    window.clear (sf::Color::Magenta);
+    window.clear (sfml::DarkGreen);
     window.draw (pitch);
 
     // draw sprites
