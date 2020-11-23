@@ -7,6 +7,8 @@
 namespace ss {
 class Label : public Widget {
 public:
+    Label (sf::RenderWindow& wnd, const sf::Font& f, const float size, const sf::Color& col);
+    void setText (const std::string& t);
     void setPosition (const sf::Vector2f& p) override;
     void setSize (const sf::Vector2f& s) override;
     void setAlpha (const sf::Uint8 a) override;
@@ -14,10 +16,10 @@ public:
     void onUnHighlight() override;
 protected:
     void draw_self() override;
-    
+
 private:
     std::string label;
-    sf::Font font;
     sf::Text text;
+    sf::Color color{0, 0, 0, 255};
 };
 }

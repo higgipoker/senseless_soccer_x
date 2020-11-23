@@ -23,7 +23,10 @@ public:
     void setAlpha (const sf::Uint8 a) override;
     void onHighlight() override;
     void onUnHighlight() override;
+    void onDisable() override;
+    void onEnable() override;
     MenuEvent event = MenuEvent::None;
+    
 private:
     sf::RectangleShape btn_rect;
     sf::RectangleShape shadow_rect;
@@ -32,7 +35,6 @@ private:
     int outline_size = 3;
     std::string caption = "CAPTION";
     sf::Color caption_color = sf::Color::White;
-    sf::Font font;
     sf::Text text;
     sf::Text text_shadow;
     const float shadow_offset = 3;

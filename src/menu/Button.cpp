@@ -1,7 +1,8 @@
 #include "Button.hpp"
 #include "Menu.hpp"
+#include "../global.hpp"
 #include <filesystem>
-#include <iostream>
+
 
 namespace ss {
 
@@ -23,22 +24,15 @@ Button::Button (sf::RenderWindow& wnd,
     shadow_rect.setPosition (pos);
     shadow_rect.setSize ({500, 50});
     shadow_rect.setFillColor ({0, 0, 0, 100});
-    shadow_rect.setOutlineColor({0,0,0,100});
+    shadow_rect.setOutlineColor ({0, 0, 0, 100});
     shadow_rect.setOutlineThickness (outline_size);
-    shadow_rect.move(4, 4);
+    shadow_rect.move (4, 4);
 
-    // test font
-    std::filesystem::path path (std::filesystem::current_path());
-    std::string fontpath = path.string() + "/fonts/swos2.ttf";
-    if (!font.loadFromFile (fontpath)) {
-        std::cout << "could not load font: " << fontpath << std::endl;
-    }
-
-    text.setFont (font);
+    text.setFont (global::Resources::font_std);
     text.setString (caption);
     text.setCharacterSize (24);
     text.setFillColor (caption_color);
-    text_shadow.setFont (font);
+    text_shadow.setFont (global::Resources::font_std);
     text_shadow.setString (caption);
     text_shadow.setCharacterSize (24);
     text_shadow.setFillColor (sf::Color::Black);
@@ -46,7 +40,7 @@ Button::Button (sf::RenderWindow& wnd,
 }
 
 MenuEvent Button::action() {
-    std::cout << "pressed " << caption << std::endl;
+    global::log ("pressed " + caption);
     return event;
 }
 
@@ -131,5 +125,15 @@ void Button::onHighlight() {
 void Button::onUnHighlight() {
     btn_rect.setOutlineColor (outline_color);
     highlighted = false;
+}
+
+void Button::onDisable() {
+    Widget::onDisable();
+    btn_rect.setFillColor ({bg_color.r, bg_color.g, bg_color.b, 50});
+}
+
+void Button::onEnable() {
+    Widget::onDisable();
+    btn_rect.setFillColor ({bg_color.r, bg_color.g, bg_color.b, 255});
 }
 }

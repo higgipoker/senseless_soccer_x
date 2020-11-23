@@ -4,6 +4,7 @@
 #include "events.hpp"
 #include "Button.hpp"
 #include "PageMain.hpp"
+
 #include <SFML/Window/Event.hpp>
 #include <iostream>
 namespace ss {
@@ -164,7 +165,7 @@ void Menu::read_mouse() {
 
 void Menu::read_gamepad() {
     gamepad.update();
-    if (!gamepad_enabled || wait_for_gamepad()) return;
+    if (/*!gamepad_enabled ||*/ wait_for_gamepad()) return;
 
     if (gamepad.state.dpad_vector.y < 0) {
         mouse_mode = false;

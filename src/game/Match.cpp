@@ -1,8 +1,8 @@
 #include "Match.hpp"
 #include "Player.hpp"
 #include "player_animations.h"
+#include "../global.hpp"
 #include <SFML/Window/Keyboard.hpp>
-#include <iostream>
 
 namespace ss {
 namespace game {
@@ -26,7 +26,7 @@ Player* add_player (Engine& engine) {
 Match::Match (sf::RenderWindow& wnd) : engine (wnd) {
     MatchResources::init();
     Player* player1 = add_player (engine);
-    std::cout << "add player with id: " << player1->id << std::endl;
+    global::log("add player with id: " + std::to_string(player1->id));
 }
 
 void Match::init() {

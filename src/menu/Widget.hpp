@@ -20,9 +20,16 @@ public:
     }
     virtual void setPosition (const sf::Vector2f& p) = 0;
     virtual void setSize (const sf::Vector2f& s) = 0;
-    virtual void setAlpha(const sf::Uint8 a);
     virtual void onHighlight() = 0;
     virtual void onUnHighlight() = 0;
+    virtual void setAlpha (const sf::Uint8 a);
+    virtual void onDisable() {
+        enabled = false;
+    }
+    virtual void onEnable() {
+        enabled = true;
+    }
+    bool enabled = true;
     bool has_mouse = false;
 
     struct {

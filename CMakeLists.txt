@@ -53,6 +53,7 @@ add_executable(senseless_soccer3
     src/menu/PageMain.cpp
     src/menu/PageCalibrate.cpp
     src/menu/GamepadWidget.cpp
+    src/menu/ListBox.cpp
     src/input/InputDevice.cpp
     src/input/Keyboard.cpp
     src/input/Gamepad.cpp

@@ -1,7 +1,7 @@
 #include "match_resources.hpp"
 #include "../graphics/Texture.hpp"
+#include "../global.hpp"
 #include <SFML/Graphics/Sprite.hpp>
-#include <iostream>
 #include <filesystem>
 
 namespace ss {
@@ -69,8 +69,8 @@ void MatchResources::init() {
 
     // create the mega texture with the necessary dimensions
     if (!match_texture.create (width, height)) {
-        std::cout << "Could not create tecture with dimensions " << width << "x" << height << std::endl;
-        std::cout << "Max texture dimensions: " << sf::Texture::getMaximumSize() << " x " << sf::Texture::getMaximumSize() << std::endl;
+        global::log ("Could not create tecture with dimensions " + std::to_string (width) + "x" + std::to_string (height));
+        global::log("Max texture dimensions: " + std::to_string(sf::Texture::getMaximumSize()) + " x " +std::to_string(sf::Texture::getMaximumSize()));
     }
 
     // create sprites to draw to the mega texture
@@ -85,7 +85,7 @@ void MatchResources::init() {
     ball_sprite.move (0, player_shadow_sprite.getGlobalBounds().top + player_shadow_sprite.getLocalBounds().height);
     grass_sprite.move (0, ball_sprite.getGlobalBounds().top + ball_sprite.getLocalBounds().height);
     lines_sprite.move (0, grass_sprite.getGlobalBounds().top + grass_sprite.getLocalBounds().height);
-    
+
     player1_origin = home_team_sprite.getPosition();
     player2_origin = away_team_sprite.getPosition();
 
@@ -116,9 +116,9 @@ KitPalette MatchResources::makeStandardBlueKit() {
     };
 }
 
-SpriteDefinition MatchResources::getPlayerSpriteDef(int which ){
-    SpriteDefinition def(match_texture.getTexture());
-    def.texture_origin = which == 0? player1_origin : player2_origin;
+SpriteDefinition MatchResources::getPlayerSpriteDef (int which) {
+    SpriteDefinition def (match_texture.getTexture());
+    def.texture_origin = which == 0 ? player1_origin : player2_origin;
     def.spritesheet_cols = 7;
     def.total_frames = 16;
     def.frame_width = 32;
