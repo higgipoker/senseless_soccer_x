@@ -7,11 +7,11 @@
 namespace ss {
 
 PageCalibrate::PageCalibrate (sf::RenderWindow& wnd, Menu* ctx) : Page (wnd, ctx, Page_ID::Calibrate) {
-    Widget* button2 = addChild (make_button (window, MenuEvent::Exit,           "BACK",    {140, 600}, color_ext));
-    Widget* button1 = addChild (make_button (window, MenuEvent::CalibrateDone,  "DONE",    {660, 600}, color_std));
+    Widget* button1 = addChild (make_button (window, MenuEvent::Exit,           "BACK",    {140, 600}, color_ext));
+    Widget* button2 = addChild (make_button (window, MenuEvent::CalibrateDone,  "DONE",    {660, 600}, color_std));
 
-    button1->neighbours.below = button2;
-    button2->neighbours.above = button1;
+    button1->neighbours.right = button2;
+    button2->neighbours.left = button1;
 
 }
 
