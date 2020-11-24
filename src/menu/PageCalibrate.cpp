@@ -43,12 +43,11 @@ PageCalibrate::PageCalibrate (sf::RenderWindow& wnd, Menu* ctx) : Page (wnd, ctx
         }
     }
 
+    rows[NUMBER_ROWS-1]->neighbours.below = button2;
+    button2->neighbours.above = rows[NUMBER_ROWS-1];
+
     button1->neighbours.right = button2;
     button2->neighbours.left = button1;
-
-
-
-
 }
 
 void PageCalibrate::onShow() {
@@ -62,8 +61,9 @@ void PageCalibrate::onShow() {
     gamepad_widget = static_cast<GamepadWidget*> (addChild (std::move (w)));
     gamepad_widget->setSize ({250, 200});
     gamepad_widget->setPosition ({780, 350});
-    gamepad_widget->controller.unCalibrate();
-    calibration.reset();
+    //gamepad_widget->controller.unCalibrate();
+    //calibration.reset();
+
 
     //
     // read connected joysticks
