@@ -16,7 +16,7 @@ public:
     void onHighlight() override;
     void onUnHighlight() override;
     drawables::DrawableGamepad gamepad;
-    Controller controller;
+    Controller *controller;
 protected:
 
     void draw_self() override;

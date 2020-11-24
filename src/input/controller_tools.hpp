@@ -37,7 +37,7 @@ struct Calibration {
     } extremities;
 
     sf::Vector2f range;
-
+    float activation_threshhold = 0;
     void reset() {
         at_rest.min.x = at_rest.min.y = 1000.f;
         at_rest.max.x = at_rest.max.y = 0.f;

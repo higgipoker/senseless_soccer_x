@@ -15,8 +15,7 @@ public:
     virtual Widget* addChild (std::unique_ptr<Widget> child);
     virtual void update();
     void draw();
-    virtual MenuEvent action() {
-        return MenuEvent::None;
+    virtual void onPressed() {
     }
     virtual void setPosition (const sf::Vector2f& p) = 0;
     virtual void setSize (const sf::Vector2f& s) = 0;
@@ -38,6 +37,8 @@ public:
         Widget* right = nullptr;
         Widget* left = nullptr;
     } neighbours;
+    
+    int id = -1;
 
 protected:
     Menu* context = nullptr;

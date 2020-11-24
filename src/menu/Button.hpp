@@ -10,13 +10,16 @@ namespace ss {
 class Button : public Widget {
 public:
     Button (sf::RenderWindow& wnd,
-            const MenuEvent evt,
+            const int i,
             const std::string& capt,
             const sf::Vector2f pos,
             const sf::Color& bg_col = sf::Color::Blue,
             const sf::Color& out_col = sf::Color (200, 200, 200, 50));
+    Button (sf::RenderWindow& wnd) : Widget (wnd) {
+
+    }
     virtual ~Button() = default;
-    MenuEvent action() override;
+    void onPressed() override;
     void setPosition (const sf::Vector2f& p) override;
     void setSize (const sf::Vector2f& s) override;
     void setCaption (const std::string& c);
@@ -25,8 +28,7 @@ public:
     void onUnHighlight() override;
     void onDisable() override;
     void onEnable() override;
-    MenuEvent event = MenuEvent::None;
-    
+
 private:
     sf::RectangleShape btn_rect;
     sf::RectangleShape shadow_rect;
@@ -38,8 +40,8 @@ private:
     sf::Text text;
     sf::Text text_shadow;
     const float shadow_offset = 3;
-    void draw_self() final override;
-    void update_self() final override;
+    void draw_self()  override;
+    void update_self()  override;
     void align_caption();
     void size_caption();
 };

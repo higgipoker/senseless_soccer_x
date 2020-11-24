@@ -5,8 +5,8 @@
 
 namespace ss {
 
-static inline std::unique_ptr<Widget> make_button (sf::RenderWindow& wnd, const MenuEvent evt,  const std::string& caption, const sf::Vector2f& pos, const sf::Color& col) {
-    std::unique_ptr<Widget> btn = std::make_unique<Button> (wnd, evt, caption, pos, col);
+static inline std::unique_ptr<Widget> make_button (sf::RenderWindow& wnd, const int i,  const std::string& caption, const sf::Vector2f& pos, const sf::Color& col) {
+    std::unique_ptr<Widget> btn = std::make_unique<Button> (wnd, i, caption, pos, col);
     return btn;
 }
 

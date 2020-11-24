@@ -44,7 +44,6 @@ private:
     } forces;
 
     bool effected_by_gravity = false;
-    InputDevice *input = nullptr;
     // ------------------------------------------------------------
     // functions
     // ------------------------------------------------------------

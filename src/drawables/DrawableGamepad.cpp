@@ -47,13 +47,8 @@ void DrawableGamepad::update() {
 }
 
 void DrawableGamepad::draw_analog_stick (const AnalogStick& stick, const sf::Vector3f& stick_vector, sf::RenderTarget& target, sf::RenderStates states) const {
-    
-    if (suspended) return;
-
     target.draw (stick.outer, states);
-//    target.draw (stick.inner);
     target.draw (stick.origin, states);
-//    target.draw (stick.line);
 }
 
 

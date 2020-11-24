@@ -17,13 +17,13 @@ public:
     void animate_in();
     void animate_out();
     virtual Widget* addChild (std::unique_ptr<Widget> child) override;
-    virtual void setPosition (const sf::Vector2f& p) override;
-    virtual void setSize (const sf::Vector2f& s) override;
-    virtual void setAlpha (const sf::Uint8 a) override;
+    void setPosition (const sf::Vector2f& p) override;
+    void setSize (const sf::Vector2f& s) override;
+    void setAlpha (const sf::Uint8 a) override;
     void onHighlight() override;
     void onUnHighlight() override;
     Widget* getActiveWidget();
-    virtual void handleMenuEvent (const MenuEvent evt){};
+    virtual void handleButtonPress (Widget* button) {};
 
     void up();
     void down();

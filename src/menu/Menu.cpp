@@ -8,8 +8,9 @@
 #include <SFML/Window/Event.hpp>
 #include <iostream>
 namespace ss {
-
-
+static const int RETURN_NOTHING = 0;
+static const int RETURN_EXIT = 1;
+static const int RETURN_MATCH = 2;
 
 Menu::Menu (sf::RenderWindow& wnd, Controller& controller) : window (wnd), gamepad (controller), mainpage (wnd, this), calibratepage (wnd, this) {
     active_page = &mainpage;
@@ -25,7 +26,7 @@ Menu::Menu (sf::RenderWindow& wnd, Controller& controller) : window (wnd), gamep
 Menu::~Menu() {
 }
 
-MenuEvent Menu::run() {
+int Menu::run() {
     while (!exit) {
         // input
         if (window.hasFocus()) {
@@ -49,35 +50,13 @@ MenuEvent Menu::run() {
         }
         active_animation.update();
 
-        switch (return_code) {
-        case  MenuEvent::Exit:
-            if (!last_page) {
-                exit = true;
-            } else {
-                changePage (last_page->id);
-            }
-            break;
-
-        case MenuEvent::Friendly:
-            return_code = MenuEvent::None;
-            return MenuEvent::Friendly;
-
-        case MenuEvent::Settings:
-            changePage (Page_ID::Calibrate);
-            break;
-
-        default:
-            active_page->handleMenuEvent (return_code);
-            break;
-        }
-        return_code = MenuEvent::None;
 
         // draw
         window.clear (sf::Color::Black);
         active_page->draw();
         window.display();
     }
-    return  MenuEvent::Exit;
+    return return_code;
 }
 
 void Menu::changePage (const Page_ID id) {
@@ -133,7 +112,8 @@ void Menu::read_keyboard() {
         case sf::Event::KeyPressed :
             mouse_mode = false;
             if (event.key.code == sf::Keyboard::Escape) {
-                return_code = MenuEvent::Exit;
+                return_code = RETURN_EXIT;
+                exit = true;
             } else if (event.key.code == sf::Keyboard::W) {
                 active_page->up();
             } else if (event.key.code == sf::Keyboard::S)  {
@@ -143,9 +123,7 @@ void Menu::read_keyboard() {
             } else if (event.key.code == sf::Keyboard::D) {
                 active_page->right();
             } else if (event.key.code == sf::Keyboard::Enter || event.key.code == sf::Keyboard::Space) {
-                if (active_widget) {
-                    return_code = active_widget->action();
-                }
+                press_button();
             }
             break;
         default:
@@ -158,7 +136,7 @@ void Menu::read_mouse() {
     if (!wait_for_mouse_up) {
         if (mouse_mode && mouse_pressed && active_widget->has_mouse) {
             wait_for_mouse_up = true;
-            return_code = active_widget->action();
+            press_button();
         }
     }
 }
@@ -167,19 +145,19 @@ void Menu::read_gamepad() {
     gamepad.update();
     if (/*!gamepad_enabled ||*/ wait_for_gamepad()) return;
 
-    if (gamepad.state.dpad_vector.y < 0) {
+    if (gamepad.up()) {
         mouse_mode = false;
         active_page->up();
         gamepad_wait = GAMEPAD_WAIT_TIME;
-    } else if (gamepad.state.dpad_vector.y > 0) {
+    } else if (gamepad.down()) {
         mouse_mode = false;
         active_page->down();
         gamepad_wait = GAMEPAD_WAIT_TIME;
-    } else if (gamepad.state.dpad_vector.x < 0) {
+    } else if (gamepad.left()) {
         mouse_mode = false;
         active_page->left();
         gamepad_wait = GAMEPAD_WAIT_TIME;
-    } else if (gamepad.state.dpad_vector.x > 0) {
+    } else if (gamepad.right()) {
         mouse_mode = false;
         active_page->right();
         gamepad_wait = GAMEPAD_WAIT_TIME;
@@ -189,10 +167,17 @@ void Menu::read_gamepad() {
             waiting_for_js_button_up = true;
             mouse_mode = false;
             fire_pressed = false;
-            return_code = active_widget->action();
+            press_button();
         }
     } else {
         waiting_for_js_button_up = false;
+    }
+}
+
+void Menu::press_button() {
+    if (active_widget) {
+        active_widget->onPressed();
+        active_page->handleButtonPress (active_widget);
     }
 }
 } // namespace ss

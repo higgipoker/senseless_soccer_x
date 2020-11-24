@@ -15,7 +15,7 @@ class Menu {
 public:
     Menu (sf::RenderWindow& wnd, Controller& controller);
     ~Menu();
-    MenuEvent run();
+    int run();
     void changePage (const Page_ID id);
 
     bool mouse_pressed = false;
@@ -28,7 +28,7 @@ private:
     bool exit = false;
     sf::RenderWindow& window;
     Controller& gamepad;
-    MenuEvent return_code = MenuEvent::None;
+    int return_code = 0;
     PageMain mainpage;
     PageCalibrate calibratepage;
     AnimationFlash active_animation;
@@ -55,6 +55,8 @@ private:
     
     // tmp will eventually be handled by controller internally
     bool waiting_for_js_button_up = false;
+    
+    void press_button();
 };
 
 } // namepsace ss

@@ -42,6 +42,7 @@ bool Controller::up() {
     bool ret = false;
     switch (type) {
     case ControllerType::Gamepad:
+        return gamepad.up();
         break;
     case ControllerType::Keyboard:
         break;
@@ -53,6 +54,7 @@ bool Controller::down() {
     bool ret = false;
     switch (type) {
     case ControllerType::Gamepad:
+        return gamepad.down();
         break;
     case ControllerType::Keyboard:
         break;
@@ -65,6 +67,7 @@ bool Controller::left() {
     bool ret = false;
     switch (type) {
     case ControllerType::Gamepad:
+        return gamepad.left();
         break;
     case ControllerType::Keyboard:
         break;
@@ -76,6 +79,7 @@ bool Controller::right() {
     bool ret = false;
     switch (type) {
     case ControllerType::Gamepad:
+        return gamepad.right();
         break;
     case ControllerType::Keyboard:
         break;

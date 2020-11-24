@@ -9,12 +9,13 @@ namespace ss {
 const int TEXT_BUFFER = 5;
 
 Button::Button (sf::RenderWindow& wnd,
-                const MenuEvent evt,
+                const int i,
                 const std::string& capt,
                 const sf::Vector2f pos,
                 const sf::Color& bg_col,
                 const sf::Color& out_col)
-    : Widget (wnd), event (evt), bg_color (bg_col), outline_color (out_col), caption (capt) {
+    : Widget (wnd), bg_color (bg_col), outline_color (out_col), caption (capt) {
+    id = i;
     btn_rect.setPosition (pos);
     btn_rect.setSize ({500, 50});
     btn_rect.setFillColor (bg_color);
@@ -39,9 +40,7 @@ Button::Button (sf::RenderWindow& wnd,
     align_caption();
 }
 
-MenuEvent Button::action() {
-    global::log ("pressed " + caption);
-    return event;
+void Button::onPressed() {
 }
 
 void Button::update_self() {

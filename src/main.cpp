@@ -14,7 +14,7 @@ void wait_for_no_key (sf::RenderWindow& window) {
 }
 
 int main() {
-    global::log("Senseless soccer started");
+    global::log ("Senseless soccer started");
     global::Resources::load();
     sf::RenderWindow window (sf::VideoMode{1280, 720}, "Senseless Soccer");
     Controller gamepad; // defaults to a gamepad tyle controller
@@ -23,25 +23,20 @@ int main() {
     window.setFramerateLimit (60);
 
     while (window.isOpen()) {
-        switch (menu.run()) {
 
-        case MenuEvent::Exit:
+        int return_code = menu.run();
+        
+        if (return_code == 1) {
             window.close();
-            break;
-
-        case MenuEvent::Friendly:
+            
+        } else if (return_code == 2) {
             match.init();
             match.play();
             match.exit();
             wait_for_no_key (window);
-            break;
-
-        default:
-            break;
-
         }
     }
 
-    global::log("Senseless Soccer finished");
+    global::log ("Senseless Soccer finished");
     return 0;
 }

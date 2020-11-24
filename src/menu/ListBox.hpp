@@ -1,5 +1,5 @@
 #pragma once
-#include "Widget.hpp"
+#include "Button.hpp"
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/System/Vector2.hpp>
@@ -8,16 +8,26 @@
 
 namespace ss {
 
-const int NUMBER_ROWS = 8;
 const int BORDER_WIDTH = 4;
 
-class ListBoxRow : public Widget {
+class ListBoxRow : public Button {
 public:
-    ListBoxRow (sf::RenderWindow& wnd) : Widget (wnd) {
+
+    ListBoxRow (sf::RenderWindow& wnd) : Button (wnd) {
         colors[0] = {0, 0, 102};
         colors[1] = {51, 51, 255};
         rect.setOutlineThickness (2);
     }
+
+    void setText (const std::string& t) {
+        std::string caption = t;
+        text.setString(caption);
+        while (text.getGlobalBounds().width >= rect.getGlobalBounds().width - 4 * 2) {
+            caption = caption.substr (0, caption.size() - 3) + ".";
+            text.setString (caption);
+        }
+    }
+
     void setPosition (const sf::Vector2f& p) override {
 
     }
@@ -48,12 +58,12 @@ private:
 
 class ListBox : public Widget {
 public:
-    ListBox (sf::RenderWindow& wnd, const sf::Vector2f& pos, const sf::Vector2f& dims);
+    ListBox (sf::RenderWindow& wnd, const int number_rows, const sf::Vector2f& pos, const sf::Vector2f& dims);
     void setPosition (const sf::Vector2f& p) override;
     void setSize (const sf::Vector2f& s) override;
     void onHighlight() override;
     void onUnHighlight() override;
-    std::array<std::unique_ptr<ListBoxRow>, NUMBER_ROWS> data;
+    std::vector<std::unique_ptr<ListBoxRow>> rows;
 protected:
     void draw_self() override;
 
