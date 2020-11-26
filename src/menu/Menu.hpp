@@ -25,13 +25,7 @@ public:
     bool gamepad_enabled = true;
 
 private:
-   // a page is a list of widgets
-    static const int MAIN_PAGE_WIDGETS = 10;
-    static const int CALIBRATE_PAGE_WIDGETS = 10;
-    
-    Widget main_page[MAIN_PAGE_WIDGETS];
-    Widget calibrate_page[CALIBRATE_PAGE_WIDGETS];
-    
+     
     bool exit = false;
     sf::RenderWindow& window;
     Controller& gamepad;
