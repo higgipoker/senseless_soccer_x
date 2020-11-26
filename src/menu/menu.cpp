@@ -1,3 +1,7 @@
+//
+// here we go, a flat, performant non-oop menu system
+//
+
 #include "../input/GamepadController.hpp"
 #include "../resources/Resources.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -21,7 +25,7 @@ const unsigned char state_mask_selected   {1 << 2};   // 0000 0100
 
 enum class   Widget_Type  {Anonymous, Button, ListItem, Gamepad};
 enum class   Widget_State {Idle, Active, Disabled, Selected};
-const int MAX_WIDGETS_PER_PAGE = 20;
+const int    MAX_WIDGETS_PER_PAGE = 20;
 
 static const sf::Vector2f IMAGE_SIZE_THUMBSTICK{599, 450};
 
@@ -293,6 +297,7 @@ static int run_menu(Menu* menu, sf::RenderWindow* window) {
     sf::Vector2f last_mouse_position;
 
     while(!menu->should_exit) {
+
         // handle input
         if(window->hasFocus()) {
             update_mouse(&mouse, window);
@@ -307,7 +312,10 @@ static int run_menu(Menu* menu, sf::RenderWindow* window) {
         }
 
         // render
-
+        for(int i=0; i<MAX_WIDGETS_PER_PAGE; ++i) {
+            if(menu->active_page[i].type == Widget_Type::Anonymous) break;
+            draw_widget(&menu->active_page[i], window);
+        }
     }
     return menu->return_code;
 }
