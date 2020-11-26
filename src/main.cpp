@@ -1,6 +1,6 @@
 #include "global.hpp"
 #include "game/Gamestate.hpp"
-#include "menu/Menu.hpp"
+#include "menu/menu.cpp"
 #include "input/Gamepad.hpp"
 #include "game/Match.hpp"
 #include <SFML/Graphics.hpp>
@@ -18,23 +18,25 @@ int main() {
     global::Resources::load();
     sf::RenderWindow window (sf::VideoMode{1280, 720}, "Senseless Soccer");
     Controller gamepad; // defaults to a gamepad tyle controller
-    Menu menu (window, gamepad);
+    //Menu menu (window, gamepad);
+    menu::Menu main_menu;
     Match match (window);
     window.setFramerateLimit (60);
 
     while (window.isOpen()) {
 
-        int return_code = menu.run();
+         int return_code = menu::run_menu(&main_menu, &window);
         
-        if (return_code == 1) {
+        if (return_code == 0) {
             window.close();
             
-        } else if (return_code == 2) {
-            match.init();
-            match.play();
-            match.exit();
-            wait_for_no_key (window);
-        }
+        } 
+//         else if (return_code == 2) {
+//             match.init();
+//             match.play();
+//             match.exit();
+//             wait_for_no_key (window);
+//         }
     }
 
     global::log ("Senseless Soccer finished");
