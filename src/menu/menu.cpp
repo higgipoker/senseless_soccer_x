@@ -12,8 +12,6 @@
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Event.hpp>
-#include <memory>
-#include <bitset>
 #include <cassert>
 
 namespace ss {
@@ -24,21 +22,19 @@ const unsigned char state_mask_active     {1 << 0};   // 0000 0001
 const unsigned char state_mask_disabled   {1 << 1};   // 0000 0010
 const unsigned char state_mask_selected   {1 << 2};   // 0000 0100
 
-enum class   Widget_Type  {Anonymous, Button, ListItem, Gamepad, Image};
-enum class   Widget_State {Idle, Active, Disabled, Selected};
-const int    MAX_WIDGETS_PER_PAGE = 20;
+const int MAX_WIDGETS_PER_PAGE = 20;
 
 struct Mouse {
-    sf::Vector2f position;
-    bool pressed = false;
-    bool moved = false;
+    sf::Vector2f position    {0,0};
+    bool pressed             {false};
+    bool moved               {false};
 };
 
 struct Keyboard {
-    bool key_pressed = false;
-    bool key_released = false;
-    bool key_down = false;
-    sf::Keyboard::Key keycode = sf::Keyboard::Key::Unknown;
+    bool key_pressed            {false};
+    bool key_released           {false};
+    bool key_down               {false};
+    sf::Keyboard::Key keycode   {sf::Keyboard::Key::Unknown};
 };
 
 struct MenuTheme {
@@ -52,27 +48,27 @@ struct MenuTheme {
 };
 
 struct Button_Attributes {
-    std::string   caption = "UNSET";
-    sf::Vector2f  position{0, 0};
-    sf::Vector2f  dimensions{300, 50};
-    sf::Color     fill_color = sf::Color::Green;
-    sf::Color     outline_color = sf::Color::Black;
-    sf::Color     shadow_color = sf::Color::Black;
-    sf::Color     text_color = sf::Color::White;
-    sf::Color     text_outline_color = sf::Color::Black;
-    sf::Color     text_shadow_color = sf::Color::Black;
-    sf::Font*     text_font;
-    bool          has_shadow = false;
-    bool          has_text_shadow = true;
-    bool          has_text_outline = false;
+    std::string   caption            {"CAPTION"};
+    sf::Vector2f  position           {0, 0};
+    sf::Vector2f  dimensions         {300, 50};
+    sf::Color     fill_color         {sf::Color::Green};
+    sf::Color     outline_color      {sf::Color::Black};
+    sf::Color     shadow_color       {sf::Color::Black};
+    sf::Color     text_color         {sf::Color::White};
+    sf::Color     text_outline_color {sf::Color::Black};
+    sf::Color     text_shadow_color  {sf::Color::Black};
+    bool          has_shadow         {false};
+    bool          has_text_shadow    {true};
+    bool          has_text_outline   {false};
+    sf::Font*     text_font          {nullptr};
 };
 
 struct Button_Widget {
-    sf::RectangleShape btn_rect{{0, 0}};
-    sf::RectangleShape shadow_rect{{0, 0}};
-    std::string caption;
-    sf::Text text{};
-    sf::Text text_shadow{};
+    std::string        caption       {"CAPTION"};
+    sf::RectangleShape btn_rect      {{0,0}};
+    sf::RectangleShape shadow_rect   {{0,0}};
+    sf::Text           text;
+    sf::Text           text_shadow;
 };
 
 struct ListRow_Widget {
@@ -80,7 +76,7 @@ struct ListRow_Widget {
 };
 
 struct Gamepad_Widget {
-    ControllerState* controller_state = nullptr;
+    ControllerState* controller_state {nullptr};
 };
 
 struct Image_Widget {
@@ -88,32 +84,33 @@ struct Image_Widget {
 };
 
 struct Widget {
-    // stored as a union depending on widget type
-    Widget_Type type = Widget_Type::Anonymous;
+    enum {Anonymous, Button, ListItem, Gamepad, Image} type;
+    // ideally this would be a union, but we can't have nice things because of all the sfml oo cruft. Next time...
+    // union {
     Button_Widget       button;
     ListRow_Widget      list;
     Gamepad_Widget      gamepad;
     Image_Widget        image;
+    // };
 
     // common data
-    int                         id = 0;
-    unsigned char               states = state_mask_idle;
-    sf::FloatRect               bounds;
-    sf::Transformable           transformable;
+    int               id              {0};
+    unsigned char     states          {state_mask_idle};
+    sf::FloatRect     bounds          {0,0,0,0};
+    sf::Transformable transformable;
 
     // navigation order
     struct {
-        int above = 0;
-        int below = 0;
-        int right = 0;
-        int left  = 0;
+        int above  {0};
+        int below  {0};
+        int right  {0};
+        int left   {0};
     } neighbours;
 };
 
 struct Menu {
     Widget page_main      [MAX_WIDGETS_PER_PAGE];
     Widget page_clibrate  [MAX_WIDGETS_PER_PAGE];
-    Widget* active_page = page_main;
 
     bool  should_exit     = false;
     int   return_code     = 0;
@@ -280,7 +277,7 @@ static void init_button_widget (Button_Widget* widget, const Button_Attributes& 
 }
 
 static void init_image_widget (Widget* widget, const sf::FloatRect dimensions, sf::Texture* texture) {
-    widget->type = Widget_Type::Image;
+    widget->type = Widget::Image;
     widget->image.img_rect.setPosition ({dimensions.left, dimensions.top});
     widget->image.img_rect.setSize ({dimensions.width, dimensions.height});
     widget->image.img_rect.setTexture (texture);
@@ -296,21 +293,24 @@ static void init_listrow_widget (Widget* widget, const Button_Attributes& btn_at
 static void init_gamepad_widget (Menu* menu, Widget* widget) {
 }
 
-static void update_button_widget (Button_Widget* widget, Menu* menu) {
+static void update_button_widget (Widget* widget, Menu* menu) {
+    if(widget_disabled(widget)) {
+        widget->button.btn_rect.setFillColor({0,0,0,0});
+    }
 }
 
 static void update_widget (Widget* widget, Menu* menu) {
     switch (widget->type) {
-    case Widget_Type::Button:
-        update_button_widget (&widget->button, menu);
+    case Widget::Button:
+        update_button_widget (widget, menu);
         break;
-    case Widget_Type::ListItem:
+    case Widget::ListItem:
         break;
-    case Widget_Type::Gamepad:
+    case Widget::Gamepad:
         break;
-    case Widget_Type::Anonymous:
+    case Widget::Image:
         break;
-    case Widget_Type::Image:
+    case Widget::Anonymous:
         break;
     }
 }
@@ -349,19 +349,19 @@ static void draw_widget (const Widget* widget, sf::RenderWindow* window) {
     states.transform = widget->transformable.getTransform();
 
     switch (widget->type) {
-    case Widget_Type::Button:
+    case Widget::Button:
         draw_button (&widget->button, window, &states);
         break;
-    case Widget_Type::ListItem:
+    case Widget::ListItem:
         draw_listrow (&widget->list, window, &states);
         break;
-    case Widget_Type::Gamepad:
+    case Widget::Gamepad:
         draw_gamepad (&widget->gamepad, window, &states);
         break;
-    case Widget_Type::Image:
+    case Widget::Image:
         draw_image (&widget->image, window, &states);
         break;
-    case Widget_Type::Anonymous:
+    case Widget::Anonymous:
         break;
 
     }
@@ -396,54 +396,47 @@ static void init_main_page (Menu* menu) {
     attribs.shadow_color = menu->theme.color_button_shadow;
     attribs.has_shadow = true;
     init_button_widget (&button1->button, attribs);
-    button1->type = Widget_Type::Button;
-
-
+    button1->type = Widget::Button;
+    disable_widget(button1);
 }
 
 static int run_menu (Menu* menu, sf::RenderWindow* window) {
-    Mouse mouse;
-    Keyboard keyboard;
+    Mouse             mouse;
+    Keyboard          keyboard;
     GamepadController gamepad;
-    sf::Vector2f last_mouse_position;
 
     init_resources (menu);
     init_main_page (menu);
 
     while (!menu->should_exit) {
 
-        {
-            // handle input
-            if (window->hasFocus()) {
-                handle_mouse (&mouse, window);
-                handle_keyboard (&keyboard);
-                handle_gamepad (&gamepad);
-                handle_window (window, menu);
+        // handle input
+        if (window->hasFocus()) {
+            handle_mouse    (&mouse, window);
+            handle_keyboard (&keyboard);
+            handle_gamepad  (&gamepad);
+            handle_window   (window, menu);
 
-                if (keyboard.keycode == sf::Keyboard::Key::Escape) {
-                    menu->should_exit = true;
-                    menu->return_code = 0;
-                }
+            // tmp special case exit
+            if (keyboard.keycode == sf::Keyboard::Key::Escape) {
+                menu->should_exit = true;
+                menu->return_code = 0;
             }
         }
 
-        {
-            // update
-            int i = 0;
-            while (menu->page_main[i].type != Widget_Type::Anonymous) {
-                update_widget (&menu->active_page[i++], menu);
-            }
+        // update
+        int i = 0;
+        while (menu->page_main[i].type != Widget::Anonymous) {
+            update_widget (&menu->page_main[i++], menu);
         }
 
-        {
-            // render
-            window->clear (sf::Color::Magenta);
-            int i = 0;
-            while (menu->page_main[i].type != Widget_Type::Anonymous) {
-                draw_widget (&menu->active_page[i++], window);
-            }
-            window->display();
+        // render
+        window->clear (sf::Color::Magenta);
+        i = 0;
+        while (menu->page_main[i].type != Widget::Anonymous) {
+            draw_widget (&menu->page_main[i++], window);
         }
+        window->display();
     }
     return menu->return_code;
 }

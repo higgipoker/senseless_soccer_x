@@ -1,5 +1,6 @@
 #include "GamepadController.hpp"
 #include "../math/vector.hpp"
+#include <vector>
 #include <cmath>
 #include <iostream>
 #include <algorithm>
