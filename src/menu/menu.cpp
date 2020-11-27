@@ -266,14 +266,6 @@ static void init_button_widget (Button_Widget* widget, const Button_Attributes& 
         widget->text_shadow.setPosition (widget->text.getPosition());
         widget->text_shadow.move ({3, 2});
     }
-
-    float x = widget->text.getGlobalBounds().left;
-    float y = widget->text.getGlobalBounds().top;
-    float w = widget->text.getGlobalBounds().width;
-    float h = widget->text.getGlobalBounds().height;
-
-    global::log (std::to_string (x) + ", " + std::to_string (y) + ", " + std::to_string (w) + ", " + std::to_string (h));
-
 }
 
 static void init_image_widget (Widget* widget, const sf::FloatRect dimensions, sf::Texture* texture) {
@@ -296,6 +288,8 @@ static void init_gamepad_widget (Menu* menu, Widget* widget) {
 static void update_button_widget (Widget* widget, Menu* menu) {
     if(widget_disabled(widget)) {
         widget->button.btn_rect.setFillColor({0,0,0,0});
+    } else {
+        // set back to original color here
     }
 }
 
@@ -311,6 +305,8 @@ static void update_widget (Widget* widget, Menu* menu) {
     case Widget::Image:
         break;
     case Widget::Anonymous:
+        global::log("TRYING TO UPDATE AN ANONYMOUSE WIDGET");
+        assert(false);
         break;
     }
 }
@@ -362,6 +358,8 @@ static void draw_widget (const Widget* widget, sf::RenderWindow* window) {
         draw_image (&widget->image, window, &states);
         break;
     case Widget::Anonymous:
+        global::log("TRYING TO DRAW AN ANONYMOUSE WIDGET");
+        assert(false);
         break;
 
     }
