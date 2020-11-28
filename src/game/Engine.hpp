@@ -2,11 +2,11 @@
 
 #include "Player.hpp"
 #include "Ball.h"
-#include "../menu/Menu.hpp"
 #include "../input/Controller.hpp"
 #include "../graphics/Sprite.hpp"
 #include "../graphics/TileMap.hpp"
 #include "../drawables/DrawableGamepad.hpp"
+#include <SFML/Graphics/RenderWindow.hpp>
 
 
 #include <map>

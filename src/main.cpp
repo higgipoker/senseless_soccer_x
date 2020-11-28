@@ -7,6 +7,7 @@
 
 using namespace ss;
 using namespace game;
+using namespace menu;
 
 void wait_for_no_key (sf::RenderWindow& window) {
     static sf::Event event;
@@ -19,24 +20,23 @@ int main() {
     sf::RenderWindow window (sf::VideoMode{1280, 720}, "Senseless Soccer");
     Controller gamepad; // defaults to a gamepad tyle controller
     //Menu menu (window, gamepad);
-    menu::Menu main_menu;
+    Menu main_menu;
     Match match (window);
     window.setFramerateLimit (60);
 
     while (window.isOpen()) {
 
-         int return_code = menu::run_menu(&main_menu, &window);
-        
+        int return_code = run_menu (&main_menu, &window);
+
         if (return_code == 0) {
             window.close();
-            
-        } 
-//         else if (return_code == 2) {
-//             match.init();
-//             match.play();
-//             match.exit();
-//             wait_for_no_key (window);
-//         }
+
+        } else if (return_code == 2) {
+            match.init();
+            match.play();
+            match.exit();
+            wait_for_no_key (window);
+        }
     }
 
     global::log ("Senseless Soccer finished");
