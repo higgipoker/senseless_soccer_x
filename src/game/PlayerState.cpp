@@ -22,8 +22,9 @@ bool PlayerState::finished() {
 }
 
 void PlayerState::handleInput(const ControllerState& controller_state){
-    player.heading = vec_normalized (controller_state.left_stick_vector);
-    float stick_vector_mag = vec_magnitude2d(controller_state.left_stick_vector) * 2;
+    sf::Vector3f vector{controller_state.left_stick_vector.x, controller_state.left_stick_vector.y, 0};
+    player.heading = vec_normalized (vector);
+    float stick_vector_mag = vec_magnitude2d(vector) * 2;
     player.force += (player.heading * stick_vector_mag);
 }
 }

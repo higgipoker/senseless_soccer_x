@@ -13,11 +13,15 @@ GamepadController::GamepadController() {
 }
 
 void GamepadController::update (ControllerState& s) {
-    Joystick::update();
-
     // analog stick direction
-    s.left_stick_vector =  get_axis_vector (sf::Joystick::X, sf::Joystick::Y, left_stick_calibration);
-    s.right_stick_vector = get_axis_vector (sf::Joystick::U, sf::Joystick::V, right_stick_calibration);
+    std::pair<sf::Vector2f, sf::Vector2f> data = get_axis_vector (sf::Joystick::X, sf::Joystick::Y, left_stick_calibration);
+    s.left_stick_raw = data.first;
+    s.left_stick_vector =  data.second;
+    
+    data = get_axis_vector (sf::Joystick::U, sf::Joystick::V, right_stick_calibration);
+    s.right_stick_raw = data.first;
+    s.right_stick_vector = data.second;
+    
     s.dpad_vector = get_dpad_vector();
 
     directionmask = mask_zero;
@@ -159,24 +163,24 @@ void GamepadController::update (ControllerState& s) {
     }
 }
 
-sf::Vector3f GamepadController::get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration) {
-    sf::Vector3f ret =  {   Joystick::getAxisPosition (sf_joystick_index, axis1),
-                            Joystick::getAxisPosition (sf_joystick_index, axis2),
-                            0
-                        };
+std::pair<sf::Vector2f, sf::Vector2f> GamepadController::get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration) {
+    std::pair<sf::Vector2f, sf::Vector2f> ret;
+    ret.first = ret.second =  {   Joystick::getAxisPosition (sf_joystick_index, axis1),
+                                  Joystick::getAxisPosition (sf_joystick_index, axis2),
+                              };
 
     if (calibrated) {
         // raw vals are lower than calibreated dead zone -> set them to zero
-        if (fabsf (ret.x) < calibration.at_rest.min.x) ret.x = 0;
-        if (fabsf (ret.y) < calibration.at_rest.min.y) ret.y = 0;
+        if (fabsf (ret.second.x) < calibration.at_rest.min.x) ret.second.x = 0;
+        if (fabsf (ret.second.y) < calibration.at_rest.min.y) ret.second.y = 0;
 
         // normalize to values between -1 and 1
-        ret.x /= calibration.range.x;
-        ret.y /= calibration.range.y;
+        ret.second.x /= calibration.range.x;
+        ret.second.y /= calibration.range.y;
 
 
-        ret.x = std::clamp (ret.x, -1.f, 1.f);
-        ret.y = std::clamp (ret.y, -1.f, 1.f);
+        ret.second.x = std::clamp (ret.second.x, -1.f, 1.f);
+        ret.second.y = std::clamp (ret.second.y, -1.f, 1.f);
 
         // TODO
 //     if (less_than (vec_magnitude2d (ret), inner_activation_radius)) {

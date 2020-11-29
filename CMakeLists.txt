@@ -27,6 +27,7 @@ link_directories(${CMAKE_BINARY_DIR})
 # --------------------------------------------------
 add_executable(senseless_soccer3
     src/main.cpp
+    src/files/files.cpp
     src/game/Engine.cpp
     src/game/Entity.cpp
     src/game/Movable.cpp
@@ -45,18 +46,10 @@ add_executable(senseless_soccer3
     src/graphics/SpriteAnimation.cpp
     src/graphics/TileMap.cpp
     src/graphics/Texture.cpp
-    src/menu/Menu.cpp
-    src/menu/Widget.cpp
-    src/menu/Button.cpp
-    src/menu/WidgetLabel.cpp
-    src/menu/Page.cpp
-    src/menu/PageMain.cpp
-    src/menu/PageCalibrate.cpp
-    src/menu/GamepadWidget.cpp
-    src/menu/ListBox.cpp
-    src/input/InputDevice.cpp
+    src/menu/widgets.cpp
+    src/menu/menu.cpp
+    src/menu/calibration_page.cpp
     src/input/Keyboard.cpp
-    src/input/Gamepad.cpp
     src/input/Controller.cpp
     src/input/KeyboardController.cpp
     src/input/GamepadController.cpp

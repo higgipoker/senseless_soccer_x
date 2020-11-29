@@ -37,7 +37,7 @@ public:
 // *******************************************************
 #ifndef NDEBUG
     std::vector<std::unique_ptr<sf::Drawable>> primitives;
-    drawables::DrawableGamepad debug_controller;
+    //drawables::DrawableGamepad debug_controller;
 #endif
  // *******************************************************
     

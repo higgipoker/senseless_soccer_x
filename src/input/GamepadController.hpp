@@ -85,7 +85,7 @@ private:
     unsigned char directionmask{0x0};
     unsigned char old_buttonmask{0x0};
 
-    sf::Vector3f get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration);
+    std::pair<sf::Vector2f, sf::Vector2f> get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration);
     sf::Vector2f get_dpad_vector();
     float inner_activation_radius = 0.3f;
     float outer_activation_radius = 0.8f;

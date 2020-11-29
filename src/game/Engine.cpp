@@ -1,7 +1,6 @@
 #include "Engine.hpp"
 #include "match_resources.hpp"
 #include "player_animations.h"
-#include "../menu/Button.hpp"
 #include "../sfml/sfml_tools.hpp"
 
 #include <iostream>
@@ -51,11 +50,11 @@ void Engine::attachController (const size_t controller_id, const size_t player_i
     assert (controller_id < MAX_CONTROLLERS);
     assert (player_id < players.size());
     control_list[controller_id] = player_id;
-    
+
 #ifndef NDEBUG
-   debug_controller.controller_state = &controllers[controller_id].state; 
-   debug_controller.setPosition({100,400});
-   debug_controller.setScale(0.5f);
+//    debug_controller.controller_state = &controllers[controller_id].state;
+//    debug_controller.setPosition({100,400});
+//    debug_controller.setScale(0.5f);
 #endif
 }
 
@@ -99,8 +98,8 @@ void Engine::draw() {
         window.draw (*primitive);
     }
     primitives.clear();
-    debug_controller.update();
-    window.draw(debug_controller);
+//     debug_controller.update();
+//     window.draw(debug_controller);
 #endif
 // ****************************************************************
 

@@ -19,8 +19,10 @@ struct ButtonState {
 };
 
 struct ControllerState {
-    sf::Vector3f left_stick_vector;
-    sf::Vector3f right_stick_vector;
+    sf::Vector2f left_stick_vector;
+    sf::Vector2f right_stick_vector;
+    sf::Vector2f left_stick_raw;
+    sf::Vector2f right_stick_raw;
     sf::Vector2f dpad_vector;
     std::array<ButtonState, MAX_BUTTONS> buttons;
 };
