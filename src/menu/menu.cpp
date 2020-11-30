@@ -104,7 +104,7 @@ void init_resources (Menu* menu) {
     menu->resources.texture_gamepad.loadFromFile (resources::gfx_folder() + "gamepad_bg.png");
     menu->resources.texture_thumbstick.loadFromFile (resources::gfx_folder() + "thumbstick.png");
     menu->resources.texture_thumbstick.loadFromFile (resources::gfx_folder() + "thumbstick.png");
-    menu->resources.font_button.loadFromFile (resources::font_folder() + "swos2.ttf");
+    menu->resources.font_button.loadFromFile (resources::font_folder() + "arial_bold.ttf");
 }
 
 
@@ -139,7 +139,7 @@ void init_main_page (Menu* menu) {
     attribs.fill_color = menu->theme.color_button_std;
     attribs.shadow_color = menu->theme.color_button_shadow;
     attribs.has_shadow = true;
-    init_button_widget (&button1->button, attribs);
+    init_button_widget (button1, attribs);
     button1->bounds = button1->button.btn_rect.getGlobalBounds();
     button1->type = Widget::Button;
     menu->active_widget = button1;
@@ -153,7 +153,7 @@ void init_main_page (Menu* menu) {
     attribs.shadow_color = menu->theme.color_button_shadow;
     attribs.has_shadow = true;
     attribs.caption = "CALIBRATE";
-    init_button_widget (&button2->button, attribs);
+    init_button_widget (button2, attribs);
     button2->bounds = button2->button.btn_rect.getGlobalBounds();
     button2->type = Widget::Button;
 
@@ -166,7 +166,7 @@ void init_main_page (Menu* menu) {
     attribs.shadow_color = menu->theme.color_button_shadow;
     attribs.has_shadow = true;
     attribs.caption = "BLAHBLAH";
-    init_button_widget (&button3->button, attribs);
+    init_button_widget (button3, attribs);
     button3->type = Widget::Button;
     button3->bounds = button3->button.btn_rect.getGlobalBounds();
 
@@ -217,9 +217,8 @@ void init_calibrate_page (Menu* menu) {
     menu->calibrate_layout.first_row_index = i;
     for (int row = 0; row < menu->calibrate_layout.number_rows; ++row) {
         Widget* listrow = &menu->page_calibrate[i];
-        listrow->id = "gamepad_list." + std::to_string (row);
         listrow->type = Widget::ListItem;
-        menu->calibrate_layout.widget_idx.listrow[i] = i;
+        menu->calibrate_layout.widget_idx.listrow[row] = i;
         if (row % 2 == 0) {
             listrow->list.button.btn_rect.setFillColor (menu->theme.color_list_bg1);
             listrow->list.fill_color = menu->theme.color_list_bg1;
@@ -244,6 +243,7 @@ void init_calibrate_page (Menu* menu) {
         if (row < 7) {
             listrow->neighbours.below = &menu->page_calibrate[i + 1];
         }
+        init_widget (listrow, "gamepad_list." + std::to_string (row), listrow->list.button.btn_rect.getGlobalBounds());
         i++;
     }
 
@@ -279,7 +279,7 @@ void init_calibrate_page (Menu* menu) {
     attribs.fill_color = menu->theme.color_button_std;
     attribs.shadow_color = menu->theme.color_button_shadow;
     attribs.has_shadow = true;
-    init_button_widget (&button1->button, attribs);
+    init_button_widget (button1, attribs);
     button1->bounds = button1->button.btn_rect.getGlobalBounds();
     button1->type = Widget::Button;
     menu->active_widget = button1;
@@ -290,7 +290,7 @@ void init_calibrate_page (Menu* menu) {
     Widget* button2 = &menu->page_calibrate[i];
     attribs.caption = "CALIBRATE";
     attribs.position = {attribs.position.x + attribs.dimensions.x + 8, row_y + ROW_HEIGHT * 8 + 12};
-    init_button_widget (&button2->button, attribs);
+    init_button_widget (button2, attribs);
     button2->bounds = button2->button.btn_rect.getGlobalBounds();
     button2->type = Widget::Button;
     menu->calibrate_layout.widget_idx.btn_calibrate = i;
@@ -309,7 +309,7 @@ void init_calibrate_page (Menu* menu) {
     attribs.position = {row_x, row_y + ROW_HEIGHT * 8 + 12 + attribs.dimensions.y + 12};
     attribs.dimensions.x = attribs.dimensions.x * 2 + 8;
     attribs.fill_color = menu->theme.color_button_ext;
-    init_button_widget (&button_exit->button, attribs);
+    init_button_widget (button_exit, attribs);
     button_exit->bounds = button_exit->button.btn_rect.getGlobalBounds();
     button_exit->type = Widget::Button;
     menu->calibrate_layout.widget_idx.btn_exit = i;
@@ -340,13 +340,12 @@ void init_calibrate_page (Menu* menu) {
     // gamepad widget
     i++;
     Widget* gamepad = &menu->page_calibrate[i];
-    init_gamepad_widget (gamepad, menu);
     gamepad->gamepad.background.setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
-
     gamepad->gamepad.left_stick_origin += gamepad->gamepad.background.getPosition();
     gamepad->gamepad.right_stick_origin += gamepad->gamepad.background.getPosition();
-    gamepad->gamepad.left_stick.move (gamepad->gamepad.background.getPosition());
-    gamepad->gamepad.right_stick.move (gamepad->gamepad.background.getPosition());
+
+    init_gamepad_widget (gamepad, menu);
+
 
     menu->calibrate_layout.gamepad_widget = gamepad;
 
@@ -357,12 +356,13 @@ void init_calibrate_page (Menu* menu) {
     attribs.dimensions = {ROW_WIDTH - 8, attribs.dimensions.y};
     attribs.position = {row_x + ROW_WIDTH + 150, row_y + ROW_HEIGHT * 8 + 12};
     attribs.fill_color = menu->theme.color_button_std;
-    init_button_widget (&button_done->button, attribs);
+    init_button_widget (button_done, attribs);
     button_done->bounds = button_done->button.btn_rect.getGlobalBounds();
     button_done->type = Widget::Button;
-    disable_widget (button_done);
+    set_widget_enabled (button_done, false);
     menu->calibrate_layout.widget_idx.btn_done = i;
     button_done->id = attribs.caption = "DONE";
+
 }
 
 void update_active_animation (Menu* menu) {
@@ -370,9 +370,9 @@ void update_active_animation (Menu* menu) {
         menu->active_animation.state = !menu->active_animation.state;
         menu->active_animation.ticks = 0;
         if (menu->active_animation.state) {
-            activate_widget (menu->active_widget);
+            set_widget_active (menu->active_widget, true);
         } else {
-            deactivate_widget (menu->active_widget);
+            set_widget_active (menu->active_widget, false);
         }
     }
 }
@@ -404,21 +404,22 @@ void change_active_widget (Menu* menu, const Menu_Event trigger) {
     // recurse to get a valid next widget
     do {
         next = get_widget_neighbour (next, trigger);
-    } while (next != nullptr && widget_disabled (next));
+    } while (next != nullptr && !widget_enabled (next));
 
 
     if (next && next != menu->active_widget) {
-        deactivate_widget (menu->active_widget);
-        activate_widget (next);
+        set_widget_active (menu->active_widget, false);
+        set_widget_active (next, true);
         menu->active_animation.ticks = 0;
         menu->active_widget = next;
     }
 }
 
 void set_active_widget (Widget* widget, Menu* menu) {
-    if (!widget_disabled (widget)) {
-        deactivate_widget (menu->active_widget);
-        activate_widget (widget);
+    if (widget_enabled (widget) && menu->active_widget != widget) {
+        std::cout << widget->id << std::endl;
+        set_widget_active (menu->active_widget, false);
+        set_widget_active (widget, true);
         menu->active_animation.ticks = 0;
         menu->active_widget = widget;
     }
@@ -431,6 +432,7 @@ void detect_and_load_gamepads (Menu* menu) {
     bool selected_a_row = false;
     for (int i = 0; i < max_gamepads; ++i) {
         if (sf::Joystick::isConnected (i)) {
+            menu->calibrate_layout.active_rows[i] = 1;
             sf::Joystick::Identification id = sf::Joystick::getIdentification (i);
 
             const int MAX_LENGTH  = 20;
@@ -443,13 +445,13 @@ void detect_and_load_gamepads (Menu* menu) {
             menu->calibrate_layout.at_least_one_gamepad_found = true;
             if (!selected_a_row) {
                 selected_a_row = true;
-                select_widget (&menu->page_calibrate[row_index + i]);
+                set_widget_selected (&menu->page_calibrate[row_index + i], true);
                 menu->calibrate_layout.selected_gamepad_index = i;
 
             }
         } else {
             menu->page_calibrate[row_index + i].list.button.text.setString ("<EMPTY>");
-            disable_widget (&menu->page_calibrate[row_index + i]);
+            set_widget_enabled (&menu->page_calibrate[row_index + i], false);
         }
         menu->page_calibrate[row_index + i].list.button.text.move (12, 0);
     }
@@ -473,8 +475,12 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
         ticks++;
         // handle input
         menu->event = Menu_Event::NOTHING;
+        mouse_mode  = false;
         if (window->hasFocus()) {
 
+            if (mouse.moved || mouse.pressed) {
+                mouse_mode = true;
+            }
             handle_mouse (&mouse, menu, window);
             handle_keyboard (&keyboard, menu);
             handle_gamepad (&gamepad, menu);
@@ -503,14 +509,20 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
                 break;
             case Menu_Event::FIRE:
                 global::log (get_widget_caption (menu->active_widget));
-                select_widget (menu->active_widget);
+                set_widget_selected (menu->active_widget, true);
                 calibrate::handle_event (menu->active_widget->id, menu);
                 if (menu->active_widget->id == "TEST") {
-                    enable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done]);
+                    set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], true);
                     set_active_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], menu);
                 } else if (menu->active_widget->id == "DONE") {
-                    disable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done]);
+                    set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], false);
                     set_active_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], menu);
+                } else if (menu->active_widget->id == "CALIBRATE") {
+                    menu->active_page = menu->page_calibrate;
+                    set_active_widget (&menu->active_page[12], menu);
+                } else if (menu->active_widget->id == "EXIT") {
+                    menu->active_page = menu->page_main;
+                    set_active_widget (&menu->active_page[3], menu);
                 }
                 break;
             case Menu_Event::NOTHING:
@@ -526,10 +538,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
         }
 
         // update
-        mouse_mode  = false;
-        if (mouse.moved || mouse.pressed) {
-            mouse_mode = true;
-        }
+
         int i = 0;
         while (menu->active_page[i].type != Widget::Anonymous) {
             if (mouse_mode) {

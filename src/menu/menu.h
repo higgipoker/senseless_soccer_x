@@ -9,7 +9,7 @@
 
 namespace ss {
 namespace menu {
-static const int MAX_WIDGETS_PER_PAGE = 20;
+static const int MAX_WIDGETS_PER_PAGE = 200;
 static const int MAX_CONTROLLERS = 8;
 
 enum Menu_Event {NOTHING, UP, DOWN, LEFT, RIGHT, FIRE};
@@ -68,7 +68,7 @@ struct Menu {
     Widget page_calibrate [MAX_WIDGETS_PER_PAGE];
     Controller controllers[MAX_CONTROLLERS];
     Active_Widget_Animation active_animation;
-    Widget* active_page = page_calibrate;
+    Widget* active_page = page_main;
     calibrate::Calibrate_Page_Layout calibrate_layout;
 
     Widget* active_widget = &page_main[0];

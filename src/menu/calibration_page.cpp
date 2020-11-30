@@ -17,36 +17,31 @@ void handle_event (const std::string& event, Menu* menu) {
         if (menu->calibrate_layout.selected_gamepad_index >= 0) {
             attach_controller (&menu->calibrate_layout.gamepad_widget->gamepad, &menu->controllers[menu->calibrate_layout.selected_gamepad_index].state);
 
-            // disable widgets
-            disable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listbox_title]);
-            disable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listbox_frame]);
-
             for (int i = 0; i < 8; ++i) {
-                disable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]]);
+                set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]], false);
             }
 
-            disable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test]);
-            disable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate]);
-            disable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit]);
+            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], false);
+            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate], false);
+            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit], false);
         }
     } else  if (event == "DONE") {
         if (menu->calibrate_layout.selected_gamepad_index >= 0) {
             // enable widgets
-            enable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listbox_title]);
-            enable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listbox_frame]);
 
             for (int i = 0; i < 8; ++i) {
-                enable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]]);
+                if (menu->calibrate_layout.active_rows[i]) {
+                    set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]], true);
+                }
             }
 
-            enable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test]);
-            enable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate]);
-            enable_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit]);
+            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], true);
+            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate], true);
+            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit], true);
         }
     }
 }
-
 }
 
-}
-}
+} // namespace
+} // namespace

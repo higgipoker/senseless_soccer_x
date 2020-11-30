@@ -6,6 +6,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <string>
 #include <bitset>
+#include <cassert>
 
 namespace ss {
 namespace menu {
@@ -109,69 +110,67 @@ struct Widget {
 // Functions
 //
 // --------------------------------------------------------------------------------
-void            init_widget            (Widget* widget, const int id, const sf::FloatRect& geometry);
-std::string     get_widget_caption     (Widget* widget);
-bool            has_mouse              (const Widget* widget, const sf::Vector2f&  mouse);
-
-// updates
-void            init_button_widget     (Button_Widget* widget, const Button_Attributes& attribs);
-void            init_image_widget      (Widget* widget, const sf::FloatRect dimensions, sf::Texture* texture) ;
-void            init_listrow_widget    (Widget* widget, const Button_Attributes& btn_attribs);
-void            init_gamepad_widget    (Widget* widget, const Menu* menu = nullptr);
+std::string     get_widget_caption (Widget* widget);
+bool            has_mouse (const Widget* widget, const sf::Vector2f&  mouse);
 
 // inits
-void            update_button_widget   (Widget* widget, const Menu* menu = nullptr);
-void            update_list_widget     (Widget* widget, const Menu* menu = nullptr);
-void            update_gamepad_widget  (Widget* widget, const Menu* menu = nullptr);
-void            update_widget          (Widget* widget, const Menu* menu = nullptr);
+void            init_widget (Widget* widget, const std::string& id, const sf::FloatRect& geometry);
+void            init_button_widget (Widget* widget, const Button_Attributes& attribs);
+void            init_image_widget (Widget* widget, const sf::FloatRect dimensions, sf::Texture* texture) ;
+void            init_listrow_widget (Widget* widget, const Button_Attributes& btn_attribs);
+void            init_gamepad_widget (Widget* widget, const Menu* menu = nullptr);
+
+// updates
+void            update_button_widget (Widget* widget, const Menu* menu = nullptr);
+void            update_list_widget (Widget* widget, const Menu* menu = nullptr);
+void            update_gamepad_widget (Widget* widget, const Menu* menu = nullptr);
+void            update_widget (Widget* widget, const Menu* menu = nullptr);
 
 // draws
-void            draw_label             (const Label_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_frame             (const Frame_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_image             (const Image_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_listrow           (const ListRow_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_gamepad           (const Gamepad_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_widget            (const Widget* widget, sf::RenderWindow* window);
+void            draw_label (const Label_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_frame (const Frame_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_image (const Image_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_listrow (const ListRow_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_gamepad (const Gamepad_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_widget (const Widget* widget, sf::RenderWindow* window);
 
 // misc
-void            attach_controller      (Gamepad_Widget* widget, ControllerState* state) ;
+void            attach_controller (Gamepad_Widget* widget, ControllerState* state) ;
 
 
-static int BIT_ACTIVE   = 0;
-static int BIT_DISABLED = 1;
-static int BIT_SELECTED = 2;
-inline void disable_widget (Widget* widget) {
-    widget->states[BIT_DISABLED] = 1;
-}
-inline void enable_widget (Widget* widget) {
-    widget->states[BIT_DISABLED] = 0;
-}
+static int BIT_ACTIVE      = 0;
+static int BIT_ENABLED     = 1;
+static int BIT_SELECTED    = 2;
+static int BIT_INTERACTIVE = 3;
 
-inline void deselect_widget (Widget* widget) {
-    widget->states[BIT_SELECTED] = 0;
+inline void set_widget_enabled(Widget* widget, bool state){
+    widget->states[BIT_ENABLED] = state;
 }
 
-inline void select_widget (Widget* widget) {
-    widget->states[BIT_SELECTED] = 1;
+inline void set_widget_selected (Widget* widget, bool state) {
+    widget->states[BIT_SELECTED] = state;
 
-    if (widget->type == Widget::ListItem) {
-        // deselect all siblings
-        for (int i = 0; i < widget->list.number_siblings; ++i) {
-            deselect_widget (widget->list.siblings[i]);
+    if (state == true) {
+        if (widget->type == Widget::ListItem) {
+            // deselect all siblings
+            for (int i = 0; i < widget->list.number_siblings; ++i) {
+                assert (widget->list.siblings[i] != widget);
+                set_widget_selected (widget->list.siblings[i], false);
+            }
         }
     }
 }
 
-inline void activate_widget (Widget* widget) {
-    widget->states[BIT_ACTIVE] = 1;
+inline void set_widget_active (Widget* widget, bool state) {
+    widget->states[BIT_ACTIVE] = state;
 }
 
-inline void deactivate_widget (Widget* widget) {
-    widget->states[BIT_ACTIVE] = 0;
+inline void set_widget_interactive (Widget* widget, bool state) {
+    widget->states[BIT_INTERACTIVE] = state;
 }
 
-inline bool widget_disabled (Widget* widget) {
-    return widget->states[BIT_DISABLED];
+inline bool widget_enabled (Widget* widget) {
+    return widget->states[BIT_ENABLED];
 }
 
 inline bool widget_selected (Widget* widget) {
@@ -180,6 +179,9 @@ inline bool widget_selected (Widget* widget) {
 
 inline bool widget_active (Widget* widget) {
     return widget->states[BIT_ACTIVE];
+}
+inline bool widget_interactive (Widget* widget) {
+    return widget->states[BIT_INTERACTIVE];
 }
 }
 }

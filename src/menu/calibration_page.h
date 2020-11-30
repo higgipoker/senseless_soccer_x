@@ -20,10 +20,10 @@ struct Calibrate_Page_Layout {
         int btn_test = -1;
         int btn_calibrate = -1;
         int btn_exit = -1;
-        
         int btn_done = -1;
 
     } widget_idx;
+    int active_rows[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 };
 
 void handle_event (const std::string& event, Menu* menu);
