@@ -33,7 +33,6 @@ std::string get_widget_caption (Widget* widget) {
     return capt;
 }
 
-
 bool has_mouse (const Widget* widget, const sf::Vector2f&  mouse) {
     return (widget->bounds.contains (mouse));
 }
@@ -266,10 +265,9 @@ void draw_widget (const Widget* widget, sf::RenderWindow* window) {
         draw_image (&widget->image, window, &states);
         break;
     case Widget::Anonymous:
-        global::log ("TRYING TO DRAW AN ANONYMOUSE WIDGET");
+        global::log ("TRYING TO DRAW AN ANONYMOUS WIDGET");
         assert (false);
         break;
-
     }
 }
 

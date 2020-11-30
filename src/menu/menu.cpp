@@ -8,11 +8,6 @@
 #include "../input/Controller.hpp"
 #include "../resources/Resources.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Event.hpp>
@@ -106,10 +101,6 @@ void init_resources (Menu* menu) {
     menu->resources.texture_thumbstick.loadFromFile (resources::gfx_folder() + "thumbstick.png");
     menu->resources.font_button.loadFromFile (resources::font_folder() + "arial_bold.ttf");
 }
-
-
-
-
 
 void init_main_page (Menu* menu) {
     int i = 0;
