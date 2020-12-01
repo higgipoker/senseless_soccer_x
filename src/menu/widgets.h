@@ -40,12 +40,12 @@ struct Button_Attributes {
 };
 
 struct Label_Widget {
-    std::string caption;
-    sf::Text text;
-    sf::Text text_shadow;
+    int text        = -1;
+    int text_shadow = -1;
 };
 
 struct Button_Widget {
+    // soa style just indexes of entry in object pool (see menu)
     int btn_rect    = -1;
     int shadow_rect = -1;
     int text        = -1;
@@ -55,13 +55,12 @@ struct Button_Widget {
 };
 
 struct Frame_Widget {
-    sf::RectangleShape rect;
+    int rect = -1;
 };
 
 struct ListRow_Widget {
     Button_Widget button;
-    sf::Color fill_color;
-
+    int fill_color = -1; // need to save this because it is changed depending on the row
     static const int MAX_LIST_ROWS = 8;
     Widget* siblings[MAX_LIST_ROWS];
     int number_siblings = 0;
@@ -77,7 +76,7 @@ struct Gamepad_Widget {
 };
 
 struct Image_Widget {
-    sf::RectangleShape img_rect{{0, 0}};
+    int img_rect = -1;
 };
 
 struct Widget {
@@ -94,7 +93,6 @@ struct Widget {
 
     // common data
     std::string       id;
-    sf::FloatRect     bounds          {0, 0, 0, 0};
     bool              interactive     {true};
     std::bitset<4>    states;
     sf::Transformable transformable;
@@ -114,12 +112,12 @@ struct Widget {
 //
 // --------------------------------------------------------------------------------
 std::string     get_widget_caption (Widget* widget, Menu* menu);
-bool            has_mouse (const Widget* widget, const sf::Vector2f&  mouse);
+bool            has_mouse (const Widget* widget, Menu* menu, const sf::Vector2f&  mouse);
 
 // inits
 void            init_widget (Widget* widget, const std::string& id, const sf::FloatRect& geometry);
 void            init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& attribs);
-void            init_image_widget (Widget* widget, const sf::FloatRect dimensions, sf::Texture* texture) ;
+void            init_image_widget (Widget* widget, Menu* menu, const sf::Vector2f dimensions, sf::Texture* texture) ;
 void            init_listrow_widget (Widget* widget, const Button_Attributes& btn_attribs);
 void            init_gamepad_widget (Widget* widget, const Menu* menu = nullptr);
 
@@ -138,7 +136,8 @@ void            draw_gamepad (const Widget* widget, Menu* menu, sf::RenderWindow
 void            draw_widget (const Widget* widget, Menu* menu, sf::RenderWindow* window);
 
 // misc
-void            attach_controller (Gamepad_Widget* widget, ControllerState* state) ;
+void            attach_controller (Gamepad_Widget* widget, ControllerState* state);
+sf::FloatRect   get_widget_bounds(const Widget* widget, Menu* menu);
 
 
 static int BIT_ACTIVE      = 0;
@@ -146,20 +145,18 @@ static int BIT_ENABLED     = 1;
 static int BIT_SELECTED    = 2;
 static int BIT_INTERACTIVE = 3;
 
-inline void set_widget_enabled(Widget* widget, bool state){
+inline void set_widget_enabled(Widget* widget, bool state) {
     widget->states[BIT_ENABLED] = state;
 }
 
 inline void set_widget_selected (Widget* widget, bool state) {
     widget->states[BIT_SELECTED] = state;
 
-    if (state == true) {
-        if (widget->type == Widget::ListItem) {
-            // deselect all siblings
-            for (int i = 0; i < widget->list.number_siblings; ++i) {
-                assert (widget->list.siblings[i] != widget);
-                set_widget_selected (widget->list.siblings[i], false);
-            }
+    // deselect all siblings
+    if (widget->type == Widget::ListItem && state == true && widget->list.number_siblings) {
+        for (int i = 0; i < widget->list.number_siblings; ++i) {
+            assert (widget->list.siblings[i] != widget);
+            widget->list.siblings[i]->states[BIT_SELECTED] = false;
         }
     }
 }

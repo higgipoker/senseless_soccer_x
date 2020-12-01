@@ -8,14 +8,13 @@ namespace menu {
 
 void init_widget (Widget* widget, const std::string& id, const sf::FloatRect& geometry) {
     widget->id = id;
-    widget->bounds = geometry;
     set_widget_enabled (widget, true);
 }
 std::string get_widget_caption (Widget* widget, Menu* menu) {
     std::string capt;
     switch (widget->type) {
     case Widget::Label:
-        return widget->label.text.getString();
+        return menu->object_pool.labels[widget->label.text].getString();
     case Widget::Button:
         return menu->object_pool.labels[widget->button.text].getString();
     case Widget::Frame:
@@ -33,8 +32,8 @@ std::string get_widget_caption (Widget* widget, Menu* menu) {
     return capt;
 }
 
-bool has_mouse (const Widget* widget, const sf::Vector2f&  mouse) {
-    return (widget->bounds.contains (mouse));
+bool has_mouse (const Widget* widget, Menu* menu, const sf::Vector2f&  mouse) {
+    return (get_widget_bounds(widget, menu).contains (mouse));
 }
 
 void init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& attribs) {
@@ -91,13 +90,14 @@ void init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& at
     init_widget (widget, menu->object_pool.labels[widget->button.text].getString(), menu->object_pool.labels[widget->button.text].getGlobalBounds());
 }
 
-void init_image_widget (Widget* widget, const sf::FloatRect dimensions, sf::Texture* texture) {
+void init_image_widget (Widget* widget, Menu* menu, const sf::Vector2f dimensions, sf::Texture* texture) {
     widget->type = Widget::Image;
     widget->interactive = false;
-    widget->image.img_rect.setPosition ({dimensions.left, dimensions.top});
-    widget->image.img_rect.setSize ({dimensions.width, dimensions.height});
-    widget->image.img_rect.setTexture (texture);
-    init_widget (widget, "image", widget->image.img_rect.getGlobalBounds());
+    widget->image.img_rect = acquire_rect(menu, dimensions);
+
+    menu->object_pool.rects[widget->image.img_rect].setSize ({dimensions.x, dimensions.y});
+    menu->object_pool.rects[widget->image.img_rect].setTexture (texture);
+    init_widget (widget, "image", menu->object_pool.rects[widget->image.img_rect].getGlobalBounds());
 }
 
 void init_listrow_widget (Widget* widget, const Button_Attributes& btn_attribs) {
@@ -194,7 +194,7 @@ void update_list_widget (Widget* widget, const Menu* menu) {
             // widget is selected, set selected fill color
             rect->setFillColor(menu->theme.color_button_ext);
         } else {
-            rect->setFillColor(widget->list.fill_color);
+            rect->setFillColor(menu->object_pool.colors[widget->list.fill_color]);
         }
     }
 }
@@ -232,7 +232,7 @@ void update_widget (Widget* widget, const Menu* menu) {
 }
 
 void draw_label (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states) {
-    window->draw (widget->label.text, *states);
+    window->draw (menu->object_pool.labels[widget->label.text], *states);
 }
 
 void draw_button (const Widget* widget,  Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states) {
@@ -244,19 +244,18 @@ void draw_button (const Widget* widget,  Menu* menu, sf::RenderWindow* window, c
 }
 
 void draw_frame (const Widget* widget, Menu* menu,sf::RenderWindow* window, const sf::RenderStates* states) {
-    window->draw (widget->frame.rect);
+    window->draw (menu->object_pool.rects[widget->frame.rect]);
 }
 
 void draw_image (const Widget* widget, Menu* menu,sf::RenderWindow* window, const sf::RenderStates* states) {
-    window->draw (widget->image.img_rect, *states);
+    window->draw (menu->object_pool.rects[widget->image.img_rect], *states);
 }
 
 void draw_listrow (const Widget* widget, Menu* menu,sf::RenderWindow* window, const sf::RenderStates* states) {
     window->draw (menu->object_pool.rects[widget->list.button.shadow_rect],    *states);
     window->draw (menu->object_pool.rects[widget->list.button.btn_rect],       *states);
-    window->draw (menu->object_pool.labels[widget->list.button.text_shadow],    *states);
-    window->draw (menu->object_pool.labels[widget->list.button.text],           *states);
-
+    window->draw (menu->object_pool.labels[widget->list.button.text_shadow],   *states);
+    window->draw (menu->object_pool.labels[widget->list.button.text],          *states);
 }
 
 void draw_gamepad (const Widget* widget, Menu* menu,sf::RenderWindow* window, const sf::RenderStates* states) {
@@ -306,6 +305,30 @@ void draw_widget (const Widget* widget, Menu* menu,sf::RenderWindow* window) {
 
 void attach_controller (Gamepad_Widget* widget, ControllerState* state) {
     widget->controller_state = state;
+}
+
+sf::FloatRect get_widget_bounds(const Widget* widget, Menu* menu) {
+    switch (widget->type) {
+    case Widget::Label:
+        return menu->object_pool.labels[widget->label.text].getGlobalBounds();
+    case Widget::Button:
+      return menu->object_pool.rects[widget->button.btn_rect].getGlobalBounds();
+    case Widget::Frame:
+      return menu->object_pool.rects[widget->frame.rect].getGlobalBounds();
+    case Widget::ListItem:
+      return menu->object_pool.rects[widget->list.button.btn_rect].getGlobalBounds();
+    case Widget::Gamepad:
+      return widget->gamepad.background.getGlobalBounds();
+      //return menu->object_pool.rects[widget->gamepad.background].getGlobalBounds();
+    case Widget::Image:
+      return menu->object_pool.rects[widget->image.img_rect].getGlobalBounds();
+    case Widget::Anonymous:
+        global::log ("TRYING TO GET BOUNDS OF ANONYMOUS WIDGET");
+        assert (false);
+        break;
+    }
+    sf::FloatRect bounds;
+    return bounds;
 }
 
 } // namespace
