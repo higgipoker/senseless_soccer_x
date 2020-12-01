@@ -78,13 +78,24 @@ struct Menu {
     MenuTheme theme;
     Menu_Event event = Menu_Event::NOTHING;
 
+    static const int MAX_WIDGETS = 100;
     struct {
-        sf::Font font_button;
+        int used_rects   = 0;
+        int used_labels  = 0;
+        int used_colors  = 0;
+        sf::RectangleShape rects      [MAX_WIDGETS*2];
+        sf::Text           labels     [MAX_WIDGETS*2];
+        sf::Color          colors     [MAX_WIDGETS*2];
+    } object_pool;
+
+    struct {
+        sf::Font    font_button;
         sf::Texture texture_menu_background;
         sf::Texture texture_menu_logo;
         sf::Texture texture_gamepad;
         sf::Texture texture_thumbstick;
     } resources;
+
 };
 //
 // functions
@@ -102,6 +113,25 @@ static void     change_active_widget (Menu* menu, const Menu_Event trigger);
 static void     set_active_widget (Widget* widget, Menu* menu);
 static void     detect_and_load_gamepads (Menu* menu);
 static int      run_menu (Menu* menu, sf::RenderWindow* window);
+
+static int acquire_rect(Menu* menu, const sf::Vector2f size = {0,0}) {
+    int id = menu->object_pool.used_rects;
+    menu->object_pool.rects[id].setSize(size);
+    menu->object_pool.used_rects++;
+    return id;
+}
+static int acquire_label(Menu* menu, const std::string &caption) {
+    int id = menu->object_pool.used_labels;
+    menu->object_pool.labels[id].setString(caption);
+    menu->object_pool.used_labels++;
+    return id;
+}
+static int acquire_color(Menu* menu, sf::Color color = sf::Color::Black) {
+    int id = menu->object_pool.used_colors;
+    menu->object_pool.colors[id] = color;
+    menu->object_pool.used_colors++;
+    return id;
+}
 }
 }
 

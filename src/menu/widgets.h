@@ -46,13 +46,12 @@ struct Label_Widget {
 };
 
 struct Button_Widget {
-    std::string        caption       {"CAPTION"};
-    sf::RectangleShape btn_rect      {{0, 0}};
-    sf::RectangleShape shadow_rect   {{0, 0}};
-    sf::Text           text;
-    sf::Text           text_shadow;
-    sf::Color          fill_color;
-    sf::Color          text_color;
+    int btn_rect    = -1;
+    int shadow_rect = -1;
+    int text        = -1;
+    int text_shadow = -1;
+    int fill_color  = -1;
+    int text_color  = -1;
 };
 
 struct Frame_Widget {
@@ -114,12 +113,12 @@ struct Widget {
 // Functions
 //
 // --------------------------------------------------------------------------------
-std::string     get_widget_caption (Widget* widget);
+std::string     get_widget_caption (Widget* widget, Menu* menu);
 bool            has_mouse (const Widget* widget, const sf::Vector2f&  mouse);
 
 // inits
 void            init_widget (Widget* widget, const std::string& id, const sf::FloatRect& geometry);
-void            init_button_widget (Widget* widget, const Button_Attributes& attribs);
+void            init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& attribs);
 void            init_image_widget (Widget* widget, const sf::FloatRect dimensions, sf::Texture* texture) ;
 void            init_listrow_widget (Widget* widget, const Button_Attributes& btn_attribs);
 void            init_gamepad_widget (Widget* widget, const Menu* menu = nullptr);
@@ -131,12 +130,12 @@ void            update_gamepad_widget (Widget* widget, const Menu* menu = nullpt
 void            update_widget (Widget* widget, const Menu* menu = nullptr);
 
 // draws
-void            draw_label (const Label_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_frame (const Frame_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_image (const Image_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_listrow (const ListRow_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_gamepad (const Gamepad_Widget* widget, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_widget (const Widget* widget, sf::RenderWindow* window);
+void            draw_label (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_frame (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_image (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_listrow (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_gamepad (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_widget (const Widget* widget, Menu* menu, sf::RenderWindow* window);
 
 // misc
 void            attach_controller (Gamepad_Widget* widget, ControllerState* state) ;
@@ -173,18 +172,18 @@ inline void set_widget_interactive (Widget* widget, bool state) {
     widget->states[BIT_INTERACTIVE] = state;
 }
 
-inline bool widget_enabled (Widget* widget) {
+inline bool widget_enabled (const Widget* widget) {
     return widget->states[BIT_ENABLED];
 }
 
-inline bool widget_selected (Widget* widget) {
+inline bool widget_selected (const Widget* widget) {
     return widget->states[BIT_SELECTED];
 }
 
-inline bool widget_active (Widget* widget) {
+inline bool widget_active (const Widget* widget) {
     return widget->states[BIT_ACTIVE];
 }
-inline bool widget_interactive (Widget* widget) {
+inline bool widget_interactive (const Widget* widget) {
     return widget->states[BIT_INTERACTIVE];
 }
 }

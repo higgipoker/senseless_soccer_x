@@ -16,29 +16,26 @@ void handle_event (const std::string& event, Menu* menu) {
     } else  if (event == "TEST") {
         if (menu->calibrate_layout.selected_gamepad_index >= 0) {
             attach_controller (&menu->calibrate_layout.gamepad_widget->gamepad, &menu->controllers[menu->calibrate_layout.selected_gamepad_index].state);
-
-            for (int i = 0; i < 8; ++i) {
-                set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]], false);
-            }
-
-            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], false);
-            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate], false);
-            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit], false);
         }
+        for (int i = 0; i < 8; ++i) {
+            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]], false);
+        }
+
+        set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], false);
+        set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate], false);
+        set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit], false);
+
     } else  if (event == "DONE") {
-        if (menu->calibrate_layout.selected_gamepad_index >= 0) {
-            // enable widgets
-
-            for (int i = 0; i < 8; ++i) {
-                if (menu->calibrate_layout.active_rows[i]) {
-                    set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]], true);
-                }
+        // enable widgets
+        for (int i = 0; i < 8; ++i) {
+            if (menu->calibrate_layout.active_rows[i]) {
+                set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.listrow[i]], true);
             }
-
-            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], true);
-            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate], true);
-            set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit], true);
         }
+
+        set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], true);
+        set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_calibrate], true);
+        set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_exit], true);
     }
 }
 }

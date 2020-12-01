@@ -130,8 +130,8 @@ void init_main_page (Menu* menu) {
     attribs.geometry[idx_dimensions] = {300, 50};
     attribs.button_colors[idx_fill] = menu->theme.color_button_std;
     attribs.button_colors[idx_shadow] = menu->theme.color_button_shadow;
-    init_button_widget (button1, attribs);
-    button1->bounds = button1->button.btn_rect.getGlobalBounds();
+    init_button_widget (button1, menu, attribs);
+    button1->bounds = menu->object_pool.rects[button1->button.btn_rect].getGlobalBounds();
     button1->type = Widget::Button;
     menu->active_widget = button1;
 
@@ -144,8 +144,8 @@ void init_main_page (Menu* menu) {
     attribs.button_colors[idx_fill] = menu->theme.color_button_std;
     attribs.button_colors[idx_shadow] = menu->theme.color_button_shadow;
     attribs.caption = "CALIBRATE";
-    init_button_widget (button2, attribs);
-    button2->bounds = button2->button.btn_rect.getGlobalBounds();
+    init_button_widget (button2, menu, attribs);
+    button2->bounds = menu->object_pool.rects[button2->button.btn_rect].getGlobalBounds();
     button2->type = Widget::Button;
 
     // button 3
@@ -157,9 +157,9 @@ void init_main_page (Menu* menu) {
     attribs.button_colors[idx_fill] = menu->theme.color_button_std;
     attribs.button_colors[idx_shadow] = menu->theme.color_button_shadow;
     attribs.caption = "BLAHBLAH";
-    init_button_widget (button3, attribs);
+    init_button_widget (button3, menu, attribs);
     button3->type = Widget::Button;
-    button3->bounds = button3->button.btn_rect.getGlobalBounds();
+    button3->bounds = menu->object_pool.rects[button3->button.btn_rect].getGlobalBounds();
 
     // navigation order
     button1->neighbours.below = button2;
@@ -210,23 +210,27 @@ void init_calibrate_page (Menu* menu) {
         Widget* listrow = &menu->page_calibrate[i];
         listrow->type = Widget::ListItem;
         menu->calibrate_layout.widget_idx.listrow[row] = i;
+        listrow->list.button.btn_rect = acquire_rect(menu);
+        listrow->list.button.shadow_rect = acquire_rect(menu);
+        listrow->list.button.text = acquire_label(menu, "");
+        listrow->list.button.text_shadow = acquire_label(menu, "");
         if (row % 2 == 0) {
-            listrow->list.button.btn_rect.setFillColor (menu->theme.color_list_bg1);
+            menu->object_pool.rects[listrow->list.button.btn_rect].setFillColor (menu->theme.color_list_bg1);
             listrow->list.fill_color = menu->theme.color_list_bg1;
-            listrow->list.button.btn_rect.setOutlineColor (menu->theme.color_list_bg1);
+            menu->object_pool.rects[listrow->list.button.btn_rect].setOutlineColor (menu->theme.color_list_bg1);
         } else {
-            listrow->list.button.btn_rect.setFillColor (menu->theme.color_list_bg2);
+            menu->object_pool.rects[listrow->list.button.btn_rect].setFillColor (menu->theme.color_list_bg2);
             listrow->list.fill_color = menu->theme.color_list_bg2;
-            listrow->list.button.btn_rect.setOutlineColor (menu->theme.color_list_bg2);
+            menu->object_pool.rects[listrow->list.button.btn_rect].setOutlineColor (menu->theme.color_list_bg2);
         }
-        listrow->list.button.btn_rect.setSize ({ROW_WIDTH - 4, ROW_HEIGHT - 4});
-        listrow->list.button.btn_rect.setPosition ({row_x, row_y + (ROW_HEIGHT * row) });
-        listrow->list.button.btn_rect.setOutlineThickness (2);
+        menu->object_pool.rects[listrow->list.button.btn_rect].setSize ({ROW_WIDTH - 4, ROW_HEIGHT - 4});
+        menu->object_pool.rects[listrow->list.button.btn_rect].setPosition ({row_x, row_y + (ROW_HEIGHT * row) });
+        menu->object_pool.rects[listrow->list.button.btn_rect].setOutlineThickness (2);
 
-        listrow->list.button.text.setFont (menu->resources.font_button);
-        listrow->list.button.text.setPosition (listrow->list.button.btn_rect.getPosition());
-        listrow->list.button.text.setFillColor (menu->theme.color_button_text);
-        listrow->bounds = listrow->list.button.btn_rect.getGlobalBounds();
+        menu->object_pool.labels[listrow->list.button.text].setFont (menu->resources.font_button);
+        menu->object_pool.labels[listrow->list.button.text].setPosition (menu->object_pool.rects[listrow->list.button.btn_rect].getPosition());
+        menu->object_pool.labels[listrow->list.button.text].setFillColor (menu->theme.color_button_text);
+        listrow->bounds = menu->object_pool.rects[listrow->list.button.btn_rect].getGlobalBounds();
 
         if (row > 0) {
             listrow->neighbours.above = &menu->page_calibrate[i - 1];
@@ -234,7 +238,7 @@ void init_calibrate_page (Menu* menu) {
         if (row < 7) {
             listrow->neighbours.below = &menu->page_calibrate[i + 1];
         }
-        init_widget (listrow, "gamepad_list." + std::to_string (row), listrow->list.button.btn_rect.getGlobalBounds());
+        init_widget (listrow, "gamepad_list." + std::to_string (row), menu->object_pool.rects[listrow->list.button.btn_rect].getGlobalBounds());
         i++;
     }
 
@@ -269,8 +273,8 @@ void init_calibrate_page (Menu* menu) {
     attribs.geometry[idx_position] = {row_x, row_y + ROW_HEIGHT * 8 + 12};
     attribs.button_colors[idx_fill] = menu->theme.color_button_std;
     attribs.button_colors[idx_shadow] = menu->theme.color_button_shadow;
-    init_button_widget (button1, attribs);
-    button1->bounds = button1->button.btn_rect.getGlobalBounds();
+    init_button_widget (button1, menu, attribs);
+    button1->bounds = menu->object_pool.rects[button1->button.btn_rect].getGlobalBounds();
     button1->type = Widget::Button;
     menu->active_widget = button1;
     menu->calibrate_layout.widget_idx.btn_test = i;
@@ -280,8 +284,8 @@ void init_calibrate_page (Menu* menu) {
     Widget* button2 = &menu->page_calibrate[i];
     attribs.caption = "CALIBRATE";
     attribs.geometry[idx_position] = {attribs.geometry[idx_position].x + attribs.geometry[idx_dimensions].x + 8, row_y + ROW_HEIGHT * 8 + 12};
-    init_button_widget (button2, attribs);
-    button2->bounds = button2->button.btn_rect.getGlobalBounds();
+    init_button_widget (button2, menu, attribs);
+    button2->bounds = menu->object_pool.rects[button2->button.btn_rect].getGlobalBounds();
     button2->type = Widget::Button;
     menu->calibrate_layout.widget_idx.btn_calibrate = i;
 
@@ -299,8 +303,8 @@ void init_calibrate_page (Menu* menu) {
     attribs.geometry[idx_position] = {row_x, row_y + ROW_HEIGHT * 8 + 12 + attribs.geometry[idx_dimensions].y + 12};
     attribs.geometry[idx_dimensions].x = attribs.geometry[idx_dimensions].x * 2 + 8;
     attribs.button_colors[idx_fill] = menu->theme.color_button_ext;
-    init_button_widget (button_exit, attribs);
-    button_exit->bounds = button_exit->button.btn_rect.getGlobalBounds();
+    init_button_widget (button_exit, menu, attribs);
+    button_exit->bounds = menu->object_pool.rects[button_exit->button.btn_rect].getGlobalBounds();
     button_exit->type = Widget::Button;
     menu->calibrate_layout.widget_idx.btn_exit = i;
 
@@ -346,8 +350,8 @@ void init_calibrate_page (Menu* menu) {
     attribs.geometry[idx_dimensions] = {ROW_WIDTH - 8, attribs.geometry[idx_dimensions].y};
     attribs.geometry[idx_position] = {row_x + ROW_WIDTH + 150, row_y + ROW_HEIGHT * 8 + 12};
     attribs.button_colors[idx_fill] = menu->theme.color_button_std;
-    init_button_widget (button_done, attribs);
-    button_done->bounds = button_done->button.btn_rect.getGlobalBounds();
+    init_button_widget (button_done, menu, attribs);
+    button_done->bounds = menu->object_pool.rects[button_done->button.btn_rect].getGlobalBounds();
     button_done->type = Widget::Button;
     set_widget_enabled (button_done, false);
     menu->calibrate_layout.widget_idx.btn_done = i;
@@ -431,7 +435,7 @@ void detect_and_load_gamepads (Menu* menu) {
                 name.resize (MAX_LENGTH);
                 name += "...";
             }
-            menu->page_calibrate[row_index + i].list.button.text.setString (std::to_string (i + 1) + ". " + name);
+            menu->object_pool.labels[menu->page_calibrate[row_index + i].list.button.text].setString (std::to_string (i + 1) + ". " + name);
             menu->calibrate_layout.at_least_one_gamepad_found = true;
             if (!selected_a_row) {
                 selected_a_row = true;
@@ -440,10 +444,10 @@ void detect_and_load_gamepads (Menu* menu) {
 
             }
         } else {
-            menu->page_calibrate[row_index + i].list.button.text.setString ("<EMPTY>");
+            menu->object_pool.labels[menu->page_calibrate[row_index + i].list.button.text].setString ("<EMPTY>");
             set_widget_enabled (&menu->page_calibrate[row_index + i], false);
         }
-        menu->page_calibrate[row_index + i].list.button.text.move (12, 0);
+        menu->object_pool.labels[menu->page_calibrate[row_index + i].list.button.text].move (12, 0);
     }
 }
 
@@ -498,7 +502,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
                 }
                 break;
             case Menu_Event::FIRE:
-                global::log (get_widget_caption (menu->active_widget));
+                global::log (get_widget_caption (menu->active_widget, menu));
                 set_widget_selected (menu->active_widget, true);
                 calibrate::handle_event (menu->active_widget->id, menu);
                 if (menu->active_widget->id == "TEST") {
@@ -546,7 +550,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
         window->clear (sf::Color::Magenta);
         i = 0;
         while (menu->active_page[i].type != Widget::Anonymous) {
-            draw_widget (&menu->active_page[i++], window);
+            draw_widget (&menu->active_page[i++], menu, window);
         }
         window->display();
     }
