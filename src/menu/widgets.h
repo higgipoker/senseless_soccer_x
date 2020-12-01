@@ -19,20 +19,24 @@ namespace menu {
 struct Menu;
 struct Widget;
 
+static const int BIT_SHADOW      =0;
+static const int BIT_TEXT_SHADOW =1;
+static const int BIT_OUTLINE     =2;
+
+static const int idx_fill    = 0;
+static const int idx_outline = 1;
+static const int idx_shadow  = 2;
+
+static const int idx_position   = 0;
+static const int idx_dimensions = 1;
+
 struct Button_Attributes {
-    std::string   caption            {"CAPTION"};
-    sf::Vector2f  position           {0, 0};
-    sf::Vector2f  dimensions         {300, 50};
-    sf::Color     fill_color         {sf::Color::Green};
-    sf::Color     outline_color      {sf::Color::Black};
-    sf::Color     shadow_color       {sf::Color::Black};
-    sf::Color     text_color         {sf::Color::White};
-    sf::Color     text_outline_color {sf::Color::Black};
-    sf::Color     text_shadow_color  {sf::Color::Black};
-    bool          has_shadow         {false};
-    bool          has_text_shadow    {true};
-    bool          has_text_outline   {false};
-    sf::Font*     text_font          {nullptr};
+    sf::Vector2f   geometry[2]        {sf::Vector2f{0,0}, sf::Vector2f{300, 50}};
+    sf::Color      button_colors[3]   {sf::Color{0,0,0}, sf::Color{0,0,0}, sf::Color{0,0,0}};
+    sf::Color      caption_colors[3]  {sf::Color{255,255,255}, sf::Color{0,0,0}, sf::Color{255,255,255}};
+    std::bitset<4> style;
+    sf::Font*      text_font          {nullptr};
+    std::string    caption            {"CAPTION"};
 };
 
 struct Label_Widget {

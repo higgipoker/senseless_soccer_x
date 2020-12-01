@@ -38,31 +38,27 @@ bool has_mouse (const Widget* widget, const sf::Vector2f&  mouse) {
 }
 
 void init_button_widget (Widget* widget, const Button_Attributes& attribs) {
-    widget->button.fill_color = attribs.fill_color;
-    widget->button.text_color = attribs.text_color;
-    widget->button.btn_rect.setPosition (attribs.position);
-    widget->button.btn_rect.setSize (attribs.dimensions);
-    widget->button.btn_rect.setFillColor (attribs.fill_color);
-    widget->button.btn_rect.setOutlineColor (attribs.outline_color);
+    widget->button.fill_color = attribs.button_colors[idx_fill];
+    widget->button.text_color = attribs.caption_colors[idx_fill];
+    widget->button.btn_rect.setPosition (attribs.geometry[idx_position]);
+    widget->button.btn_rect.setSize (attribs.geometry[idx_dimensions]);
+    widget->button.btn_rect.setFillColor (attribs.button_colors[idx_fill]);
+    widget->button.btn_rect.setOutlineColor (attribs.button_colors[idx_outline]);
     widget->button.btn_rect.setOutlineThickness (2); // TODO style themea
 
 
-    if (attribs.has_shadow) {
-        widget->button.shadow_rect = widget->button.btn_rect;
-        widget->button.shadow_rect.setFillColor (attribs.shadow_color);
-        widget->button.shadow_rect.setOutlineColor (attribs.shadow_color);
-        widget->button.shadow_rect.move ({4, 4});
-    }
+    widget->button.shadow_rect = widget->button.btn_rect;
+    widget->button.shadow_rect.setFillColor (attribs.button_colors[idx_shadow]);
+    widget->button.shadow_rect.setOutlineColor (attribs.button_colors[idx_shadow]);
+    widget->button.shadow_rect.move ({4, 4});
 
     widget->button.caption = attribs.caption;
     widget->button.text.setString (attribs.caption);
-    widget->button.text.setFillColor (attribs.text_color);
+    widget->button.text.setFillColor (attribs.caption_colors[idx_fill]);
     widget->button.text.setFont (*attribs.text_font);
 
-    if (attribs.has_text_outline) {
-        widget->button.text.setOutlineThickness (2); // TODO themes
-        widget->button.text.setOutlineColor (attribs.text_outline_color);
-    }
+    widget->button.text.setOutlineThickness (2); // TODO themes
+    widget->button.text.setOutlineColor (attribs.caption_colors[idx_outline]);
 
     // size the caption
     while (widget->button.text.getGlobalBounds().width >= widget->button.btn_rect.getGlobalBounds().width - 12) {
@@ -73,18 +69,17 @@ void init_button_widget (Widget* widget, const Button_Attributes& attribs) {
     // align the caption
     widget->button.text.setOrigin (widget->button.text.getLocalBounds().width / 2, widget->button.text.getLocalBounds().height / 2);
     widget->button.text.setPosition ({
-        (attribs.position.x + attribs.dimensions.x / 2)
+        (attribs.geometry[idx_position].x + attribs.geometry[idx_dimensions].x / 2)
         ,
-        (attribs.position.y + attribs.dimensions.y / 2 - widget->button.text.getCharacterSize() / 4)
+        (attribs.geometry[idx_position].y + attribs.geometry[idx_dimensions].y / 2 - widget->button.text.getCharacterSize() / 4)
     });
-    if (attribs.has_text_shadow) {
-        widget->button.text_shadow.setFont (*attribs.text_font);
-        widget->button.text_shadow.setOutlineThickness (2);
-        widget->button.text_shadow.setFillColor (sf::Color::Black);
-        widget->button.text_shadow.setOrigin (widget->button.text.getLocalBounds().width / 2, widget->button.text.getLocalBounds().height / 2);
-        widget->button.text_shadow.setPosition (widget->button.text.getPosition());
-        widget->button.text_shadow.move ({3, 2});
-    }
+        
+    widget->button.text_shadow.setFont (*attribs.text_font);
+    widget->button.text_shadow.setOutlineThickness (2);
+    widget->button.text_shadow.setFillColor (sf::Color::Black);
+    widget->button.text_shadow.setOrigin (widget->button.text.getLocalBounds().width / 2, widget->button.text.getLocalBounds().height / 2);
+    widget->button.text_shadow.setPosition (widget->button.text.getPosition());
+    widget->button.text_shadow.move ({3, 2});
 
     init_widget (widget, widget->button.text.getString(), widget->button.btn_rect.getGlobalBounds());
 }
