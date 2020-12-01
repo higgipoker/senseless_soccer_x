@@ -12,6 +12,7 @@ struct Calibrate_Page_Layout {
     int selected_gamepad_index = -1;
     bool at_least_one_gamepad_found = false;
     Widget* gamepad_widget;
+    Widget* calibrate_widget;
 
     struct {
         int listbox_title = -1;

@@ -187,7 +187,7 @@ void init_calibrate_page (Menu* menu) {
     i++;
     Widget* list_title = &menu->page_calibrate[i];
     list_title->type = Widget::Label;
-    list_title->label.text = acquire_label(menu, "GAMEPADS");
+    list_title->label.text = acquire_label (menu, "GAMEPADS");
     menu->object_pool.labels[list_title->label.text].setFont (menu->resources.font_button);
     menu->object_pool.labels[list_title->label.text].setCharacterSize (32);
     menu->object_pool.labels[list_title->label.text].setPosition ({50, 200});
@@ -204,11 +204,11 @@ void init_calibrate_page (Menu* menu) {
         Widget* listrow = &menu->page_calibrate[i];
         listrow->type = Widget::ListItem;
         menu->calibrate_layout.widget_idx.listrow[row] = i;
-        listrow->list.button.btn_rect = acquire_rect(menu);
-        listrow->list.button.shadow_rect = acquire_rect(menu);
-        listrow->list.button.text = acquire_label(menu);
-        listrow->list.button.text_shadow = acquire_label(menu);
-        listrow->list.fill_color = acquire_color(menu);
+        listrow->list.button.btn_rect = acquire_rect (menu);
+        listrow->list.button.shadow_rect = acquire_rect (menu);
+        listrow->list.button.text = acquire_label (menu);
+        listrow->list.button.text_shadow = acquire_label (menu);
+        listrow->list.fill_color = acquire_color (menu);
         if (row % 2 == 0) {
             menu->object_pool.rects[listrow->list.button.btn_rect].setFillColor (menu->theme.color_list_bg1);
             menu->object_pool.colors[listrow->list.fill_color] = menu->theme.color_list_bg1;
@@ -232,7 +232,7 @@ void init_calibrate_page (Menu* menu) {
         if (row < 7) { // not last row
             listrow->neighbours.below = &menu->page_calibrate[i + 1];
         }
-        init_widget (listrow, "gamepad_list." + std::to_string (row), menu->object_pool.rects[listrow->list.button.btn_rect].getGlobalBounds());
+        init_widget (listrow, "gamepad_list." + std::to_string (row));
         i++;
     }
 
@@ -250,12 +250,13 @@ void init_calibrate_page (Menu* menu) {
     // frame for the listbox (i was incremented last time through the list loop)
     Widget* frame = &menu->page_calibrate[i];
     frame->type = Widget::Frame;
-    frame->frame.rect = acquire_rect(menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
+    frame->frame.rect = acquire_rect (menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
     menu->object_pool.rects[frame->frame.rect].setFillColor ({0, 0, 0, 0});
     menu->object_pool.rects[frame->frame.rect].setOutlineColor ({255, 255, 255});
     menu->object_pool.rects[frame->frame.rect].setOutlineThickness (2);
     menu->object_pool.rects[frame->frame.rect].setPosition ({row_x - 2, row_y - 2});
     menu->calibrate_layout.widget_idx.listbox_frame = i;
+    init_widget(frame, "list_frame");
 
     // button test
     i++;
@@ -279,6 +280,7 @@ void init_calibrate_page (Menu* menu) {
     attribs.geometry[idx_position] = {attribs.geometry[idx_position].x + attribs.geometry[idx_dimensions].x + 8, row_y + ROW_HEIGHT * 8 + 12};
     init_button_widget (button2, menu, attribs);
     button2->type = Widget::Button;
+    init_widget(button2, "START_CALIBRATE");
     menu->calibrate_layout.widget_idx.btn_calibrate = i;
 
     button1->neighbours.right = button2;
@@ -287,6 +289,7 @@ void init_calibrate_page (Menu* menu) {
     button1->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
     button2->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
     menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7].neighbours.below = button1;
+    
 
     // button  exit
     i++;
@@ -316,11 +319,12 @@ void init_calibrate_page (Menu* menu) {
     i++;
     frame = &menu->page_calibrate[i];
     frame->type = Widget::Frame;
-    frame->frame.rect = acquire_rect(menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
+    frame->frame.rect = acquire_rect (menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
     menu->object_pool.rects[frame->frame.rect].setFillColor ({0, 0, 0, 0});
     menu->object_pool.rects[frame->frame.rect].setOutlineColor ({255, 255, 255});
     menu->object_pool.rects[frame->frame.rect].setOutlineThickness (2);
     menu->object_pool.rects[frame->frame.rect].setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
+    init_widget(frame, "list_frame");
 
     // gamepad widget
     i++;
@@ -328,8 +332,16 @@ void init_calibrate_page (Menu* menu) {
     gamepad->gamepad.background.setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
     gamepad->gamepad.left_stick_origin += gamepad->gamepad.background.getPosition();
     gamepad->gamepad.right_stick_origin += gamepad->gamepad.background.getPosition();
-    init_gamepad_widget (gamepad, menu);
+    init_gamepad_widget (gamepad, menu);    
     menu->calibrate_layout.gamepad_widget = gamepad;
+    set_widget_visible(gamepad, false);
+    
+    // calibrate widget
+    i++;
+    Widget* calibrate = &menu->page_calibrate[i];
+    init_calibrate_widget(calibrate, menu);
+    menu->calibrate_layout.calibrate_widget = calibrate;
+    
 
     // button done
     i++;

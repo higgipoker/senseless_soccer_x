@@ -81,9 +81,11 @@ struct Menu {
     static const int MAX_WIDGETS = 100;
     struct {
         int used_rects   = 0;
+        int used_circles = 0;
         int used_labels  = 0;
         int used_colors  = 0;
         sf::RectangleShape rects      [MAX_WIDGETS*2];
+        sf::CircleShape    circles    [MAX_WIDGETS*2];
         sf::Text           labels     [MAX_WIDGETS*2];
         sf::Color          colors     [MAX_WIDGETS*2];
     } object_pool;
@@ -118,6 +120,12 @@ static int acquire_rect(Menu* menu, const sf::Vector2f size = {0,0}) {
     int id = menu->object_pool.used_rects;
     menu->object_pool.rects[id].setSize(size);
     menu->object_pool.used_rects++;
+    return id;
+}
+static int acquire_circle(Menu* menu, const float radius = 10.f) {
+    int id = menu->object_pool.used_circles;
+    menu->object_pool.circles[id].setRadius(radius);
+    menu->object_pool.used_circles++;
     return id;
 }
 static int acquire_label(Menu* menu, const std::string &caption = "") {
