@@ -120,7 +120,7 @@ static int acquire_rect(Menu* menu, const sf::Vector2f size = {0,0}) {
     menu->object_pool.used_rects++;
     return id;
 }
-static int acquire_label(Menu* menu, const std::string &caption) {
+static int acquire_label(Menu* menu, const std::string &caption = "") {
     int id = menu->object_pool.used_labels;
     menu->object_pool.labels[id].setString(caption);
     menu->object_pool.used_labels++;

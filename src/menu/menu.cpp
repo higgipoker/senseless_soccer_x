@@ -17,6 +17,8 @@ namespace ss {
 namespace menu {
 
 void handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window) {
+
+    // mouse presses
     bool was_down = mouse->down;
     mouse->pressed = false;
     mouse->down = sf::Mouse::isButtonPressed (sf::Mouse::Left);
@@ -29,6 +31,7 @@ void handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window) {
         }
     }
 
+    // mouse movement
     sf::Vector2f last_mouse_position = mouse->position;
     sf::Vector2i m = sf::Mouse::getPosition (*window);
     mouse->position = window->mapPixelToCoords (m);
@@ -95,11 +98,11 @@ void handle_gamepad (GamepadController* gamepad, Menu* menu) {
 
 void init_resources (Menu* menu) {
     menu->resources.texture_menu_background.loadFromFile (resources::gfx_folder() + "bg1.png");
-    menu->resources.texture_menu_logo.loadFromFile (resources::gfx_folder() + "logo2.png");
-    menu->resources.texture_gamepad.loadFromFile (resources::gfx_folder() + "gamepad_bg.png");
-    menu->resources.texture_thumbstick.loadFromFile (resources::gfx_folder() + "thumbstick.png");
-    menu->resources.texture_thumbstick.loadFromFile (resources::gfx_folder() + "thumbstick.png");
-    menu->resources.font_button.loadFromFile (resources::font_folder() + "arial_bold.ttf");
+    menu->resources.texture_menu_logo.loadFromFile (resources::gfx_folder()       + "logo2.png");
+    menu->resources.texture_gamepad.loadFromFile (resources::gfx_folder()         + "gamepad_bg.png");
+    menu->resources.texture_thumbstick.loadFromFile (resources::gfx_folder()      + "thumbstick.png");
+    menu->resources.texture_thumbstick.loadFromFile (resources::gfx_folder()      + "thumbstick.png");
+    menu->resources.font_button.loadFromFile (resources::font_folder()            + "arial_bold.ttf");
 }
 
 void init_main_page (Menu* menu) {
@@ -159,7 +162,6 @@ void init_main_page (Menu* menu) {
     // navigation order
     button1->neighbours.below = button2;
     button2->neighbours.above = button1;
-
     button2->neighbours.right = button3;
     button3->neighbours.left = button2;
 }
@@ -171,7 +173,6 @@ void init_calibrate_page (Menu* menu) {
     sf::Vector2f dimensions{1280.f, 720.f};
     init_image_widget (bg, menu, dimensions, &menu->resources.texture_menu_background);
     bg->id = i;
-
 
     // the logo
     i++;
@@ -205,8 +206,8 @@ void init_calibrate_page (Menu* menu) {
         menu->calibrate_layout.widget_idx.listrow[row] = i;
         listrow->list.button.btn_rect = acquire_rect(menu);
         listrow->list.button.shadow_rect = acquire_rect(menu);
-        listrow->list.button.text = acquire_label(menu, "");
-        listrow->list.button.text_shadow = acquire_label(menu, "");
+        listrow->list.button.text = acquire_label(menu);
+        listrow->list.button.text_shadow = acquire_label(menu);
         listrow->list.fill_color = acquire_color(menu);
         if (row % 2 == 0) {
             menu->object_pool.rects[listrow->list.button.btn_rect].setFillColor (menu->theme.color_list_bg1);
@@ -225,10 +226,10 @@ void init_calibrate_page (Menu* menu) {
         menu->object_pool.labels[listrow->list.button.text].setPosition (menu->object_pool.rects[listrow->list.button.btn_rect].getPosition());
         menu->object_pool.labels[listrow->list.button.text].setFillColor (menu->theme.color_button_text);
 
-        if (row > 0) {
+        if (row > 0) { // not first row
             listrow->neighbours.above = &menu->page_calibrate[i - 1];
         }
-        if (row < 7) {
+        if (row < 7) { // not last row
             listrow->neighbours.below = &menu->page_calibrate[i + 1];
         }
         init_widget (listrow, "gamepad_list." + std::to_string (row), menu->object_pool.rects[listrow->list.button.btn_rect].getGlobalBounds());
@@ -315,7 +316,7 @@ void init_calibrate_page (Menu* menu) {
     i++;
     frame = &menu->page_calibrate[i];
     frame->type = Widget::Frame;
-     frame->frame.rect = acquire_rect(menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
+    frame->frame.rect = acquire_rect(menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
     menu->object_pool.rects[frame->frame.rect].setFillColor ({0, 0, 0, 0});
     menu->object_pool.rects[frame->frame.rect].setOutlineColor ({255, 255, 255});
     menu->object_pool.rects[frame->frame.rect].setOutlineThickness (2);
@@ -327,10 +328,7 @@ void init_calibrate_page (Menu* menu) {
     gamepad->gamepad.background.setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
     gamepad->gamepad.left_stick_origin += gamepad->gamepad.background.getPosition();
     gamepad->gamepad.right_stick_origin += gamepad->gamepad.background.getPosition();
-
     init_gamepad_widget (gamepad, menu);
-
-
     menu->calibrate_layout.gamepad_widget = gamepad;
 
     // button done
@@ -494,15 +492,19 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
                 global::log (get_widget_caption (menu->active_widget, menu));
                 set_widget_selected (menu->active_widget, true);
                 calibrate::handle_event (menu->active_widget->id, menu);
+
                 if (menu->active_widget->id == "TEST") {
                     set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], true);
                     set_active_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], menu);
+
                 } else if (menu->active_widget->id == "DONE") {
                     set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], false);
                     set_active_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], menu);
+
                 } else if (menu->active_widget->id == "CALIBRATE") {
                     menu->active_page = menu->page_calibrate;
                     set_active_widget (&menu->active_page[12], menu);
+
                 } else if (menu->active_widget->id == "EXIT") {
                     menu->active_page = menu->page_main;
                     set_active_widget (&menu->active_page[3], menu);
@@ -521,13 +523,12 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
         }
 
         // update
-
         int i = 0;
-        while (menu->active_page[i].type != Widget::Anonymous) {
+        while (menu->active_page[i].type != Widget::Anonymous) {                // for all configured widgets
             if (mouse_mode) {
-                if (menu->active_page[i].interactive && has_mouse (&menu->active_page[i], menu, mouse.position)
-                        && menu->active_widget != &menu->active_page[i]
-                   ) {
+                if (menu->active_page[i].interactive &&                         // widget is interactive
+                        has_mouse (&menu->active_page[i], menu, mouse.position) &&  // widget has the mouse in its bounds
+                        menu->active_widget != &menu->active_page[i]) {             // widget not already the active widget
                     set_active_widget (&menu->active_page[i], menu);
                 }
             }
@@ -538,7 +539,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
         // render
         window->clear (sf::Color::Magenta);
         i = 0;
-        while (menu->active_page[i].type != Widget::Anonymous) {
+        while (menu->active_page[i].type != Widget::Anonymous) {    // for all configured widgets
             draw_widget (&menu->active_page[i++], menu, window);
         }
         window->display();
