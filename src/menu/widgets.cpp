@@ -136,12 +136,12 @@ void init_gamepad_widget (Widget* widget, const Menu* menu) {
 
 void init_calibrate_widget (Widget* widget, Menu* menu) {
     widget->type = Widget::Calibrate;
-    widget->calibrate.center_circle = acquire_circle (menu, 6);
+    widget->calibrate.center_circle = acquire_circle (menu, 3);
     widget->calibrate.outer_rect = acquire_rect (menu);
     menu->object_pool.circles[widget->calibrate.center_circle].setPosition ({942.f, 414.f});
     menu->object_pool.circles[widget->calibrate.center_circle].setFillColor ({0, 0, 0, 0});
-    menu->object_pool.circles[widget->calibrate.center_circle].setOutlineColor ({255, 255, 255, 255});
-    menu->object_pool.circles[widget->calibrate.center_circle].setOutlineThickness (2);
+    menu->object_pool.circles[widget->calibrate.center_circle].setOutlineColor ({0, 0, 0, 0});
+    menu->object_pool.circles[widget->calibrate.center_circle].setOutlineThickness (1);
 
     menu->object_pool.rects[widget->calibrate.outer_rect].setSize ({502.f, 338.f});
     menu->object_pool.rects[widget->calibrate.outer_rect].setOrigin ({245.f, 164.f});
@@ -237,17 +237,17 @@ void update_calibrate_widget (Widget* widget, const Menu* menu) {
 
         sf::Vector2f origin = menu->object_pool.circles[widget->calibrate.center_circle].getPosition();
 
-        widget->calibrate.crosshair.horizontal_line[0].position.x = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().x - menu->object_pool.rects[widget->calibrate.outer_rect].getSize().x / 2;
+        widget->calibrate.crosshair.horizontal_line[0].position.x = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().x - menu->object_pool.rects[widget->calibrate.outer_rect].getSize().x / 2 +4;
         widget->calibrate.crosshair.horizontal_line[0].position.y = origin.y + raw_data.y;
 
-        widget->calibrate.crosshair.horizontal_line[1].position.x = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().x + menu->object_pool.rects[widget->calibrate.outer_rect].getSize().x / 2;
+        widget->calibrate.crosshair.horizontal_line[1].position.x = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().x + menu->object_pool.rects[widget->calibrate.outer_rect].getSize().x / 2+4;
         widget->calibrate.crosshair.horizontal_line[1].position.y = origin.y + raw_data.y;
 
 
-        widget->calibrate.crosshair.vertical_line[0].position.x = origin.x + raw_data.x;
+        widget->calibrate.crosshair.vertical_line[0].position.x = origin.x + raw_data.x +4;
         widget->calibrate.crosshair.vertical_line[0].position.y = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().y - menu->object_pool.rects[widget->calibrate.outer_rect].getSize().y / 2;
 
-        widget->calibrate.crosshair.vertical_line[1].position.x = origin.x + raw_data.x;
+        widget->calibrate.crosshair.vertical_line[1].position.x = origin.x + raw_data.x+4;
         widget->calibrate.crosshair.vertical_line[1].position.y = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().y + menu->object_pool.rects[widget->calibrate.outer_rect].getSize().y / 2;
 
     }
