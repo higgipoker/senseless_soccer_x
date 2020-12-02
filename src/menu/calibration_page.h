@@ -1,4 +1,5 @@
 #pragma once
+#include "events.h"
 #include <string>
 namespace ss {
 namespace menu {
@@ -27,7 +28,7 @@ struct Calibrate_Page_Layout {
     int active_rows[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 };
 
-void handle_event (const std::string& event, Menu* menu);
+void handle_event (const Event event, Menu* menu);
 }
 }
 }
