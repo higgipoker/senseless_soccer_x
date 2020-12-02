@@ -24,7 +24,6 @@ static std::map<sf::Keyboard::Key, Event> keymap = {
     {sf::Keyboard::Enter,    Event::Fire},
     {sf::Keyboard::Space,    Event::Fire},
     {sf::Keyboard::RControl, Event::Fire},
-
 };
 // ***************************
 // Mouse
