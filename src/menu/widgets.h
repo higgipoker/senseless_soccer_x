@@ -95,13 +95,11 @@ struct Gamepad_Widget {
 // Calibrate
 // ***************************
 struct Calibrate_Widget {
-    int outer_rect    {-1};
-    int center_circle {-1};
+    int input_circle  {-1};
+    int origin_circle {-1};
+    int outer_circle  {-1};
 
-    struct {
-        sf::Vertex horizontal_line[2];
-        sf::Vertex vertical_line  [2];
-    } crosshair;
+    sf::Vertex line   [2];
 
     ControllerState*   controller_state {nullptr};
 };

@@ -1,6 +1,7 @@
 #include "widgets.h"
 #include "menu.h"
 #include "../global.hpp"
+#include "../math/vector.hpp"
 #include <algorithm>
 #include <cassert>
 namespace ss {
@@ -16,13 +17,20 @@ std::string get_widget_caption (const Widget* widget, Menu* menu) {
 
     switch (widget->type) {
 
-    case Widget::Label:        return menu->object_pool.labels[widget->label.text].getString();
-    case Widget::Button:       return menu->object_pool.labels[widget->button.text].getString();
-    case Widget::Frame:        break;
-    case Widget::ListItem:     return menu->object_pool.labels[widget->list.button.text].getString();
-    case Widget::Gamepad:      break;
-    case Widget::Calibrate:    break;
-    case Widget::Image:        break;
+    case Widget::Label:
+        return menu->object_pool.labels[widget->label.text].getString();
+    case Widget::Button:
+        return menu->object_pool.labels[widget->button.text].getString();
+    case Widget::Frame:
+        break;
+    case Widget::ListItem:
+        return menu->object_pool.labels[widget->list.button.text].getString();
+    case Widget::Gamepad:
+        break;
+    case Widget::Calibrate:
+        break;
+    case Widget::Image:
+        break;
 
     case Widget::Anonymous:
         break;
@@ -105,12 +113,13 @@ void init_gamepad_widget (Widget* widget,  Menu* menu) {
     widget->type = Widget::Gamepad;
 
     // background
-    widget->gamepad.background = acquire_rect(menu, {500, 320});
+    widget->gamepad.background = acquire_rect (menu, {500, 320});
     menu->object_pool.rects[widget->gamepad.background].setTexture (&menu->object_pool.textures[menu->resources.texture_gamepad]);
+    menu->object_pool.rects[widget->gamepad.background].setPosition({700, 250});
 
     // thumbsticks
-    widget->gamepad.left_stick = acquire_circle(menu, 39);
-    widget->gamepad.right_stick = acquire_circle(menu, 39);
+    widget->gamepad.left_stick = acquire_circle (menu, 39);
+    widget->gamepad.right_stick = acquire_circle (menu, 39);
 
     menu->object_pool.circles[widget->gamepad.left_stick].setTexture (&menu->object_pool.textures[menu->resources.texture_thumbstick]);
     menu->object_pool.circles[widget->gamepad.right_stick].setTexture (&menu->object_pool.textures[menu->resources.texture_thumbstick]);
@@ -126,25 +135,35 @@ void init_gamepad_widget (Widget* widget,  Menu* menu) {
     menu->object_pool.circles[widget->gamepad.right_stick].move (menu->object_pool.rects[widget->gamepad.background].getPosition());
 
     init_widget (widget);
+    set_widget_visible (widget, false);
 }
 
 void init_calibrate_widget (Widget* widget, Menu* menu) {
     widget->type = Widget::Calibrate;
-    widget->calibrate.center_circle = acquire_circle (menu, 3);
-    widget->calibrate.outer_rect = acquire_rect (menu);
-    menu->object_pool.circles[widget->calibrate.center_circle].setPosition ({942.f, 414.f});
-    menu->object_pool.circles[widget->calibrate.center_circle].setFillColor ({0, 0, 0, 0});
-    menu->object_pool.circles[widget->calibrate.center_circle].setOutlineColor ({0, 0, 0, 0});
-    menu->object_pool.circles[widget->calibrate.center_circle].setOutlineThickness (1);
+    widget->calibrate.origin_circle = acquire_circle (menu, 3);
+    widget->calibrate.input_circle = acquire_circle (menu, 3);
+    widget->calibrate.outer_circle = acquire_circle (menu, 150);
+     
+    menu->object_pool.circles[widget->calibrate.origin_circle].setOrigin({3, 3});
+    menu->object_pool.circles[widget->calibrate.origin_circle].setPosition ({942.f, 414.f});
+    menu->object_pool.circles[widget->calibrate.origin_circle].setFillColor ({0, 0, 0, 0});
+    menu->object_pool.circles[widget->calibrate.origin_circle].setOutlineColor ({0, 0, 0, 0});
+    menu->object_pool.circles[widget->calibrate.origin_circle].setOutlineThickness (1);
 
-    menu->object_pool.rects[widget->calibrate.outer_rect].setSize ({502.f, 338.f});
-    menu->object_pool.rects[widget->calibrate.outer_rect].setOrigin ({245.f, 164.f});
-    menu->object_pool.rects[widget->calibrate.outer_rect].setPosition ({942.f, 414.f});
-    menu->object_pool.rects[widget->calibrate.outer_rect].setFillColor ({0, 0, 0, 0});
-    menu->object_pool.rects[widget->calibrate.outer_rect].setOutlineColor ({255, 255, 255, 255});
-    menu->object_pool.rects[widget->calibrate.outer_rect].setOutlineThickness (2);
-    set_widget_visible (widget, true);
+    menu->object_pool.circles[widget->calibrate.input_circle].setOrigin({3, 3});
+    menu->object_pool.circles[widget->calibrate.input_circle].setPosition ({942.f, 414.f});
+    menu->object_pool.circles[widget->calibrate.input_circle].setFillColor ({0, 0, 0, 0});
+    menu->object_pool.circles[widget->calibrate.input_circle].setOutlineColor ({255, 255, 255, 255});
+    menu->object_pool.circles[widget->calibrate.input_circle].setOutlineThickness (2);
+    
+    menu->object_pool.circles[widget->calibrate.outer_circle].setOrigin({150, 150});
+    menu->object_pool.circles[widget->calibrate.outer_circle].setPosition ({942.f, 414.f});
+    menu->object_pool.circles[widget->calibrate.outer_circle].setFillColor ({0, 0, 0, 100});
+    menu->object_pool.circles[widget->calibrate.outer_circle].setOutlineColor ({255, 255, 255, 255});
+    menu->object_pool.circles[widget->calibrate.outer_circle].setOutlineThickness (2);
+        
     init_widget (widget);
+    set_widget_visible (widget, false);
 }
 
 void update_button_widget (Widget* widget, const Menu* menu) {
@@ -219,33 +238,43 @@ void update_list_widget (Widget* widget, const Menu* menu) {
 void update_gamepad_widget (Widget* widget, const Menu* menu) {
     if (widget->gamepad.controller_state) {
         ControllerState* state = widget->gamepad.controller_state;
-        sf::CircleShape* left_stick = const_cast<sf::CircleShape*>(&menu->object_pool.circles[widget->gamepad.left_stick]);
-        sf::CircleShape* right_stick = const_cast<sf::CircleShape*>(&menu->object_pool.circles[widget->gamepad.right_stick]);
-        left_stick->setPosition ({menu->object_pool.rects[widget->gamepad.background].getPosition() + widget->gamepad.left_stick_origin + state->left_stick_vector * 50.f});
-        right_stick->setPosition (menu->object_pool.rects[widget->gamepad.background].getPosition() +  widget->gamepad.right_stick_origin + state->right_stick_vector * 50.f);
+        sf::CircleShape* left_stick = const_cast<sf::CircleShape*> (&menu->object_pool.circles[widget->gamepad.left_stick]);
+        sf::CircleShape* right_stick = const_cast<sf::CircleShape*> (&menu->object_pool.circles[widget->gamepad.right_stick]);
+        left_stick->setPosition (menu->object_pool.rects[widget->gamepad.background].getPosition() + 
+                                  widget->gamepad.left_stick_origin + 
+                                  state->left_stick_vector * 50.f);
+        right_stick->setPosition (menu->object_pool.rects[widget->gamepad.background].getPosition() +
+                                  widget->gamepad.right_stick_origin + 
+                                  state->right_stick_vector * 50.f);
     }
 }
 
 void update_calibrate_widget (Widget* widget, const Menu* menu) {
     if (widget->gamepad.controller_state) {
         ControllerState* state = widget->gamepad.controller_state;
-        sf::Vector2f raw_data = state->left_stick_raw * 1.6f;
-
-        sf::Vector2f origin = menu->object_pool.circles[widget->calibrate.center_circle].getPosition();
-
-        widget->calibrate.crosshair.horizontal_line[0].position.x = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().x - menu->object_pool.rects[widget->calibrate.outer_rect].getSize().x / 2 +4;
-        widget->calibrate.crosshair.horizontal_line[0].position.y = origin.y + raw_data.y;
-
-        widget->calibrate.crosshair.horizontal_line[1].position.x = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().x + menu->object_pool.rects[widget->calibrate.outer_rect].getSize().x / 2+4;
-        widget->calibrate.crosshair.horizontal_line[1].position.y = origin.y + raw_data.y;
-
-
-        widget->calibrate.crosshair.vertical_line[0].position.x = origin.x + raw_data.x +4;
-        widget->calibrate.crosshair.vertical_line[0].position.y = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().y - menu->object_pool.rects[widget->calibrate.outer_rect].getSize().y / 2;
-
-        widget->calibrate.crosshair.vertical_line[1].position.x = origin.x + raw_data.x+4;
-        widget->calibrate.crosshair.vertical_line[1].position.y = menu->object_pool.rects[widget->calibrate.outer_rect].getPosition().y + menu->object_pool.rects[widget->calibrate.outer_rect].getSize().y / 2;
-
+        sf::Vector2f raw_data = state->left_stick_raw;
+        sf::Vector2f origin = menu->object_pool.circles[widget->calibrate.origin_circle].getPosition();
+        sf::CircleShape* input_circle = const_cast<sf::CircleShape*> (&menu->object_pool.circles[widget->calibrate.input_circle]);
+        sf::CircleShape* outer_circle = const_cast<sf::CircleShape*> (&menu->object_pool.circles[widget->calibrate.outer_circle]);
+        
+        std::cout << raw_data.x << ", " << raw_data.y << std::endl;
+        
+        sf::Vector2f display_data = raw_data *= 1.5f;
+        
+        if(vec_magnitude(display_data) > 150){
+            vec_set_magnitude(display_data, 150);
+            input_circle->setOutlineColor(sf::Color::Green);
+            outer_circle->setOutlineColor(sf::Color::Green);
+        } else {
+            input_circle->setOutlineColor(sf::Color::White);
+            outer_circle->setOutlineColor(sf::Color::White);
+        }
+        sf::Vector2f direction = origin + display_data;
+        
+        input_circle->setPosition (direction);
+        
+        widget->calibrate.line[0].position = origin;
+        widget->calibrate.line[1].position = direction;
     }
 }
 
@@ -254,7 +283,7 @@ void draw_label (const Widget* widget, const Menu* menu, sf::RenderWindow* windo
 }
 
 void draw_button (const Widget* widget,  const Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states) {
-    if (widget_enabled (widget)){ // don't draw shadow if button is disabled
+    if (widget_enabled (widget)) { // don't draw shadow if button is disabled
         window->draw (menu->object_pool.rects[widget->button.shadow_rect],    *states);
     }
     window->draw (menu->object_pool.rects[widget->button.btn_rect],        *states);
@@ -292,22 +321,33 @@ void draw_gamepad (const Widget* widget, const Menu* menu, sf::RenderWindow* win
 }
 
 void draw_calibrate (const Widget* widget, const Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states) {
-    window->draw (menu->object_pool.circles[widget->calibrate.center_circle],  *states);
-    window->draw (menu->object_pool.rects[widget->calibrate.outer_rect],  *states);
-    window->draw (widget->calibrate.crosshair.horizontal_line, 2, sf::Lines);
-    window->draw (widget->calibrate.crosshair.vertical_line, 2, sf::Lines);
+    window->draw (menu->object_pool.circles[widget->calibrate.outer_circle],  *states);
+    window->draw (menu->object_pool.circles[widget->calibrate.origin_circle],  *states);
+    window->draw (menu->object_pool.circles[widget->calibrate.input_circle],  *states);
+    window->draw (widget->calibrate.line, 2, sf::Lines);
 }
 
 void update_widget (Widget* widget, const Menu* menu) {
     switch (widget->type) {
 
-    case Widget::Label:                                                 break;
-    case Widget::Button:    update_button_widget    (widget, menu);     break;
-    case Widget::Frame:                                                 break;
-    case Widget::ListItem:  update_list_widget      (widget, menu);     break;
-    case Widget::Gamepad:   update_gamepad_widget   (widget);           break;
-    case Widget::Calibrate: update_calibrate_widget (widget, menu);     break;
-    case Widget::Image:                                                 break;
+    case Widget::Label:
+        break;
+    case Widget::Button:
+        update_button_widget (widget, menu);
+        break;
+    case Widget::Frame:
+        break;
+    case Widget::ListItem:
+        update_list_widget (widget, menu);
+        break;
+    case Widget::Gamepad:
+        update_gamepad_widget (widget);
+        break;
+    case Widget::Calibrate:
+        update_calibrate_widget (widget, menu);
+        break;
+    case Widget::Image:
+        break;
 
     case Widget::Anonymous:
         global::log ("TRYING TO UPDATE AN ANONYMOUSE WIDGET");
@@ -323,15 +363,30 @@ void draw_widget (const Widget* widget, const Menu* menu, sf::RenderWindow* wind
 
     switch (widget->type) {
 
-    case Widget::Label:     draw_label     (widget, menu, window, &states);     break;
-    case Widget::Button:    draw_button    (widget, menu, window, &states);     break;
-    case Widget::Frame:     draw_frame     (widget, menu, window, &states);     break;
-    case Widget::ListItem:  draw_listrow   (widget, menu, window, &states);     break;
-    case Widget::Gamepad:   draw_gamepad   (widget, menu, window, &states);     break;
-    case Widget::Calibrate: draw_calibrate (widget, menu, window, &states);     break;
-    case Widget::Image:     draw_image     (widget, menu, window, &states);     break;
+    case Widget::Label:
+        draw_label (widget, menu, window, &states);
+        break;
+    case Widget::Button:
+        draw_button (widget, menu, window, &states);
+        break;
+    case Widget::Frame:
+        draw_frame (widget, menu, window, &states);
+        break;
+    case Widget::ListItem:
+        draw_listrow (widget, menu, window, &states);
+        break;
+    case Widget::Gamepad:
+        draw_gamepad (widget, menu, window, &states);
+        break;
+    case Widget::Calibrate:
+        draw_calibrate (widget, menu, window, &states);
+        break;
+    case Widget::Image:
+        draw_image (widget, menu, window, &states);
+        break;
 
-    case Widget::Anonymous: global::log ("TRYING TO DRAW AN ANONYMOUS WIDGET");
+    case Widget::Anonymous:
+        global::log ("TRYING TO DRAW AN ANONYMOUS WIDGET");
         assert (false);
         break;
     }
@@ -340,13 +395,20 @@ void draw_widget (const Widget* widget, const Menu* menu, sf::RenderWindow* wind
 sf::FloatRect get_widget_bounds (const Widget* widget, Menu* menu) {
     switch (widget->type) {
 
-    case Widget::Label:     return menu->object_pool.labels[widget->label.text].getGlobalBounds();
-    case Widget::Button:    return menu->object_pool.rects[widget->button.btn_rect].getGlobalBounds();
-    case Widget::Frame:     return menu->object_pool.rects[widget->frame.rect].getGlobalBounds();
-    case Widget::ListItem:  return menu->object_pool.rects[widget->list.button.btn_rect].getGlobalBounds();
-    case Widget::Gamepad:   return menu->object_pool.rects[widget->gamepad.background].getGlobalBounds();
-    case Widget::Calibrate: return menu->object_pool.rects[widget->calibrate.outer_rect].getGlobalBounds();
-    case Widget::Image:     return menu->object_pool.rects[widget->image.img_rect].getGlobalBounds();
+    case Widget::Label:
+        return menu->object_pool.labels[widget->label.text].getGlobalBounds();
+    case Widget::Button:
+        return menu->object_pool.rects[widget->button.btn_rect].getGlobalBounds();
+    case Widget::Frame:
+        return menu->object_pool.rects[widget->frame.rect].getGlobalBounds();
+    case Widget::ListItem:
+        return menu->object_pool.rects[widget->list.button.btn_rect].getGlobalBounds();
+    case Widget::Gamepad:
+        return menu->object_pool.rects[widget->gamepad.background].getGlobalBounds();
+    case Widget::Calibrate:
+        return menu->object_pool.rects[widget->calibrate.input_circle].getGlobalBounds();
+    case Widget::Image:
+        return menu->object_pool.rects[widget->image.img_rect].getGlobalBounds();
 
     case Widget::Anonymous:
         global::log ("TRYING TO GET BOUNDS OF ANONYMOUS WIDGET");
@@ -367,5 +429,6 @@ void attach_controller (Calibrate_Widget* widget, ControllerState* state) {
 
 } // namespace
 } // namespace
+
 
 

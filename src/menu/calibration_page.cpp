@@ -45,6 +45,7 @@ void handle_event (const Event event, Menu* menu) {
 
     case Event::Calibrate:
         if (menu->calibrate_layout.selected_gamepad_index >= 0) {
+            set_widget_visible(menu->calibrate_layout.gamepad_widget, false);
             set_widget_visible(menu->calibrate_layout.calibrate_widget, true);
             attach_controller (&menu->calibrate_layout.calibrate_widget->gamepad, &menu->controllers[menu->calibrate_layout.selected_gamepad_index].state);
         }

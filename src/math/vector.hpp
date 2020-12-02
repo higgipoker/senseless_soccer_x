@@ -32,6 +32,16 @@ inline static float vec_magnitude (const sf::Vector3f v) {
     return sqrtf (v.x * v.x + v.y * v.y + v.z * v.z);
 }
 
+inline static float vec_magnitude (const sf::Vector2f v) {
+    return sqrtf (v.x * v.x + v.y * v.y);
+}
+
+inline static void vec_set_magnitude(sf::Vector2f& v, const float mag){
+    float old_mag = vec_magnitude(v);
+    v.x = v.x * mag / old_mag;
+    v.y = v.y * mag / old_mag;
+}
+
 static float vec_magnitude2d (const sf::Vector3f& v) {
     return sqrtf (v.x * v.x + v.y * v.y);
 }
@@ -68,6 +78,30 @@ inline static sf::Vector3f vec_normalized (const sf::Vector3f& vec) {
     if (less_than (fabsf (v.z), 0)) {
         v.z = 0;
     }
+    return v;
+}
+
+inline static sf::Vector2f vec_normalized (const sf::Vector2f& vec) {
+    if (equal (vec_magnitude (vec), 0)) return vec;
+
+    sf::Vector2f v = vec;
+
+    float m = sqrtf (v.x * v.x + v.y * v.y);
+
+    if (less_than (m, 0)) {
+        m = 1;
+    }
+
+    v.x /= m;
+    v.y /= m;
+
+    if (less_than (fabsf (v.x), 0)) {
+        v.x = 0;
+    }
+    if (less_than (fabsf (v.y), 0)) {
+        v.y = 0;
+    }
+
     return v;
 }
 

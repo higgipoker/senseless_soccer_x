@@ -22,7 +22,7 @@ namespace menu {
 void handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window) {
 
     // mouse presses
-    static bool was_down = mouse->states[Mouse::Down];
+     bool was_down = mouse->states[Mouse::Down];
     mouse->states[Mouse::Pressed] = 0;
     mouse->states[Mouse::Down] = sf::Mouse::isButtonPressed (sf::Mouse::Left);
     if (mouse->states[Mouse::Down] && !was_down) {
@@ -35,8 +35,8 @@ void handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window) {
     }
 
     // mouse movement
-    static sf::Vector2f last_mouse_position = mouse->position;
-    static sf::Vector2i m = sf::Mouse::getPosition (*window);
+     sf::Vector2f last_mouse_position = mouse->position;
+     sf::Vector2i m = sf::Mouse::getPosition (*window);
     mouse->position = window->mapPixelToCoords (m);
 
     if (mouse->position != last_mouse_position) {
@@ -111,7 +111,7 @@ void init_resources (Menu* menu) {
     menu->resources.texture_menu_background = acquire_texture(menu, resources::gfx_folder() + "bg1.png");
     menu->resources.texture_menu_logo = acquire_texture(menu, resources::gfx_folder() + "logo2.png");
     menu->resources.texture_gamepad = acquire_texture(menu, resources::gfx_folder() + "gamepad_bg.png");
-    menu->resources.texture_gamepad = acquire_texture(menu, resources::gfx_folder() + "thumbstick.png");
+    menu->resources.texture_thumbstick = acquire_texture(menu, resources::gfx_folder() + "thumbstick.png");
     menu->resources.font_button = acquire_font(menu, resources::font_folder() + "arial_bold.ttf");
 }
 //
@@ -142,6 +142,8 @@ void init_main_page (Menu* menu) {
     // button 1
     i++;
     Widget* button1 = &menu->page_main[i];
+    attribs.caption = "BUTTON";
+    attribs.id = Event::None;
     attribs.geometry[Button_Attributes::Position] = {300, 300};
     init_button_widget (button1, menu, attribs);
     menu->active_widget = button1;
@@ -149,23 +151,38 @@ void init_main_page (Menu* menu) {
     // button 2
     i++;
     Widget* button2 = &menu->page_main[i];
-    attribs.geometry[Button_Attributes::Position] = {300, 400};
-    attribs.caption = "CALIBRATE";
+    attribs.caption = "SETTINGS";
     attribs.id = Event::PageCalibrate;
+    attribs.geometry[Button_Attributes::Position] = {300, 400};
     init_button_widget (button2, menu, attribs);
 
     // button 3
     i++;
     Widget* button3 = &menu->page_main[i];
-    attribs.geometry[Button_Attributes::Position] = {650, 400};
     attribs.caption = "BLAHBLAH";
+    attribs.id = Event::None;
+    attribs.geometry[Button_Attributes::Position] = {650, 400};
     init_button_widget (button3, menu, attribs);
+    
+    // exit button
+    i++;
+    Widget* exit_button = &menu->page_main[i];
+    attribs.caption = "EXIT";
+    attribs.id = Event::Exit;
+    attribs.geometry[Button_Attributes::Position] = {300, 500};
+    attribs.geometry[Button_Attributes::Dimensions] = {650, 50};
+    attribs.button_colors[Button_Attributes::Fill] = menu->theme.color_button_ext;
+    init_button_widget(exit_button, menu, attribs);
 
     // navigation order
     button1->neighbours.below = button2;
     button2->neighbours.above = button1;
     button2->neighbours.right = button3;
     button3->neighbours.left = button2;
+    
+    button2->neighbours.below = exit_button;
+    button3->neighbours.below = exit_button;
+    exit_button->neighbours.above = button2;
 }
 //
 //
@@ -266,57 +283,59 @@ void init_calibrate_page (Menu* menu) {
 
     // commont button attributes
     Button_Attributes attribs;
+    attribs.id = Event::None;
     attribs.text_font = menu->resources.font_button;
     attribs.geometry[Button_Attributes::Dimensions] = {ROW_WIDTH / 2 - 8, attribs.geometry[Button_Attributes::Dimensions].y};
     attribs.button_colors[Button_Attributes::Fill] = menu->theme.color_button_std;
     attribs.button_colors[Button_Attributes::Shadow] = menu->theme.color_button_shadow;
     // button test
     i++;
-    Widget* button1 = &menu->page_calibrate[i];
-    button1->id = Event::Test;
+    Widget* btn_test = &menu->page_calibrate[i];
+    attribs.caption = "TEST";
+    btn_test->id = Event::Test;
     attribs.text_font = menu->resources.font_button;
     attribs.geometry[Button_Attributes::Position] = {row_x, row_y + ROW_HEIGHT * 8 + 12};
-    init_button_widget (button1, menu, attribs);
-    menu->active_widget = button1;
+    init_button_widget (btn_test, menu, attribs);
     menu->calibrate_layout.widget_idx.btn_test = i;
 
     // button calibrate
     i++;
-    Widget* button2 = &menu->page_calibrate[i];
+    Widget* btn_calibrate = &menu->page_calibrate[i];
     attribs.caption = "CALIBRATE";
+    attribs.id = Event::Calibrate;
     attribs.geometry[Button_Attributes::Position] = {attribs.geometry[Button_Attributes::Position].x + attribs.geometry[Button_Attributes::Dimensions].x + 8, row_y + ROW_HEIGHT * 8 + 12};
-    init_button_widget (button2, menu, attribs);
-    init_widget(button2);
+    init_button_widget (btn_calibrate, menu, attribs);
     menu->calibrate_layout.widget_idx.btn_calibrate = i;
 
-    button1->neighbours.right = button2;
-    button2->neighbours.left = button1;
+    btn_test->neighbours.right = btn_calibrate;
+    btn_calibrate->neighbours.left = btn_test;
 
-    button1->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
-    button2->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
-    menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7].neighbours.below = button1;
+    btn_test->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
+    btn_calibrate->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
+    menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7].neighbours.below = btn_test;
 
 
     // button  exit
     i++;
     Widget* button_exit = &menu->page_calibrate[i];
     attribs.caption = "EXIT";
+    attribs.id = Event::None;
     attribs.geometry[Button_Attributes::Position] = {row_x, row_y + ROW_HEIGHT * 8 + 12 + attribs.geometry[Button_Attributes::Dimensions].y + 12};
     attribs.geometry[Button_Attributes::Dimensions].x = attribs.geometry[Button_Attributes::Dimensions].x * 2 + 8;
     attribs.button_colors[Button_Attributes::Fill] = menu->theme.color_button_ext;
     init_button_widget (button_exit, menu, attribs);
     menu->calibrate_layout.widget_idx.btn_exit = i;
 
-    button1->neighbours.right = button2;
-    button2->neighbours.left = button1;
+    btn_test->neighbours.right = btn_calibrate;
+    btn_calibrate->neighbours.left = btn_test;
 
-    button1->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
-    button2->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
-    menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7].neighbours.below = button1;
+    btn_test->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
+    btn_calibrate->neighbours.above = &menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7];
+    menu->page_calibrate[ menu->calibrate_layout.first_row_index + 7].neighbours.below = btn_test;
 
-    button1->neighbours.below = button_exit;
-    button2->neighbours.below = button_exit;
-    button_exit->neighbours.above = button1;
+    btn_test->neighbours.below = button_exit;
+    btn_calibrate->neighbours.below = button_exit;
+    button_exit->neighbours.above = btn_test;
 
     // other side of the page...
 
@@ -339,7 +358,7 @@ void init_calibrate_page (Menu* menu) {
     gamepad->gamepad.right_stick_origin += menu->object_pool.rects[gamepad->gamepad.background].getPosition();
     init_gamepad_widget (gamepad, menu);
     menu->calibrate_layout.gamepad_widget = gamepad;
-    set_widget_visible(gamepad, false);
+    set_widget_visible(gamepad, true);
 
     // calibrate widget
     i++;
@@ -497,21 +516,25 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
                     next_active_widget (menu, menu->event);
                 }
                 break;
+                
             case Event::Down:
                 if (menu->active_widget->neighbours.below) {
                     next_active_widget (menu, menu->event);
                 }
                 break;
+                
             case Event::Right:
                 if (menu->active_widget->neighbours.right) {
                     next_active_widget (menu, menu->event);
                 }
                 break;
+                
             case Event::Left:
                 if (menu->active_widget->neighbours.left) {
                     next_active_widget (menu, menu->event);
                 }
                 break;
+                
             case Event::Fire:
                 global::log (get_widget_caption (menu->active_widget, menu));
                 set_widget_selected (menu->active_widget, true);
@@ -522,18 +545,23 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
                     set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], true);
                     set_active_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], menu);
                     break;
+                    
                 case Event::Done:
                     set_widget_enabled (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_done], false);
                     set_active_widget (&menu->page_calibrate[menu->calibrate_layout.widget_idx.btn_test], menu);
                     break;
+                    
                 case Event::PageCalibrate:
                     menu->active_page = menu->page_calibrate;
                     set_active_widget (&menu->active_page[12], menu);
                     break;
+                    
                 case Event::Exit:
-                    menu->active_page = menu->page_main;
-                    set_active_widget (&menu->active_page[3], menu);
+                    menu->should_exit = true;
+                    // test earily exit
+                    return menu->return_code;
                     break;
+                    
                 default:
                     break;
                 }
@@ -578,3 +606,4 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
 
 } // namespace menu
 } // namespace ss
+
