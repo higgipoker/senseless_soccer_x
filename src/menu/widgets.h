@@ -26,16 +26,16 @@ struct Button_Attributes {
     enum {Fill, Outline, Shadow}  Colors;
 
     // position and dimensions
-    sf::Vector2f geometry[2] {sf::Vector2f{0, 0}, sf::Vector2f{300, 50}};
+    sf::Vector2f geometry[2];
 
     // background colors for fill, outline and shadow
-    sf::Color button_colors[3] {sf::Color{0, 0, 0}, sf::Color{0, 0, 0}, sf::Color{0, 0, 0}};
+    sf::Color button_colors[3];
 
     // text colors for fill, outlinge and shadow
-    sf::Color caption_colors[3]{sf::Color{255, 255, 255}, sf::Color{0, 0, 0}, sf::Color{255, 255, 255}};
+    sf::Color caption_colors[3];
 
     // button caption text
-    std::string caption {"CAPTION"};
+    std::string caption;
 
     // id for tracking if the button was pressed
     Event id {Event::None};
@@ -107,13 +107,13 @@ struct Calibrate_Widget {
 // Image
 // ***************************
 struct Image_Widget {
-    int img_rect {1};
+    int img_rect {-1};
 };
 // ***************************
 // Widget
 // ***************************
 struct Widget {
-    enum {Anonymous, Label, Button, Frame, ListItem, Gamepad, Calibrate, Image} type;
+    enum Type {Anonymous, Label, Button, Frame, ListItem, Gamepad, Calibrate, Image} type;
     enum {Visible, Active, Enabled, Selected, Interactive} state;
     // ideally this would be a union, but we can't have nice things because of all the sfml oo cruft. Next time...
     // union {
@@ -130,7 +130,7 @@ struct Widget {
     Event             id              {Event::None};
     bool              interactive     {true};
     std::bitset<8>    states;
-    sf::Transformable transformable;
+    int transform     {-1};
 
     // navigation order
     struct {
@@ -147,7 +147,7 @@ struct Widget {
 //
 // --------------------------------------------------------------------------------
 // inits
-void            init_widget            (Widget* widget);
+void            init_widget            (Widget* widget, Menu* menu, const Widget::Type type);
 void            init_button_widget     (Widget* widget, Menu* menu, const Button_Attributes& attribs);
 void            init_image_widget      (Widget* widget, Menu* menu, const sf::Vector2f dimensions, const sf::Texture* texture) ;
 void            init_listrow_widget    (Widget* widget, const Button_Attributes& btn_attribs);

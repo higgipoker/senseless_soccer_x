@@ -10,7 +10,7 @@
 
 namespace ss {
 namespace menu {
-static const int MAX_WIDGETS_PER_PAGE = 200; // todo: optimize when we know for sure how many we need
+static const int MAX_WIDGETS_PER_PAGE = 20; // todo: optimize when we know for sure how many we need
 static const int MAX_CONTROLLERS = 8; // max supported by sfml
 
 // ***************************
@@ -49,6 +49,8 @@ struct Keyboard {
 // ***************************
 struct MenuTheme {
     // buttons
+    sf::Vector2f dimensions_btn_small   {300, 50};
+    sf::Vector2f dimensions_btn_big     {300, 50};
     sf::Color color_button_std          {0, 120, 10};
     sf::Color color_button_ext          {55, 0, 0};
     sf::Color color_button_shadow       {0, 0, 0, 190};
@@ -102,7 +104,7 @@ struct Menu {
     MenuTheme theme;
 
     // resource pool
-    static const int MAX_WIDGETS = 100;
+    static const int MAX_WIDGETS = 50;
     struct {
         int used_rects    = 0;
         int used_circles  = 0;
@@ -110,14 +112,16 @@ struct Menu {
         int used_colors   = 0;
         int used_fonts    = 0;
         int used_textures = 0;
+        int used_transforms = 0;
 
         // max sizes will be optimized later depemding on usage requirements
-        sf::RectangleShape rects      [MAX_WIDGETS*2];
-        sf::CircleShape    circles    [MAX_WIDGETS*2];
-        sf::Text           labels     [MAX_WIDGETS*2];
-        sf::Color          colors     [MAX_WIDGETS*2];
-        sf::Font           fonts      [MAX_WIDGETS*2];
+        sf::RectangleShape rects      [MAX_WIDGETS * 2];
+        sf::CircleShape    circles    [MAX_WIDGETS * 2];
+        sf::Text           labels     [MAX_WIDGETS * 2];
+        sf::Color          colors     [MAX_WIDGETS * 2];
+        sf::Font           fonts      [MAX_WIDGETS * 2];
         sf::Texture        textures   [MAX_WIDGETS];
+        sf::Transform      transforms [MAX_WIDGETS];
 
     } object_pool;
 
@@ -134,58 +138,67 @@ struct Menu {
 //
 // functions
 //
-static void     handle_mouse             (Mouse* mouse, Menu* menu, sf::RenderWindow* window);
-static void     handle_keyboard          (Keyboard* keyboard, Menu* menu);
-static void     handle_window            (sf::RenderWindow* window, Menu* menu);
-static void     handle_gamepad           (GamepadController* gamepad, Menu* menu);
-static void     init_resources           (Menu* menu);
-static void     init_main_page           (Menu* menu);
-static void     init_calibrate_page      (Menu* menu);
-static void     update_active_animation  (Menu* menu);
-static void     next_active_widget       (Menu* menu, const Event trigger);
-static void     set_active_widget        (Widget* widget, Menu* menu);
+static void     handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window);
+static void     handle_keyboard (Keyboard* keyboard, Menu* menu);
+static void     handle_window (sf::RenderWindow* window, Menu* menu);
+static void     handle_gamepad (GamepadController* gamepad, Menu* menu);
+static void     init_resources (Menu* menu);
+static void     init_main_page (Menu* menu);
+static void     init_calibrate_page (Menu* menu);
+static void     update_active_animation (Menu* menu);
+static void     next_active_widget (Menu* menu, const Event trigger);
+static void     set_active_widget (Widget* widget, Menu* menu);
 static void     detect_and_load_gamepads (Menu* menu);
-static int      run_menu                 (Menu* menu, sf::RenderWindow* window);
-static Widget*  get_widget_neighbour     (const Widget* widget, const Event trigger);
+static int      run_menu (Menu* menu, sf::RenderWindow* window);
+static Widget*  get_widget_neighbour (const Widget* widget, const Event trigger);
 //
 // functions to acquire resources
 //
-inline static int acquire_rect(Menu* menu, const sf::Vector2f size = {0,0}) {
+inline static int acquire_rect (Menu* menu, const sf::Vector2f size = {0, 0}) {
     int id = menu->object_pool.used_rects;
-    menu->object_pool.rects[id].setSize(size);
+    menu->object_pool.rects[id].setSize (size);
     menu->object_pool.used_rects++;
     return id;
 }
-inline static int acquire_circle(Menu* menu, const float radius = 10.f) {
+inline static int acquire_circle (Menu* menu, const float radius = 10.f) {
     int id = menu->object_pool.used_circles;
-    menu->object_pool.circles[id].setRadius(radius);
+    menu->object_pool.circles[id].setRadius (radius);
     menu->object_pool.used_circles++;
     return id;
 }
-inline static int acquire_label(Menu* menu, const std::string &caption = "") {
+inline static int acquire_label (Menu* menu, const std::string& caption = "") {
     int id = menu->object_pool.used_labels;
-    menu->object_pool.labels[id].setString(caption);
+    menu->object_pool.labels[id].setString (caption);
     menu->object_pool.used_labels++;
     return id;
 }
-inline static int acquire_color(Menu* menu, sf::Color color = sf::Color::Black) {
+inline static int acquire_color (Menu* menu, sf::Color color = sf::Color::Black) {
     int id = menu->object_pool.used_colors;
     menu->object_pool.colors[id] = color;
     menu->object_pool.used_colors++;
     return id;
 }
-inline static int acquire_texture(Menu* menu, const std::string& file) {
+inline static int acquire_texture (Menu* menu, const std::string& file) {
     int id = menu->object_pool.used_textures;
-    menu->object_pool.textures[id].loadFromFile(file);
+    menu->object_pool.textures[id].loadFromFile (file);
     menu->object_pool.used_textures++;
     return id;
 }
-inline static int acquire_font(Menu* menu, const std::string& file) {
+inline static int acquire_font (Menu* menu, const std::string& file) {
     int id = menu->object_pool.used_fonts;
-    menu->object_pool.fonts[id].loadFromFile(file);
+    menu->object_pool.fonts[id].loadFromFile (file);
     menu->object_pool.used_fonts++;
     return id;
 }
+inline static int acquire_transform (Menu* menu) {
+    int id = menu->object_pool.used_transforms;
+    menu->object_pool.used_transforms++;
+    return id;
+}
+inline sf::RectangleShape get_rect (Menu* menu, int id) {
+    return menu->object_pool.rects[id];
+}
 } // namespace
 } // namespace
+
 

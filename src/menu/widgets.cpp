@@ -8,9 +8,13 @@ namespace ss {
 namespace menu {
 
 
-void init_widget (Widget* widget) {
+void init_widget (Widget* widget, Menu* menu, const Widget::Type type) {
+    widget->type = type; 
     set_widget_enabled (widget, true);
     set_widget_visible (widget, true);
+    
+    //TODO for now all widgets share the same trasnform
+    widget->transform = acquire_transform(menu);
 }
 
 std::string get_widget_caption (const Widget* widget, Menu* menu) {
@@ -43,7 +47,6 @@ bool has_mouse (const Widget* widget, Menu* menu, const sf::Vector2f&  mouse) {
 }
 
 void init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& attribs) {
-    widget->type = Widget::Button;
     widget->id = attribs.id;
     // colors
     widget->button.fill_color = acquire_color (menu, attribs.button_colors[Button_Attributes::Fill]);
@@ -72,9 +75,7 @@ void init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& at
     menu->object_pool.labels[widget->button.text].setOutlineColor (attribs.caption_colors[Button_Attributes::Outline]);
 
     // size the caption
-    sf::Text caption = menu->object_pool.labels[widget->button.text];
-    sf::RectangleShape rect = menu->object_pool.rects[widget->button.btn_rect];
-    while (caption.getGlobalBounds().width >= menu->object_pool.rects[widget->button.btn_rect].getGlobalBounds().width - 12) {
+    while (menu->object_pool.labels[widget->button.text].getGlobalBounds().width >= menu->object_pool.rects[widget->button.btn_rect].getGlobalBounds().width - 12) {
         sf::String  tmp = menu->object_pool.labels[widget->button.text].getString().substring (0, menu->object_pool.labels[widget->button.text].getString().getSize() - 3) + ".";
         menu->object_pool.labels[widget->button.text].setString (tmp);
     }
@@ -91,18 +92,13 @@ void init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& at
     menu->object_pool.labels[widget->button.text_shadow] = menu->object_pool.labels[widget->button.text];
     menu->object_pool.labels[widget->button.text_shadow].setFillColor ({0, 0, 0, 100}); // todo color from theme
     menu->object_pool.labels[widget->button.text_shadow].move ({3, 2});
-
-    init_widget (widget);
 }
 
 void init_image_widget (Widget* widget, Menu* menu, const sf::Vector2f dimensions, const sf::Texture* texture) {
-    widget->type = Widget::Image;
     widget->interactive = false;
     widget->image.img_rect = acquire_rect (menu, dimensions);
-
     menu->object_pool.rects[widget->image.img_rect].setSize ({dimensions.x, dimensions.y});
     menu->object_pool.rects[widget->image.img_rect].setTexture (texture);
-    init_widget (widget);
 }
 
 void init_listrow_widget (Widget* widget, const Button_Attributes& btn_attribs) {
@@ -120,22 +116,16 @@ void init_gamepad_widget (Widget* widget,  Menu* menu) {
     // thumbsticks
     widget->gamepad.left_stick = acquire_circle (menu, 39);
     widget->gamepad.right_stick = acquire_circle (menu, 39);
-
     menu->object_pool.circles[widget->gamepad.left_stick].setTexture (&menu->object_pool.textures[menu->resources.texture_thumbstick]);
     menu->object_pool.circles[widget->gamepad.right_stick].setTexture (&menu->object_pool.textures[menu->resources.texture_thumbstick]);
     menu->object_pool.circles[widget->gamepad.left_stick].setOrigin (menu->object_pool.circles[widget->gamepad.left_stick].getLocalBounds().width / 2, menu->object_pool.circles[widget->gamepad.left_stick].getLocalBounds().height / 2);
     menu->object_pool.circles[widget->gamepad.right_stick].setOrigin (menu->object_pool.circles[widget->gamepad.right_stick].getLocalBounds().width / 2, menu->object_pool.circles[widget->gamepad.right_stick].getLocalBounds().height / 2);
-
     widget->gamepad.left_stick_origin = {112, 110};
     widget->gamepad.right_stick_origin = {330, 192};
     menu->object_pool.circles[widget->gamepad.left_stick].setPosition ({112, 110});
     menu->object_pool.circles[widget->gamepad.right_stick].setPosition ({330, 192});
-
     menu->object_pool.circles[widget->gamepad.left_stick].move (menu->object_pool.rects[widget->gamepad.background].getPosition());
     menu->object_pool.circles[widget->gamepad.right_stick].move (menu->object_pool.rects[widget->gamepad.background].getPosition());
-
-    init_widget (widget);
-    set_widget_visible (widget, false);
 }
 
 void init_calibrate_widget (Widget* widget, Menu* menu) {
@@ -143,6 +133,7 @@ void init_calibrate_widget (Widget* widget, Menu* menu) {
     widget->calibrate.origin_circle = acquire_circle (menu, 3);
     widget->calibrate.input_circle = acquire_circle (menu, 3);
     widget->calibrate.outer_circle = acquire_circle (menu, 150);
+    
      
     menu->object_pool.circles[widget->calibrate.origin_circle].setOrigin({3, 3});
     menu->object_pool.circles[widget->calibrate.origin_circle].setPosition ({942.f, 414.f});
@@ -161,9 +152,6 @@ void init_calibrate_widget (Widget* widget, Menu* menu) {
     menu->object_pool.circles[widget->calibrate.outer_circle].setFillColor ({0, 0, 0, 100});
     menu->object_pool.circles[widget->calibrate.outer_circle].setOutlineColor ({255, 255, 255, 255});
     menu->object_pool.circles[widget->calibrate.outer_circle].setOutlineThickness (2);
-        
-    init_widget (widget);
-    set_widget_visible (widget, false);
 }
 
 void update_button_widget (Widget* widget, const Menu* menu) {
@@ -359,7 +347,7 @@ void update_widget (Widget* widget, const Menu* menu) {
 void draw_widget (const Widget* widget, const Menu* menu, sf::RenderWindow* window) {
     if (!widget_visible (widget)) return;
     static sf::RenderStates states;
-    states.transform = widget->transformable.getTransform();
+    states.transform = menu->object_pool.transforms[widget->transform];
 
     switch (widget->type) {
 
@@ -429,6 +417,8 @@ void attach_controller (Calibrate_Widget* widget, ControllerState* state) {
 
 } // namespace
 } // namespace
+
+
 
 
 
