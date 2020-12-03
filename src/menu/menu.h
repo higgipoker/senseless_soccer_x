@@ -195,7 +195,7 @@ inline static int acquire_transform (Menu* menu) {
     menu->object_pool.used_transforms++;
     return id;
 }
-inline sf::RectangleShape get_rect (Menu* menu, int id) {
+inline sf::RectangleShape& get_rect (Menu* menu, int id) {
     return menu->object_pool.rects[id];
 }
 } // namespace

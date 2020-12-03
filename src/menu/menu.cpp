@@ -129,8 +129,8 @@ void init_main_page (Menu* menu) {
     Widget* logo = &menu->page_main[i];
     init_widget (logo, menu, Widget::Image);
     init_image_widget (logo, menu, {819, 144}, &menu->object_pool.textures[menu->resources.texture_menu_logo]);
-    menu->object_pool.rects[logo->image.img_rect].setOrigin ({menu->object_pool.rects[logo->image.img_rect].getLocalBounds().width / 2, menu->object_pool.rects[bg->image.img_rect].getLocalBounds().height / 2});
-    menu->object_pool.rects[logo->image.img_rect].setPosition ({menu->object_pool.rects[bg->image.img_rect].getLocalBounds().width / 2, menu->object_pool.rects[bg->image.img_rect].getLocalBounds().height / 2});
+    get_rect(menu, logo->image.img_rect).setOrigin ({get_rect(menu, logo->image.img_rect).getLocalBounds().width / 2, get_rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
+    get_rect(menu, logo->image.img_rect).setPosition ({get_rect(menu, bg->image.img_rect).getLocalBounds().width / 2, get_rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
 
     // common button attributes
     Button_Attributes attribs;
@@ -204,8 +204,8 @@ void init_calibrate_page (Menu* menu) {
     Widget* logo = &menu->page_calibrate[i];
     init_widget (logo, menu, Widget::Image);
     init_image_widget (logo, menu, {819, 144}, &menu->object_pool.textures[menu->resources.texture_menu_logo]);
-    menu->object_pool.rects[logo->image.img_rect].setOrigin ({menu->object_pool.rects[logo->image.img_rect].getLocalBounds().width / 2, menu->object_pool.rects[bg->image.img_rect].getLocalBounds().height / 2});
-    menu->object_pool.rects[logo->image.img_rect].setPosition ({menu->object_pool.rects[bg->image.img_rect].getLocalBounds().width / 2, menu->object_pool.rects[bg->image.img_rect].getLocalBounds().height / 2});
+    get_rect(menu, logo->image.img_rect).setOrigin ({get_rect(menu, logo->image.img_rect).getLocalBounds().width / 2,get_rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
+    get_rect(menu, logo->image.img_rect).setPosition ({get_rect(menu, bg->image.img_rect).getLocalBounds().width / 2, get_rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
 
     // joystics listbox heading text
     i++;
@@ -234,20 +234,20 @@ void init_calibrate_page (Menu* menu) {
         listrow->list.button.text_shadow = acquire_label (menu);
         listrow->list.fill_color = acquire_color (menu);
         if (row % 2 == 0) {
-            menu->object_pool.rects[listrow->list.button.btn_rect].setFillColor (menu->theme.color_list_bg1);
+            get_rect(menu, listrow->list.button.btn_rect).setFillColor (menu->theme.color_list_bg1);
             menu->object_pool.colors[listrow->list.fill_color] = menu->theme.color_list_bg1;
-            menu->object_pool.rects[listrow->list.button.btn_rect].setOutlineColor (menu->theme.color_list_bg1);
+            get_rect(menu, listrow->list.button.btn_rect).setOutlineColor (menu->theme.color_list_bg1);
         } else {
-            menu->object_pool.rects[listrow->list.button.btn_rect].setFillColor (menu->theme.color_list_bg2);
+            get_rect(menu, listrow->list.button.btn_rect).setFillColor (menu->theme.color_list_bg2);
             menu->object_pool.colors[listrow->list.fill_color] = menu->theme.color_list_bg2;
-            menu->object_pool.rects[listrow->list.button.btn_rect].setOutlineColor (menu->theme.color_list_bg2);
+            get_rect(menu, listrow->list.button.btn_rect).setOutlineColor (menu->theme.color_list_bg2);
         }
-        menu->object_pool.rects[listrow->list.button.btn_rect].setSize ({ROW_WIDTH - 4, ROW_HEIGHT - 4});
-        menu->object_pool.rects[listrow->list.button.btn_rect].setPosition ({row_x, row_y + (ROW_HEIGHT * row) });
-        menu->object_pool.rects[listrow->list.button.btn_rect].setOutlineThickness (2);
+        get_rect(menu, listrow->list.button.btn_rect).setSize ({ROW_WIDTH - 4, ROW_HEIGHT - 4});
+        get_rect(menu, listrow->list.button.btn_rect).setPosition ({row_x, row_y + (ROW_HEIGHT * row) });
+        get_rect(menu, listrow->list.button.btn_rect).setOutlineThickness (2);
 
         menu->object_pool.labels[listrow->list.button.text].setFont (menu->object_pool.fonts[menu->resources.font_button]);
-        menu->object_pool.labels[listrow->list.button.text].setPosition (menu->object_pool.rects[listrow->list.button.btn_rect].getPosition());
+        menu->object_pool.labels[listrow->list.button.text].setPosition (get_rect(menu, listrow->list.button.btn_rect).getPosition());
         menu->object_pool.labels[listrow->list.button.text].setFillColor (menu->theme.color_button_text);
 
         if (row > 0) { // not first row
@@ -279,10 +279,10 @@ void init_calibrate_page (Menu* menu) {
     Widget* frame = &menu->page_calibrate[i];
     init_widget (frame, menu, Widget::Frame);
     frame->frame.rect = acquire_rect (menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
-    menu->object_pool.rects[frame->frame.rect].setFillColor ({0, 0, 0, 0});
-    menu->object_pool.rects[frame->frame.rect].setOutlineColor ({255, 255, 255});
-    menu->object_pool.rects[frame->frame.rect].setOutlineThickness (2);
-    menu->object_pool.rects[frame->frame.rect].setPosition ({row_x - 2, row_y - 2});
+    get_rect(menu, frame->frame.rect).setFillColor ({0, 0, 0, 0});
+    get_rect(menu, frame->frame.rect).setOutlineColor ({255, 255, 255});
+    get_rect(menu, frame->frame.rect).setOutlineThickness (2);
+    get_rect(menu, frame->frame.rect).setPosition ({row_x - 2, row_y - 2});
     menu->calibrate_layout.widget_idx.listbox_frame = i;
 
     // commont button attributes
@@ -348,23 +348,23 @@ void init_calibrate_page (Menu* menu) {
     // other side of the page...
 
     // frame for the gamepad widget
-    i++;
-    frame = &menu->page_calibrate[i];
-    init_widget (frame, menu, Widget::Frame);
-    frame->frame.rect = acquire_rect (menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
-    menu->object_pool.rects[frame->frame.rect].setFillColor ({0, 0, 0, 0});
-    menu->object_pool.rects[frame->frame.rect].setOutlineColor ({255, 255, 255});
-    menu->object_pool.rects[frame->frame.rect].setOutlineThickness (2);
-    menu->object_pool.rects[frame->frame.rect].setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
+//     i++;
+//     frame = &menu->page_calibrate[i];
+//     init_widget (frame, menu, Widget::Frame);
+//     frame->frame.rect = acquire_rect (menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
+//     get_rect(menu, frame->frame.rect).setFillColor ({0, 0, 0, 0});
+//     get_rect(menu, frame->frame.rect).setOutlineColor ({255, 255, 255});
+//     get_rect(menu, frame->frame.rect).setOutlineThickness (2);
+//     get_rect(menu, frame->frame.rect).setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
 
     // gamepad widget
     i++;
     Widget* gamepad = &menu->page_calibrate[i];
     init_widget (gamepad, menu, Widget::Gamepad);
     init_gamepad_widget (gamepad, menu);
-    menu->object_pool.rects[gamepad->gamepad.background].setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
-    gamepad->gamepad.left_stick_origin += menu->object_pool.rects[gamepad->gamepad.background].getPosition();
-    gamepad->gamepad.right_stick_origin += menu->object_pool.rects[gamepad->gamepad.background].getPosition();
+    get_rect(menu, gamepad->gamepad.background).setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
+    gamepad->gamepad.left_stick_origin += get_rect(menu, gamepad->gamepad.background).getPosition();
+    gamepad->gamepad.right_stick_origin += get_rect(menu, gamepad->gamepad.background).getPosition();
     menu->calibrate_layout.gamepad_widget = gamepad;
 
     // calibrate widget
