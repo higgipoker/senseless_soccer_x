@@ -161,6 +161,12 @@ void            update_gamepad_widget  (Widget* widget,  Menu* menu = nullptr);
 void            update_calibrate_widget(Widget* widget,  Menu* menu = nullptr);
 void            update_widget          (Widget* widget,  Menu* menu = nullptr);
 
+// set positions
+void            set_widget_position    (Widget* widget, Menu* menu, const sf::Vector2f& pos);
+
+// get positions
+sf::Vector2f    get_widget_position    (Widget* widget, Menu* menu);
+
 // draws
 void            draw_calibrate         (const Widget* widget, Menu *menu, sf::RenderWindow* window, const sf::RenderStates* states);
 void            draw_label             (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
@@ -177,6 +183,7 @@ sf::FloatRect   get_widget_bounds      (const Widget* widget, Menu* menu);
 std::string     get_widget_caption     (const Widget* widget, Menu* menu);
 bool            has_mouse              (const Widget* widget, Menu* menu, const sf::Vector2f&  mouse);
 Widget*         get_widget_neighbour   (const Widget* widget, const Event trigger);
+
 
 
 // --

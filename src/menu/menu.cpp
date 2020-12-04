@@ -122,15 +122,15 @@ void init_main_page (Menu* menu) {
     // add the background widget
     Widget* bg = &menu->page_main[i];
     init_widget (bg, menu, Widget::Image);
-    init_image_widget (bg, menu, {1280, 720}, &texture(menu, menu->resources.texture_menu_background));
+    init_image_widget (bg, menu, {1280, 720}, &texture (menu, menu->resources.texture_menu_background));
 
     // the logo
     i++;
     Widget* logo = &menu->page_main[i];
     init_widget (logo, menu, Widget::Image);
-    init_image_widget (logo, menu, {819, 144}, &texture(menu, menu->resources.texture_menu_logo));
-    rect(menu, logo->image.img_rect).setOrigin ({rect(menu, logo->image.img_rect).getLocalBounds().width / 2, rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
-    rect(menu, logo->image.img_rect).setPosition ({rect(menu, bg->image.img_rect).getLocalBounds().width / 2, rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
+    init_image_widget (logo, menu, {819, 144}, &texture (menu, menu->resources.texture_menu_logo));
+    rect (menu, logo->image.img_rect).setOrigin ({rect (menu, logo->image.img_rect).getLocalBounds().width / 2, rect (menu, bg->image.img_rect).getLocalBounds().height / 2});
+    rect (menu, logo->image.img_rect).setPosition ({rect (menu, bg->image.img_rect).getLocalBounds().width / 2, rect (menu, bg->image.img_rect).getLocalBounds().height / 2});
 
     // common button attributes
     Button_Attributes attribs;
@@ -197,25 +197,25 @@ void init_calibrate_page (Menu* menu) {
     // add the background widget
     Widget* bg = &menu->page_calibrate[i];
     init_widget (bg, menu, Widget::Image);
-    init_image_widget (bg, menu, {1280, 720}, &texture(menu, menu->resources.texture_menu_background));
+    init_image_widget (bg, menu, {1280, 720}, &texture (menu, menu->resources.texture_menu_background));
 
     // the logo
     i++;
     Widget* logo = &menu->page_calibrate[i];
     init_widget (logo, menu, Widget::Image);
-    init_image_widget (logo, menu, {819, 144}, &texture(menu, menu->resources.texture_menu_logo));
-    rect(menu, logo->image.img_rect).setOrigin ({rect(menu, logo->image.img_rect).getLocalBounds().width / 2,rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
-    rect(menu, logo->image.img_rect).setPosition ({rect(menu, bg->image.img_rect).getLocalBounds().width / 2, rect(menu, bg->image.img_rect).getLocalBounds().height / 2});
+    init_image_widget (logo, menu, {819, 144}, &texture (menu, menu->resources.texture_menu_logo));
+    rect (menu, logo->image.img_rect).setOrigin ({rect (menu, logo->image.img_rect).getLocalBounds().width / 2, rect (menu, bg->image.img_rect).getLocalBounds().height / 2});
+    rect (menu, logo->image.img_rect).setPosition ({rect (menu, bg->image.img_rect).getLocalBounds().width / 2, rect (menu, bg->image.img_rect).getLocalBounds().height / 2});
 
     // joystics listbox heading text
     i++;
     Widget* list_title = &menu->page_calibrate[i];
     init_widget (list_title, menu, Widget::Label);
-    set_widget_interactive(list_title, false);
+    set_widget_interactive (list_title, false);
     list_title->label.text = acquire_label (menu, "GAMEPADS");
-    label(menu, list_title->label.text).setFont (font(menu, menu->resources.font_button));
-    label(menu, list_title->label.text).setCharacterSize (32);
-    label(menu, list_title->label.text).setPosition ({50, 200});
+    label (menu, list_title->label.text).setFont (font (menu, menu->resources.font_button));
+    label (menu, list_title->label.text).setCharacterSize (32);
+    label (menu, list_title->label.text).setPosition ({50, 200});
     menu->calibrate_layout.widget_idx.listbox_title = i;
 
     // joysticks listbox
@@ -235,21 +235,21 @@ void init_calibrate_page (Menu* menu) {
         listrow->list.button.text_shadow = acquire_label (menu);
         listrow->list.fill_color = acquire_color (menu);
         if (row % 2 == 0) {
-            rect(menu, listrow->list.button.btn_rect).setFillColor (menu->theme.color_list_bg1);
-            color(menu, listrow->list.fill_color) = menu->theme.color_list_bg1;
-            rect(menu, listrow->list.button.btn_rect).setOutlineColor (menu->theme.color_list_bg1);
+            rect (menu, listrow->list.button.btn_rect).setFillColor (menu->theme.color_list_bg1);
+            color (menu, listrow->list.fill_color) = menu->theme.color_list_bg1;
+            rect (menu, listrow->list.button.btn_rect).setOutlineColor (menu->theme.color_list_bg1);
         } else {
-            rect(menu, listrow->list.button.btn_rect).setFillColor (menu->theme.color_list_bg2);
-            color(menu, listrow->list.fill_color) = menu->theme.color_list_bg2;
-            rect(menu, listrow->list.button.btn_rect).setOutlineColor (menu->theme.color_list_bg2);
+            rect (menu, listrow->list.button.btn_rect).setFillColor (menu->theme.color_list_bg2);
+            color (menu, listrow->list.fill_color) = menu->theme.color_list_bg2;
+            rect (menu, listrow->list.button.btn_rect).setOutlineColor (menu->theme.color_list_bg2);
         }
-        rect(menu, listrow->list.button.btn_rect).setSize ({ROW_WIDTH - 4, ROW_HEIGHT - 4});
-        rect(menu, listrow->list.button.btn_rect).setPosition ({row_x, row_y + (ROW_HEIGHT * row) });
-        rect(menu, listrow->list.button.btn_rect).setOutlineThickness (2);
+        rect (menu, listrow->list.button.btn_rect).setSize ({ROW_WIDTH - 4, ROW_HEIGHT - 4});
+        rect (menu, listrow->list.button.btn_rect).setPosition ({row_x, row_y + (ROW_HEIGHT * row) });
+        rect (menu, listrow->list.button.btn_rect).setOutlineThickness (2);
 
-        label(menu, listrow->list.button.text).setFont (font(menu, menu->resources.font_button));
-        label(menu, listrow->list.button.text).setPosition (rect(menu, listrow->list.button.btn_rect).getPosition());
-        label(menu, listrow->list.button.text).setFillColor (menu->theme.color_button_text);
+        label (menu, listrow->list.button.text).setFont (font (menu, menu->resources.font_button));
+        label (menu, listrow->list.button.text).setPosition (rect (menu, listrow->list.button.btn_rect).getPosition());
+        label (menu, listrow->list.button.text).setFillColor (menu->theme.color_button_text);
 
         if (row > 0) { // not first row
             listrow->neighbours.above = &menu->page_calibrate[i - 1];
@@ -279,12 +279,12 @@ void init_calibrate_page (Menu* menu) {
     // frame for the listbox (i was incremented last time through the list loop)
     Widget* frame = &menu->page_calibrate[i];
     init_widget (frame, menu, Widget::Frame);
-    set_widget_interactive(frame, false);
+    set_widget_interactive (frame, false);
     frame->frame.rect = acquire_rect (menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
-    rect(menu, frame->frame.rect).setFillColor ({0, 0, 0, 0});
-    rect(menu, frame->frame.rect).setOutlineColor ({255, 255, 255});
-    rect(menu, frame->frame.rect).setOutlineThickness (2);
-    rect(menu, frame->frame.rect).setPosition ({row_x - 2, row_y - 2});
+    rect (menu, frame->frame.rect).setFillColor ({0, 0, 0, 0});
+    rect (menu, frame->frame.rect).setOutlineColor ({255, 255, 255});
+    rect (menu, frame->frame.rect).setOutlineThickness (2);
+    rect (menu, frame->frame.rect).setPosition ({row_x - 2, row_y - 2});
     menu->calibrate_layout.widget_idx.listbox_frame = i;
 
     // commont button attributes
@@ -353,35 +353,39 @@ void init_calibrate_page (Menu* menu) {
     i++;
     frame = &menu->page_calibrate[i];
     init_widget (frame, menu, Widget::Frame);
-    set_widget_interactive(frame, false);
+    set_widget_interactive (frame, false);
     frame->frame.rect = acquire_rect (menu, {ROW_WIDTH + 2, (ROW_HEIGHT * 8) + 2});
-    rect(menu, frame->frame.rect).setFillColor ({0, 0, 0, 0});
-    rect(menu, frame->frame.rect).setOutlineColor ({255, 255, 255});
-    rect(menu, frame->frame.rect).setOutlineThickness (2);
-    rect(menu, frame->frame.rect).setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
+    rect (menu, frame->frame.rect).setFillColor ({0, 0, 0, 0});
+    rect (menu, frame->frame.rect).setOutlineColor ({255, 255, 255});
+    rect (menu, frame->frame.rect).setOutlineThickness (2);
+    rect (menu, frame->frame.rect).setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
 
     // gamepad widget
     i++;
     Widget* gamepad = &menu->page_calibrate[i];
     init_widget (gamepad, menu, Widget::Gamepad);
     init_gamepad_widget (gamepad, menu);
-    rect(menu, gamepad->gamepad.background).setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
-    gamepad->gamepad.left_stick_origin += rect(menu, gamepad->gamepad.background).getPosition();
-    gamepad->gamepad.right_stick_origin += rect(menu, gamepad->gamepad.background).getPosition();
+    rect (menu, gamepad->gamepad.background).setPosition ({row_x - 2 + ROW_WIDTH + 150, row_y - 2});
+    gamepad->gamepad.left_stick_origin += rect (menu, gamepad->gamepad.background).getPosition();
+    gamepad->gamepad.right_stick_origin += rect (menu, gamepad->gamepad.background).getPosition();
     menu->calibrate_layout.gamepad_widget = gamepad;
 
     // calibrate widget
     i++;
     Widget* calibrate = &menu->page_calibrate[i];
-    init_widget(calibrate, menu, Widget::Calibrate);
-    init_calibrate_widget(calibrate, menu);
+    init_widget (calibrate, menu, Widget::Calibrate);
+
+
+    init_calibrate_widget (calibrate, menu);
+    
     menu->calibrate_layout.calibrate_widget = calibrate;
+    set_widget_visible (calibrate, false);
 
 
     // button done
     i++;
     Widget* button_done = &menu->page_calibrate[i];
-    init_widget(button_done, menu, Widget::Button);
+    init_widget (button_done, menu, Widget::Button);
     attribs.caption = "DONE";
     attribs.geometry[Button_Attributes::Dimensions] = {ROW_WIDTH - 8, attribs.geometry[Button_Attributes::Dimensions].y};
     attribs.geometry[Button_Attributes::Position] = {row_x + ROW_WIDTH + 150, row_y + ROW_HEIGHT * 8 + 12};
@@ -450,7 +454,7 @@ void detect_and_load_gamepads (Menu* menu) {
                 name.resize (MAX_LENGTH);
                 name += "...";
             }
-            label(menu, menu->page_calibrate[row_index + i].list.button.text).setString (std::to_string (i + 1) + ". " + name);
+            label (menu, menu->page_calibrate[row_index + i].list.button.text).setString (std::to_string (i + 1) + ". " + name);
             menu->calibrate_layout.at_least_one_gamepad_found = true;
             if (!selected_a_row) {
                 selected_a_row = true;
@@ -459,10 +463,10 @@ void detect_and_load_gamepads (Menu* menu) {
 
             }
         } else {
-            label(menu, menu->page_calibrate[row_index + i].list.button.text).setString ("<EMPTY>");
+            label (menu, menu->page_calibrate[row_index + i].list.button.text).setString ("<EMPTY>");
             set_widget_enabled (&menu->page_calibrate[row_index + i], false);
         }
-        label(menu, menu->page_calibrate[row_index + i].list.button.text).move (12, 0);
+        label (menu, menu->page_calibrate[row_index + i].list.button.text).move (12, 0);
     }
 }
 //
@@ -570,7 +574,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
         int i = 0;
         while (menu->active_page[i].type != Widget::Anonymous) {                    // for all configured widgets
             if (mouse_mode) {
-                if (widget_interactive(&menu->active_page[i]) &&                     // widget is interactive
+                if (widget_interactive (&menu->active_page[i]) &&                    // widget is interactive
                         has_mouse (&menu->active_page[i], menu, mouse.position) &&  // widget has the mouse in its bounds
                         menu->active_widget != &menu->active_page[i]) {             // widget not already the active widget
                     set_active_widget (&menu->active_page[i], menu);
