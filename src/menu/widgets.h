@@ -73,7 +73,7 @@ struct Frame_Widget {
 // ListRow
 // ***************************
 struct ListRow_Widget {
-    Button_Widget       button; // a list row is implemented in terms of a button (has caption, can be active, pressed etc)
+    Button_Widget       button;               // a list row is implemented in terms of a button (has caption, can be active, pressed etc)
     int                 fill_color      {-1}; // need to save this because it is changed depending on the row
     int                 number_siblings {0};
     static const int    MAX_LIST_ROWS   {8};
@@ -155,20 +155,20 @@ void            init_gamepad_widget    (Widget* widget, Menu* menu = nullptr);
 void            init_calibrate_widget  (Widget* widget, Menu* menu = nullptr);
 
 // updates
-void            update_button_widget   (Widget* widget, const Menu* menu = nullptr);
-void            update_list_widget     (Widget* widget, const Menu* menu = nullptr);
-void            update_gamepad_widget  (Widget* widget, const Menu* menu = nullptr);
-void            update_calibrate_widget(Widget* widget, const Menu* menu = nullptr);
-void            update_widget          (Widget* widget, const Menu* menu = nullptr);
+void            update_button_widget   (Widget* widget,  Menu* menu = nullptr);
+void            update_list_widget     (Widget* widget,  Menu* menu = nullptr);
+void            update_gamepad_widget  (Widget* widget,  Menu* menu = nullptr);
+void            update_calibrate_widget(Widget* widget,  Menu* menu = nullptr);
+void            update_widget          (Widget* widget,  Menu* menu = nullptr);
 
 // draws
-void            draw_calibrate         (const Widget* widget, const Menu *menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_label             (const Widget* widget, const Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_frame             (const Widget* widget, const Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_image             (const Widget* widget, const Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_listrow           (const Widget* widget, const Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_gamepad           (const Widget* widget, const Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_widget            (const Widget* widget, const Menu* menu, sf::RenderWindow* window);
+void            draw_calibrate         (const Widget* widget, Menu *menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_label             (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_frame             (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_image             (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_listrow           (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_gamepad           (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_widget            (const Widget* widget, Menu* menu, sf::RenderWindow* window);
 
 // misc
 void            attach_controller      (Gamepad_Widget* widget, ControllerState* state);
@@ -176,6 +176,7 @@ void            attach_controller      (Calibrate_Widget* widget, ControllerStat
 sf::FloatRect   get_widget_bounds      (const Widget* widget, Menu* menu);
 std::string     get_widget_caption     (const Widget* widget, Menu* menu);
 bool            has_mouse              (const Widget* widget, Menu* menu, const sf::Vector2f&  mouse);
+Widget*         get_widget_neighbour   (const Widget* widget, const Event trigger);
 
 
 // --

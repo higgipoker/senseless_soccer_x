@@ -106,13 +106,13 @@ struct Menu {
     // resource pool
     static const int MAX_WIDGETS = 50;
     struct {
-        int used_rects    = 0;
-        int used_circles  = 0;
-        int used_labels   = 0;
-        int used_colors   = 0;
-        int used_fonts    = 0;
-        int used_textures = 0;
-        int used_transforms = 0;
+        int used_rects      {0};
+        int used_circles    {0};
+        int used_labels     {0};
+        int used_colors     {0};
+        int used_fonts      {0};
+        int used_textures   {0};
+        int used_transforms {0};
 
         // max sizes will be optimized later depemding on usage requirements
         sf::RectangleShape rects      [MAX_WIDGETS * 2];
@@ -150,7 +150,7 @@ static void     next_active_widget (Menu* menu, const Event trigger);
 static void     set_active_widget (Widget* widget, Menu* menu);
 static void     detect_and_load_gamepads (Menu* menu);
 static int      run_menu (Menu* menu, sf::RenderWindow* window);
-static Widget*  get_widget_neighbour (const Widget* widget, const Event trigger);
+
 //
 // functions to acquire resources
 //
@@ -195,9 +195,15 @@ inline static int acquire_transform (Menu* menu) {
     menu->object_pool.used_transforms++;
     return id;
 }
-inline sf::RectangleShape& get_rect (Menu* menu, int id) {
-    return menu->object_pool.rects[id];
-}
+
+// shorthand accessors
+inline sf::RectangleShape&  rect      (Menu* menu, int id) {return menu->object_pool.rects[id];}
+inline sf::CircleShape&     circle    (Menu* menu, int id) {return menu->object_pool.circles[id];}
+inline sf::Text&            label     (Menu* menu, int id) {return menu->object_pool.labels[id];}
+inline sf::Color&           color     (Menu* menu, int id) {return menu->object_pool.colors[id];}
+inline sf::Font&            font      (Menu* menu, int id) {return menu->object_pool.fonts[id];}
+inline sf::Texture&         texture   (Menu* menu, int id) {return menu->object_pool.textures[id];}
+inline sf::Transform&       transform (Menu* menu, int id) {return menu->object_pool.transforms[id];}
 } // namespace
 } // namespace
 
