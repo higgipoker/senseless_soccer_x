@@ -52,7 +52,7 @@ void init_button_widget (Widget* widget, Menu* menu, const Button_Attributes& at
     // colors
     widget->button.fill_color = acquire_color (menu, attribs.button_colors[Button_Attributes::Fill]);
 
-    // button rect
+
     widget->button.btn_rect   = acquire_rect (menu, attribs.geometry[Button_Attributes::Dimensions]);
     rect (menu, widget->button.btn_rect).setPosition (attribs.geometry[Button_Attributes::Position]);
     color (menu, widget->button.fill_color) = attribs.button_colors[Button_Attributes::Fill];
@@ -131,33 +131,29 @@ void init_gamepad_widget (Widget* widget,  Menu* menu) {
 
 void init_calibrate_widget (Widget* widget, Menu* menu) {
     widget->type = Widget::Calibrate;
-    widget->calibrate.origin_circle = acquire_circle (menu, 3);
-    widget->calibrate.input_circle = acquire_circle (menu, 3);
-    widget->calibrate.outer_circle = acquire_circle (menu, 150);
+    widget->thumbstick_diagnostic.origin_circle = acquire_circle (menu, 3);
+    widget->thumbstick_diagnostic.input_circle = acquire_circle (menu, 3);
+    widget->thumbstick_diagnostic.outer_rect = acquire_rect (menu, {300, 300});
 
-    circle (menu, widget->calibrate.origin_circle).setOrigin ({3, 3});
-    circle (menu, widget->calibrate.origin_circle).setFillColor ({0, 0, 0, 0});
-    circle (menu, widget->calibrate.origin_circle).setOutlineColor ({0, 0, 0, 0});
-    circle (menu, widget->calibrate.origin_circle).setOutlineThickness (1);
+    circle (menu, widget->thumbstick_diagnostic.origin_circle).setOrigin ({3, 3});
+    circle (menu, widget->thumbstick_diagnostic.origin_circle).setFillColor ({0, 0, 0, 0});
+    circle (menu, widget->thumbstick_diagnostic.origin_circle).setOutlineColor ({0, 0, 0, 0});
+    circle (menu, widget->thumbstick_diagnostic.origin_circle).setOutlineThickness (1);
 
-    circle (menu, widget->calibrate.input_circle).setOrigin ({3, 3});
-    circle (menu, widget->calibrate.input_circle).setFillColor ({0, 0, 0, 0});
-    circle (menu, widget->calibrate.input_circle).setOutlineColor ({255, 255, 255, 255});
-    circle (menu, widget->calibrate.input_circle).setOutlineThickness (2);
+    circle (menu, widget->thumbstick_diagnostic.input_circle).setOrigin ({3, 3});
+    circle (menu, widget->thumbstick_diagnostic.input_circle).setFillColor ({0, 0, 0, 0});
+    circle (menu, widget->thumbstick_diagnostic.input_circle).setOutlineColor ({255, 255, 255, 255});
+    circle (menu, widget->thumbstick_diagnostic.input_circle).setOutlineThickness (2);
 
-    circle (menu, widget->calibrate.outer_circle).setOrigin ({150, 150});
-    circle (menu, widget->calibrate.outer_circle).setFillColor ({0, 0, 0, 100});
-    circle (menu, widget->calibrate.outer_circle).setOutlineColor ({255, 255, 255, 255});
-    circle (menu, widget->calibrate.outer_circle).setOutlineThickness (2);
-   
-    transform (menu, widget->transform).translate ({942.f, 414.f});
-    transform (menu, widget->transform).scale (0.5f, 0.5f);
-
+    rect (menu, widget->thumbstick_diagnostic.outer_rect).setOrigin ({150, 150});
+    rect (menu, widget->thumbstick_diagnostic.outer_rect).setFillColor ({0, 0, 0, 100});
+    rect (menu, widget->thumbstick_diagnostic.outer_rect).setOutlineColor ({255, 255, 255, 255});
+    rect (menu, widget->thumbstick_diagnostic.outer_rect).setOutlineThickness (2);
 }
 
 void update_button_widget (Widget* widget, Menu* menu) {
     // we have to cast to a pointer because of c++ constness (this pointer passed to memeber fucntion of sf::rect)
-    sf::RectangleShape* btn_rect         = const_cast<sf::RectangleShape*> (&rect (menu, widget->button.btn_rect));
+    sf::RectangleShape* btn_rect     = const_cast<sf::RectangleShape*> (&rect (menu, widget->button.btn_rect));
     sf::Text* text                   = const_cast<sf::Text*> (&label (menu, widget->button.text));
 
     if (widget_enabled (widget)) {
@@ -238,15 +234,15 @@ void update_gamepad_widget (Widget* widget, Menu* menu) {
     }
 }
 
-void update_calibrate_widget (Widget* widget, Menu* menu) {
-    if (widget->gamepad.controller_state) {
-        ControllerState* state = widget->gamepad.controller_state;
-        sf::Vector2f raw_data = state->left_stick_raw;
-        sf::Vector2f origin = circle (menu, widget->calibrate.origin_circle).getPosition();
-        sf::CircleShape* input_circle = const_cast<sf::CircleShape*> (&circle (menu, widget->calibrate.input_circle));
+void update_thumbstick_diagnostic_widget (Widget* widget, Menu* menu) {
+    if (widget->thumbstick_diagnostic.controller_state) {
+        ControllerState* state = widget->thumbstick_diagnostic.controller_state;
+        sf::Vector2f raw_data = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Left ?  state->left_stick_raw : state->right_stick_raw;
+        sf::Vector2f origin = circle (menu, widget->thumbstick_diagnostic.origin_circle).getPosition();
+        sf::CircleShape* input_circle = const_cast<sf::CircleShape*> (&circle (menu, widget->thumbstick_diagnostic.input_circle));
         //sf::CircleShape* outer_circle = const_cast<sf::CircleShape*> (&circle(menu, widget->calibrate.outer_circle));
 
-        std::cout << raw_data.x << ", " << raw_data.y << std::endl;
+        // std::cout << raw_data.x << ", " << raw_data.y << std::endl;
         // sf::Vector2f display_data = raw_data *= 1.5f;
         sf::Vector2f display_data = raw_data;
 
@@ -259,17 +255,49 @@ void update_calibrate_widget (Widget* widget, Menu* menu) {
 //             input_circle->setOutlineColor(sf::Color::White);
 //             outer_circle->setOutlineColor(sf::Color::White);
 //         }
-        sf::Vector2f direction = origin + display_data;
+        sf::Vector2f direction = origin + display_data * 1.4f;
 
         input_circle->setPosition (direction);
 
-        widget->calibrate.line[0].position = origin;
-        widget->calibrate.line[1].position = direction;
+        widget->thumbstick_diagnostic.line[0].position = origin;
+        widget->thumbstick_diagnostic.line[1].position = direction;
+
+        // save the data?
+        if (menu->state == Menu_State::State_CalibratePhase1) {
+
+            sf::Vector2f* min = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->at_rest_left.min : &widget->thumbstick_diagnostic.cali->at_rest_right.min;
+
+            sf::Vector2f* max = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->at_rest_left.max : &widget->thumbstick_diagnostic.cali->at_rest_right.max;
+
+            min->x = std::min (min->x, raw_data.x);
+            min->y = std::min (min->y, raw_data.y);
+
+            max->x = std::max (max->x, raw_data.x);
+            max->y = std::max (max->y, raw_data.y);
+
+            std::cout << min->x << ", " << min->y << std::endl;
+            std::cout << max->x << ", " << max->y << std::endl;
+
+        } else if (menu->state == Menu_State::State_CalibratePhase2) {
+
+            sf::Vector2f* min = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->extremities_left.min : &widget->thumbstick_diagnostic.cali->extremities_right.min;
+
+            sf::Vector2f* max = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->extremities_left.max : &widget->thumbstick_diagnostic.cali->extremities_right.max;
+
+            min->x = std::min (min->x, raw_data.x);
+            min->y = std::min (min->y, raw_data.y);
+
+            max->x = std::max (max->x, raw_data.x);
+            max->y = std::max (max->y, raw_data.y);
+            
+            std::cout << min->x << ", " << min->y << std::endl;
+            std::cout << max->x << ", " << max->y << std::endl;
+        }
     }
 }
 
 void set_widget_position (Widget* widget, Menu* menu, const sf::Vector2f& pos) {
-   transform(menu, widget->transform).translate(pos);
+    transform (menu, widget->transform).translate (pos);
 }
 
 void draw_label (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states) {
@@ -315,10 +343,10 @@ void draw_gamepad (const Widget* widget, Menu* menu, sf::RenderWindow* window, c
 }
 
 void draw_calibrate (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states) {
-    window->draw (circle (menu, widget->calibrate.outer_circle),  *states);
-    window->draw (circle (menu, widget->calibrate.origin_circle),  *states);
-    window->draw (circle (menu, widget->calibrate.input_circle),  *states);
-    window->draw (widget->calibrate.line, 2, sf::Lines, *states);
+    window->draw (rect (menu, widget->thumbstick_diagnostic.outer_rect),  *states);
+    window->draw (circle (menu, widget->thumbstick_diagnostic.origin_circle),  *states);
+    window->draw (circle (menu, widget->thumbstick_diagnostic.input_circle),  *states);
+    //window->draw (widget->thumbstick_diagnostic.line, 2, sf::Lines, *states);
 }
 
 void update_widget (Widget* widget, Menu* menu) {
@@ -338,7 +366,7 @@ void update_widget (Widget* widget, Menu* menu) {
         update_gamepad_widget (widget);
         break;
     case Widget::Calibrate:
-        update_calibrate_widget (widget, menu);
+        update_thumbstick_diagnostic_widget (widget, menu);
         break;
     case Widget::Image:
         break;
@@ -400,7 +428,7 @@ sf::FloatRect get_widget_bounds (const Widget* widget, Menu* menu) {
     case Widget::Gamepad:
         return rect (menu, widget->gamepad.background).getGlobalBounds();
     case Widget::Calibrate:
-        return rect (menu, widget->calibrate.input_circle).getGlobalBounds();
+        return rect (menu, widget->thumbstick_diagnostic.input_circle).getGlobalBounds();
     case Widget::Image:
         return rect (menu, widget->image.img_rect).getGlobalBounds();
 
@@ -437,7 +465,7 @@ sf::Vector2f get_widget_position (const Widget* widget, Menu* menu) {
             return {bounds.left, bounds.top};
         }
     case Widget::Calibrate: {
-        return transform(menu, widget->transform).transformPoint(circle(menu, widget->calibrate.origin_circle).getOrigin());
+            return transform (menu, widget->transform).transformPoint (circle (menu, widget->thumbstick_diagnostic.origin_circle).getOrigin());
         }
     case Widget::Image: {
             auto bounds = rect (menu, widget->image.img_rect).getGlobalBounds();
@@ -478,8 +506,10 @@ void attach_controller (Gamepad_Widget* widget, ControllerState* state) {
     widget->controller_state = state;
 }
 
-void attach_controller (Calibrate_Widget* widget, ControllerState* state) {
+void attach_controller (Thumbstick_Diagnostic_Widget* widget, Thumbstick_Diagnostic_Widget::Stick stick, ControllerState* state, calibration::Calibration* cali) {
+    widget->attached_stick = stick;
     widget->controller_state = state;
+    widget->cali = cali;
 }
 
 } // namespace

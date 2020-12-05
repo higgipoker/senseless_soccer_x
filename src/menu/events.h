@@ -8,6 +8,7 @@ enum class Event : int {
     None,
     Back,
     Done,
+    Cancel,
     Exit,
     Up,
     Down,
@@ -19,7 +20,7 @@ enum class Event : int {
     PageMain,
 
     // page calibrate
-    PageCalibrate,
+    PageSettings,
     Test,
     Calibrate,
 

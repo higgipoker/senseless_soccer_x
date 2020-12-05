@@ -25,41 +25,22 @@ const unsigned char mask_stick_right{1 << 5};  // 0010 0000
 const unsigned char mask_stick_down{1 << 6};   // 0100 0000
 const unsigned char mask_stick_left{1 << 7};   // 1000 0000
 
-enum class Buttons {
-    DPadUp = 0,
-    DPadDown,
-    DPadLeft,
-    DPadRight,
 
-    Button1,
-    Button2,
-    Button3,
-    Button4,
-
-    ShoulderLeft1,
-    ShoulderLeft2,
-    Shoulderright1,
-    Shoulderright2,
-
-    Start,
-    Select
-};
-enum class InputEvent { FireDown = 0, FireUp, SingleTap, DoubleTap };
 class GamepadController {
 public:
     GamepadController();
     void update (ControllerState& s);
     void setSaneDefaults();
-    void calibrate (const Calibration& left, const Calibration& right);
+    void calibrate (const calibration::Calibration& cali);
     void unCalibrate();
     bool up();
     bool down();
     bool left();
     bool right();
+    bool fire();
 
     size_t sf_joystick_index = 0;
-    Calibration left_stick_calibration;
-    Calibration right_stick_calibration;
+    calibration::Calibration calibration;
 
     size_t thumbstick_threshold_x = 0;
     size_t thumbstick_threshold_y = 0;
@@ -85,7 +66,7 @@ private:
     unsigned char directionmask{0x0};
     unsigned char old_buttonmask{0x0};
 
-    std::pair<sf::Vector2f, sf::Vector2f> get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const Calibration& calibration);
+    std::pair<sf::Vector2f, sf::Vector2f> get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const calibration::Calibration& calibration, const calibration::Stick stick);
     sf::Vector2f get_dpad_vector();
     float inner_activation_radius = 0.3f;
     float outer_activation_radius = 0.8f;

@@ -13,9 +13,10 @@ void Controller::update() {
     }
 }
 
-void Controller::calibrate (const Calibration& left, const Calibration& right) {
+void Controller::calibrate (const calibration::Calibration& cali) {
+   act_calibration = cali;
     if (type == ControllerType::Gamepad) {
-        gamepad.calibrate (left, right);
+        gamepad.calibrate (cali);
     }
 }
 
@@ -85,5 +86,16 @@ bool Controller::right() {
         break;
     }
     return ret;
+}
+
+bool Controller::fire() {
+    switch (type) {
+    case ControllerType::Gamepad:
+        return gamepad.fire();
+        break;
+    case ControllerType::Keyboard:
+        break;
+    }
+    return false;
 }
 } // namespace ss

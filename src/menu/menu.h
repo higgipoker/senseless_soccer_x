@@ -1,6 +1,7 @@
 #pragma once
+#include "menu_states.h"
 #include "widgets.h"
-#include "calibration_page.h"
+#include "settings_page.h"
 #include "events.h"
 #include "../input/Controller.hpp"
 #include "../input/GamepadController.hpp"
@@ -10,7 +11,7 @@
 
 namespace ss {
 namespace menu {
-static const int MAX_WIDGETS_PER_PAGE = 20; // todo: optimize when we know for sure how many we need
+static const int MAX_WIDGETS_PER_PAGE = 50; // todo: optimize when we know for sure how many we need
 static const int MAX_CONTROLLERS = 8; // max supported by sfml
 
 // ***************************
@@ -76,9 +77,12 @@ struct Active_Widget_Animation {
 // Menu
 // ***************************
 struct Menu {
+    // state machine
+    Menu_State state = Menu_State::State_MainPage;
+    
     // a page is an array of widgets
     Widget page_main      [MAX_WIDGETS_PER_PAGE];
-    Widget page_calibrate [MAX_WIDGETS_PER_PAGE];
+    Widget page_settings  [MAX_WIDGETS_PER_PAGE];
 
     // controllers
     Controller controllers[MAX_CONTROLLERS];
@@ -93,7 +97,7 @@ struct Menu {
     Active_Widget_Animation active_animation;
 
     // tracks ids of widgets on the calibration page
-    calibrate::Calibrate_Page_Layout calibrate_layout;
+    settings::Settings_Page_Layout settings_layout;
 
     // menu exit conditions
     bool  should_exit     = false;
@@ -104,7 +108,7 @@ struct Menu {
     MenuTheme theme;
 
     // resource pool
-    static const int MAX_WIDGETS = 50;
+    static const int MAX_WIDGETS = 100;
     struct {
         int used_rects      {0};
         int used_circles    {0};
@@ -144,11 +148,12 @@ static void     handle_window (sf::RenderWindow* window, Menu* menu);
 static void     handle_gamepad (GamepadController* gamepad, Menu* menu);
 static void     init_resources (Menu* menu);
 static void     init_main_page (Menu* menu);
-static void     init_calibrate_page (Menu* menu);
+static void     init_settings_page (Menu* menu);
 static void     update_active_animation (Menu* menu);
 static void     next_active_widget (Menu* menu, const Event trigger);
 static void     set_active_widget (Widget* widget, Menu* menu);
 static void     detect_and_load_gamepads (Menu* menu);
+static void     handle_event(Menu* menu, const Event trigger);
 static int      run_menu (Menu* menu, sf::RenderWindow* window);
 
 //

@@ -7,6 +7,8 @@ namespace ss {
 
 enum class ControllerType {Keyboard, Gamepad};
 
+
+
 class Controller {
 public:
     void update();
@@ -16,10 +18,12 @@ public:
     bool down();
     bool left();
     bool right();
-    void calibrate(const Calibration& left, const Calibration &right);
+    bool fire();
+    void calibrate (const calibration::Calibration& cali);
     bool isCalibrated();
     void init();
     void unCalibrate();
+    calibration::Calibration act_calibration;
 private:
     KeyboardController kb;
     GamepadController gamepad;

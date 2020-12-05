@@ -48,7 +48,8 @@ add_executable(senseless_soccer3
     src/graphics/Texture.cpp
     src/menu/widgets.cpp
     src/menu/menu.cpp
-    src/menu/calibration_page.cpp
+    src/menu/settings_page.cpp
+    src/input/controller_tools.cpp
     src/input/Keyboard.cpp
     src/input/Controller.cpp
     src/input/KeyboardController.cpp

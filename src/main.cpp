@@ -1,8 +1,10 @@
 #include "global.hpp"
+#include "files/files.h"
 #include "game/Gamestate.hpp"
 #include "menu/menu.cpp"
 #include "input/Gamepad.hpp"
 #include "game/Match.hpp"
+#include "input/controller_tools.hpp"
 #include <SFML/Graphics.hpp>
 
 using namespace ss;
@@ -23,6 +25,20 @@ int main() {
     Menu main_menu;
     Match match (window);
     window.setFramerateLimit (60);
+    
+    
+    // test file handling
+    files::File file;
+    files::open(file, files::working_dir() +"/data/calibration.cfg");
+    files::read_lines(file);
+    
+    std::map<int, calibration::Calibration> c;
+    
+    calibration::load_from_file(c, file);
+    
+    
+    files::close(file);
+    
 
     while (window.isOpen()) {
 
