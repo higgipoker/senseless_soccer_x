@@ -10,6 +10,7 @@ namespace settings {
 
 void show_phase_1 (Menu* menu) {
     menu->state = Menu_State::State_CalibratePhase1;
+    menu->gamepad_state.suspended = true;
     calibration::Calibration* cali = &get_selected_controller (menu)->act_calibration;
     on_calibration_started (cali);
     if (menu->settings_layout.selected_gamepad_index >= 0) {
@@ -29,7 +30,7 @@ void show_phase_1 (Menu* menu) {
         //
         // stuff on the right side of the screen
         //
-        label (menu, menu->settings_layout.cali_instructions->label.text).setString ("LEAVE THE STICKS CENTERED AND PRESS A BUTTON");
+        label (menu, menu->settings_layout.cali_instructions->label.text).setString ("STEP 1 OF 2: \nLEAVE THE STICKS CENTERED AND PRESS A BUTTON");
         set_widget_visible (menu->settings_layout.gamepad_widget, false);
         set_widget_visible (menu->settings_layout.leftstick_diag, true);
         set_widget_visible (menu->settings_layout.rightstick_diag, true);
@@ -37,7 +38,7 @@ void show_phase_1 (Menu* menu) {
         // done and cancel
         set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_cancel], true);
         set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_done], true);
-        menu->active_widget = &menu->page_settings[menu->settings_layout.widget_idx.btn_done];
+        set_active_widget(&menu->page_settings[menu->settings_layout.widget_idx.btn_done], menu);
 
         // attach the left stick to left cali widget
         attach_controller (&menu->settings_layout.leftstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Left, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &get_selected_controller (menu)->act_calibration);
@@ -52,16 +53,17 @@ void show_phase_2 (Menu* menu) {
     cali->left_stick.at_rest_before = menu->controllers[menu->settings_layout.selected_gamepad_index].state.left_stick_raw;
     cali->right_stick.at_rest_before = menu->controllers[menu->settings_layout.selected_gamepad_index].state.right_stick_raw;
     menu->state = Menu_State::State_CalibratePhase2;
-    label (menu, menu->settings_layout.cali_instructions->label.text).setString ("MOVE BOTH THUMBSTICKS TO THE EXTREMITIES \nAND PRESS A BUTTON");
+    label (menu, menu->settings_layout.cali_instructions->label.text).setString ("STEP 2 OF 2: \nMOVE BOTH THUMBSTICKS TO THE EXTREMITIES AND \nPRESS A BUTTON");
 }
 
 void calibration_finished (Menu* menu) {
     menu->state = Menu_State::State_SettingsPage;
+    menu->gamepad_state.suspended = false;
     auto cali = &get_selected_controller (menu)->act_calibration;
     cali->left_stick.at_rest_after = menu->controllers[menu->settings_layout.selected_gamepad_index].state.left_stick_raw;
     cali->right_stick.at_rest_after = menu->controllers[menu->settings_layout.selected_gamepad_index].state.right_stick_raw;
     on_calibration_finished (cali, menu->settings_layout.selected_gamepad_index);
-    
+
     //
     //  stuff on the left side of the screen
     //
@@ -73,7 +75,7 @@ void calibration_finished (Menu* menu) {
             set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.listrow[i]], true);
         }
     }
-    menu->active_widget = &menu->page_settings[menu->settings_layout.widget_idx.btn_calibrate];
+   set_active_widget(&menu->page_settings[menu->settings_layout.widget_idx.btn_calibrate], menu);
     //
     // stuff on the right side of the screen
     //
@@ -88,6 +90,7 @@ void calibration_finished (Menu* menu) {
 
 void cancel (Menu* menu) {
     calibration_finished (menu);
+    menu->gamepad_state.suspended = false;
 }
 
 void handle_event (const Event event, Menu* menu) {

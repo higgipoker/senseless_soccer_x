@@ -157,8 +157,6 @@ void GamepadController::update (ControllerState& s) {
         old_buttonmask = buttonmask;
     }
 
-
-
     //tmp
     if (Joystick::isButtonPressed (sf_joystick_index, 0)) {
         s.buttons[0].evt = ButtonEvent::Pressed;
@@ -202,6 +200,7 @@ void GamepadController::setSaneDefaults() {
     calibration.left_stick.inner_dead_zone = {10, 10};
     calibration.left_stick.outer_max = {100, 100};
     calibration.left_stick.activation_threshhold = {0.5f, 0.5f};
+    calibration.left_stick.range = calibration.left_stick.outer_max - calibration.left_stick.inner_dead_zone;
     
     calibration.right_stick = calibration.left_stick;
 }

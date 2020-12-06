@@ -20,6 +20,7 @@ public:
     bool left();
     bool right();
     bool fire();
+    bool anyInput();
     void calibrate (const calibration::Calibration& cali);
     bool isCalibrated();
     void init();

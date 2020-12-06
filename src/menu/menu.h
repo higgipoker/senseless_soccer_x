@@ -79,13 +79,22 @@ struct Active_Widget_Animation {
 struct Menu {
     // state machine
     Menu_State state = Menu_State::State_MainPage;
-    
+
     // a page is an array of widgets
     Widget page_main      [MAX_WIDGETS_PER_PAGE];
     Widget page_settings  [MAX_WIDGETS_PER_PAGE];
 
     // controllers
     Controller controllers[MAX_CONTROLLERS];
+    int active_controller = 0;
+    // this kind of info is not embedded in the controller so do it here
+    struct {
+        bool wait_for_repeat = false;
+        int repeat_ticks = 0;
+        int repeat_time = 10;
+        bool suspended = false;
+    } gamepad_state;
+
 
     // track the currently displayed page
     Widget* active_page = page_main;
@@ -145,21 +154,28 @@ struct Menu {
 static void     handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window);
 static void     handle_keyboard (Keyboard* keyboard, Menu* menu);
 static void     handle_window (sf::RenderWindow* window, Menu* menu);
-static void     handle_gamepad (GamepadController* gamepad, Menu* menu);
+static void     handle_gamepad (Menu* menu);
 static void     init_resources (Menu* menu);
 static void     init_main_page (Menu* menu);
 static void     init_settings_page (Menu* menu);
-static void     init_controllers(Menu* menu);
+static void     init_controllers (Menu* menu);
 static void     update_active_animation (Menu* menu);
 static void     next_active_widget (Menu* menu, const Event trigger);
-static void     set_active_widget (Widget* widget, Menu* menu);
 static void     detect_and_load_gamepads (Menu* menu);
-static void     handle_event(Menu* menu, const Event trigger);
+static void     handle_event (Menu* menu, const Event trigger);
 static int      run_menu (Menu* menu, sf::RenderWindow* window);
 //
 // helper functions
 //
-inline Controller* get_selected_controller(Menu* menu){
+inline void     set_active_widget (Widget* widget, Menu* menu) {
+    if (widget_enabled (widget) && menu->active_widget != widget) {
+        set_widget_active (menu->active_widget, false);
+        set_widget_active (widget, true);
+        menu->active_animation.ticks = 0;
+        menu->active_widget = widget;
+    }
+}
+inline Controller* get_selected_controller (Menu* menu) {
     return &menu->controllers[menu->settings_layout.selected_gamepad_index];
 }
 //
@@ -208,13 +224,27 @@ inline static int acquire_transform (Menu* menu) {
 }
 
 // shorthand accessors
-inline sf::RectangleShape&  rect      (Menu* menu, int id) {return menu->object_pool.rects[id];}
-inline sf::CircleShape&     circle    (Menu* menu, int id) {return menu->object_pool.circles[id];}
-inline sf::Text&            label     (Menu* menu, int id) {return menu->object_pool.labels[id];}
-inline sf::Color&           color     (Menu* menu, int id) {return menu->object_pool.colors[id];}
-inline sf::Font&            font      (Menu* menu, int id) {return menu->object_pool.fonts[id];}
-inline sf::Texture&         texture   (Menu* menu, int id) {return menu->object_pool.textures[id];}
-inline sf::Transform&       transform (Menu* menu, int id) {return menu->object_pool.transforms[id];}
+inline sf::RectangleShape&  rect (Menu* menu, int id) {
+    return menu->object_pool.rects[id];
+}
+inline sf::CircleShape&     circle (Menu* menu, int id) {
+    return menu->object_pool.circles[id];
+}
+inline sf::Text&            label (Menu* menu, int id) {
+    return menu->object_pool.labels[id];
+}
+inline sf::Color&           color (Menu* menu, int id) {
+    return menu->object_pool.colors[id];
+}
+inline sf::Font&            font (Menu* menu, int id) {
+    return menu->object_pool.fonts[id];
+}
+inline sf::Texture&         texture (Menu* menu, int id) {
+    return menu->object_pool.textures[id];
+}
+inline sf::Transform&       transform (Menu* menu, int id) {
+    return menu->object_pool.transforms[id];
+}
 } // namespace
 } // namespace
 

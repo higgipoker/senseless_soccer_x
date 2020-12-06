@@ -98,13 +98,42 @@ void handle_window (sf::RenderWindow* window, Menu* menu) {
 //
 //
 //
-void handle_gamepad (GamepadController* gamepad, Menu* menu) {
-    sf::Joystick::update();
-    if (menu->settings_layout.selected_gamepad_index >= 0) {
-        menu->controllers[menu->settings_layout.selected_gamepad_index].update();
+void handle_gamepad (Menu* menu) {
 
-        if (menu->controllers[menu->settings_layout.selected_gamepad_index].state.last_event == ButtonEvent::Pressed)
-            menu->event = Event::Fire;
+    for (int i = 0; i < MAX_CONTROLLERS; ++i) {
+        menu->controllers[i].update();
+        if (menu->controllers[i].anyInput() && i != menu->active_controller) {
+            menu->active_controller = i;
+            std::cout << "handover to controller "  << i << std::endl;
+            menu->gamepad_state.wait_for_repeat = true;
+        }
+    }
+    
+    if (menu->gamepad_state.wait_for_repeat) {
+        if (--menu->gamepad_state.repeat_ticks <= 0) {
+            menu->gamepad_state.repeat_ticks = menu->gamepad_state.repeat_time;
+            menu->gamepad_state.wait_for_repeat = false;
+        }
+    }
+
+    if (menu->controllers[menu->active_controller].state.last_event == ButtonEvent::Pressed) {
+        menu->event = Event::Fire;
+    }
+    if (menu->gamepad_state.suspended) return;
+    if (!menu->gamepad_state.wait_for_repeat) {
+        if (menu->controllers[menu->active_controller].up()) {
+            menu->event = Event::Up;
+            menu->gamepad_state.wait_for_repeat = true;
+        } else if (menu->controllers[menu->active_controller].down()) {
+            menu->event = Event::Down;
+            menu->gamepad_state.wait_for_repeat = true;
+        } else if (menu->controllers[menu->active_controller].left()) {
+            menu->event = Event::Left;
+            menu->gamepad_state.wait_for_repeat = true;
+        } else if (menu->controllers[menu->active_controller].right()) {
+            menu->event = Event::Right;
+            menu->gamepad_state.wait_for_repeat = true;
+        }
     }
 }
 //
@@ -263,8 +292,8 @@ void init_settings_page (Menu* menu) {
         }
 
         //Event id = static_cast<Event> (static_cast<int> (Event::ListRow1) + row);
-       // listrow->id = id;
-       listrow->id = Event::Fire;
+        // listrow->id = id;
+        listrow->id = Event::Fire;
         i++;
     }
 
@@ -378,7 +407,7 @@ void init_settings_page (Menu* menu) {
     Widget* instruction_text = &menu->page_settings[i];
     init_widget (instruction_text, menu, Widget::Label);
     set_widget_interactive (instruction_text, false);
-    instruction_text->label.text = acquire_label (menu, "LEAVE THE STICKS CENTERED AND PRESS A BUTTON");
+    instruction_text->label.text = acquire_label (menu, "STEP 1 OF 2:\nLEAVE THE STICKS CENTERED \nAND PRESS A BUTTON");
     label (menu, instruction_text->label.text).setFont (font (menu, menu->resources.font_button));
     label (menu, instruction_text->label.text).setCharacterSize (18);
     label (menu, instruction_text->label.text).setPosition ({710, 260});
@@ -480,14 +509,6 @@ void next_active_widget (Menu* menu, const Event trigger) {
 //
 //
 //
-void set_active_widget (Widget* widget, Menu* menu) {
-    if (widget_enabled (widget) && menu->active_widget != widget) {
-        set_widget_active (menu->active_widget, false);
-        set_widget_active (widget, true);
-        menu->active_animation.ticks = 0;
-        menu->active_widget = widget;
-    }
-}
 //
 //
 //
@@ -539,7 +560,7 @@ void handle_event (Menu* menu, const Event trigger) {
         case Event::PageSettings:
             menu->state = Menu_State::State_SettingsPage;
             menu->active_page = menu->page_settings;
-            menu->active_widget = &menu->page_settings[menu->settings_layout.widget_idx.btn_test];
+            set_active_widget(&menu->page_settings[menu->settings_layout.widget_idx.btn_test], menu);
             break;
         }
         break;
@@ -549,7 +570,7 @@ void handle_event (Menu* menu, const Event trigger) {
         default :
             break;
         case Event::Fire:
-            if(menu->active_widget->type == Widget::ListItem){
+            if (menu->active_widget->type == Widget::ListItem) {
                 menu->settings_layout.selected_gamepad_index = menu->active_widget->list.index;
             }
             break;
@@ -559,6 +580,7 @@ void handle_event (Menu* menu, const Event trigger) {
         case Event::Exit:
             menu->state = Menu_State::State_MainPage;
             menu->active_page = menu->page_main;
+            set_active_widget(&menu->page_main[2], menu);
             break;
         }
         break;
@@ -605,7 +627,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
     init_resources (menu);
     init_main_page (menu);
     init_settings_page (menu);
-    init_controllers(menu);
+    init_controllers (menu);
 
     detect_and_load_gamepads (menu);
 
@@ -621,7 +643,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
             }
             handle_mouse (&mouse, menu, window);
             handle_keyboard (&keyboard, menu);
-            handle_gamepad (&gamepad, menu);
+            handle_gamepad (menu);
             handle_window (window, menu);
 
             switch (menu->event) {
@@ -722,3 +744,4 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
 
 } // namespace menu
 } // namespace ss
+

@@ -40,6 +40,7 @@ enum class Button {
     Start,
     Select
 };
+
 struct ControllerState {
     sf::Vector2f left_stick_vector;
     sf::Vector2f right_stick_vector;

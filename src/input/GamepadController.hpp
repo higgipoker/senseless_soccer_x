@@ -48,7 +48,7 @@ public:
     bool calibrated = false;
     bool thumbsticks_enabled = true;
     bool dpad_enabled = true;
-
+    
 private:
     
     struct {

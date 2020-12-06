@@ -79,7 +79,6 @@ struct ListRow_Widget {
     int                 number_siblings {0};
     static const int    MAX_LIST_ROWS   {8};
     Widget*             siblings[MAX_LIST_ROWS];
-
 };
 // ***************************
 // Gamepad
@@ -98,13 +97,20 @@ struct Gamepad_Widget {
 struct Thumbstick_Diagnostic_Widget {
     enum Stick {Left, Right} attached_stick {Stick::Left};
     int input_circle  {-1};
-    int origin_circle {-1};
     int outer_rect    {-1};
-
-    sf::Vertex line   [2];
-
     ControllerState*   controller_state {nullptr};
     calibration::Calibration* cali {nullptr};
+};
+// ***************************
+// Test
+// ***************************
+struct Thumbstick_Test_Widget {
+    enum Stick {Left, Right} attached_stick {Stick::Left};
+    int input_circle   {-1};
+    int colored_circle {-1};
+    int outer_circle   {-1};
+    sf::Vertex line    [2];
+    ControllerState*   controller_state {nullptr};
 };
 // ***************************
 // Image

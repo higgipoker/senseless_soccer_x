@@ -1,4 +1,5 @@
 #include "Controller.hpp"
+#include "../math/vector.hpp"
 
 namespace ss {
 void Controller::update() {
@@ -103,5 +104,8 @@ bool Controller::fire() {
         break;
     }
     return false;
+}
+bool Controller::anyInput() {
+    return state.last_event!=ButtonEvent::None || vec_magnitude(state.dpad_vector) || vec_magnitude(state.left_stick_vector) || vec_magnitude(state.right_stick_vector);
 }
 } // namespace ss
