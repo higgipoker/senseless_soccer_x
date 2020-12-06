@@ -13,8 +13,14 @@ void Controller::update() {
     }
 }
 
+void Controller::setId (const size_t id) {
+    if (type == ControllerType::Gamepad) {
+        gamepad.sf_joystick_index = id;
+    }
+}
+
 void Controller::calibrate (const calibration::Calibration& cali) {
-   act_calibration = cali;
+    act_calibration = cali;
     if (type == ControllerType::Gamepad) {
         gamepad.calibrate (cali);
     }

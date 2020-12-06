@@ -230,7 +230,8 @@ void init_settings_page (Menu* menu) {
     for (int row = 0; row < menu->settings_layout.number_rows; ++row) {
         Widget* listrow = &menu->page_settings[i];
         init_widget (listrow, menu, Widget::ListItem);
-        set_widget_interactive(listrow, true);
+        set_widget_interactive (listrow, true);
+        listrow->list.index = row;
         menu->settings_layout.widget_idx.listrow[row] = i;
         listrow->list.button.btn_rect = acquire_rect (menu);
         listrow->list.button.shadow_rect = acquire_rect (menu);
@@ -261,8 +262,9 @@ void init_settings_page (Menu* menu) {
             listrow->neighbours.below = &menu->page_settings[i + 1];
         }
 
-        Event id = static_cast<Event> (static_cast<int> (Event::ListRow1) + row);
-        listrow->id = id;
+        //Event id = static_cast<Event> (static_cast<int> (Event::ListRow1) + row);
+       // listrow->id = id;
+       listrow->id = Event::Fire;
         i++;
     }
 
@@ -429,11 +431,19 @@ void init_settings_page (Menu* menu) {
     init_button_widget (button_cancel, menu, attribs);
     set_widget_enabled (button_cancel, false);
     menu->settings_layout.widget_idx.btn_cancel = i;
-    
+
     // buton tab order
     button_done->neighbours.below = button_cancel;
     button_cancel->neighbours.above = button_done;
-    
+
+}
+//
+//
+//
+void init_controllers (Menu* menu) {
+    for (int i = 0; i < MAX_CONTROLLERS; ++i) {
+        menu->controllers[i].setId (i);
+    }
 }
 //
 //
@@ -488,7 +498,7 @@ void detect_and_load_gamepads (Menu* menu) {
         if (sf::Joystick::isConnected (i)) {
             menu->settings_layout.active_rows[i] = 1;
             sf::Joystick::Identification id = sf::Joystick::getIdentification (i);
-            
+
             std::cout << id.name.toAnsiString() << std::endl;
             std::cout << id.productId << std::endl;
             std::cout << id.vendorId << std::endl;
@@ -538,6 +548,11 @@ void handle_event (Menu* menu, const Event trigger) {
         switch (trigger) {
         default :
             break;
+        case Event::Fire:
+            if(menu->active_widget->type == Widget::ListItem){
+                menu->settings_layout.selected_gamepad_index = menu->active_widget->list.index;
+            }
+            break;
         case Event::Calibrate:
             settings::show_phase_1 (menu);
             break;
@@ -556,9 +571,9 @@ void handle_event (Menu* menu, const Event trigger) {
             settings::show_phase_2 (menu);
             break;
         case Event::Cancel:
-            settings::cancel(menu);
+            settings::cancel (menu);
             break;
-            
+
         }
         break;
 
@@ -590,6 +605,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
     init_resources (menu);
     init_main_page (menu);
     init_settings_page (menu);
+    init_controllers(menu);
 
     detect_and_load_gamepads (menu);
 
@@ -634,6 +650,7 @@ int run_menu (Menu* menu, sf::RenderWindow* window) {
                 break;
 
             case Event::Fire:
+                set_widget_selected (menu->active_widget, true);
                 handle_event (menu, menu->active_widget->id);
 //                 global::log (get_widget_caption (menu->active_widget, menu));
 //                 set_widget_selected (menu->active_widget, true);

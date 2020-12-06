@@ -57,25 +57,22 @@ struct Calibration {
     std::string name;
     int product_id = 0;
     int vendor_id = 0;
-    struct {
-        sf::Vector2f min{1000.f, 1000.f};
-        sf::Vector2f max{0, 0};
-    } at_rest_left, at_rest_right;
+    bool calibrating = false;
 
     struct {
-        sf::Vector2f min{1000.f, 1000.f};
-        sf::Vector2f max{0, 0};
-    } extremities_left, extremities_right;
+        std::vector<sf::Vector2f> samples;
+        sf::Vector2f at_rest_before;
+        sf::Vector2f at_rest_after;
+        sf::Vector2f inner_dead_zone;
+        sf::Vector2f outer_max;
+        sf::Vector2f activation_threshhold;
+        sf::Vector2f range;
 
-    sf::Vector2f range_left, range_right;
-    float activation_threshhold = 0;
-    void reset() {
-        at_rest_left.min = at_rest_right.min = {1000.f, 1000.f};
-        at_rest_left.max = at_rest_right.max = {0.f, 0.f};
-        range_left = range_right = {};
-    }
+    } left_stick, right_stick;
 };
-
+void on_calibration_started (Calibration* cali);
+void on_calibration_finished (Calibration* cali, int id);
+void on_calibration_cancelled (Calibration* cali);
 bool load_from_file (std::map<int, Calibration>& calibrations, files::File& file);
 bool write_to_file (const int id, const Calibration& calibration, files::File& file);
 }

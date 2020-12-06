@@ -236,62 +236,24 @@ void update_gamepad_widget (Widget* widget, Menu* menu) {
 
 void update_thumbstick_diagnostic_widget (Widget* widget, Menu* menu) {
     if (widget->thumbstick_diagnostic.controller_state) {
+        auto attached_stick = widget->thumbstick_diagnostic.attached_stick;
         ControllerState* state = widget->thumbstick_diagnostic.controller_state;
-        sf::Vector2f raw_data = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Left ?  state->left_stick_raw : state->right_stick_raw;
+        sf::Vector2f raw_data = attached_stick == Thumbstick_Diagnostic_Widget::Left ?  state->left_stick_raw : state->right_stick_raw;
         sf::Vector2f origin = circle (menu, widget->thumbstick_diagnostic.origin_circle).getPosition();
         sf::CircleShape* input_circle = const_cast<sf::CircleShape*> (&circle (menu, widget->thumbstick_diagnostic.input_circle));
-        //sf::CircleShape* outer_circle = const_cast<sf::CircleShape*> (&circle(menu, widget->calibrate.outer_circle));
-
-        // std::cout << raw_data.x << ", " << raw_data.y << std::endl;
-        // sf::Vector2f display_data = raw_data *= 1.5f;
         sf::Vector2f display_data = raw_data;
-
-
-//         if(vec_magnitude(display_data) > 150) {
-//             vec_set_magnitude(display_data, 150);
-//             input_circle->setOutlineColor(sf::Color::Green);
-//             outer_circle->setOutlineColor(sf::Color::Green);
-//         } else {
-//             input_circle->setOutlineColor(sf::Color::White);
-//             outer_circle->setOutlineColor(sf::Color::White);
-//         }
         sf::Vector2f direction = origin + display_data * 1.4f;
-
         input_circle->setPosition (direction);
-
         widget->thumbstick_diagnostic.line[0].position = origin;
         widget->thumbstick_diagnostic.line[1].position = direction;
 
         // save the data?
-        if (menu->state == Menu_State::State_CalibratePhase1) {
-
-            sf::Vector2f* min = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->at_rest_left.min : &widget->thumbstick_diagnostic.cali->at_rest_right.min;
-
-            sf::Vector2f* max = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->at_rest_left.max : &widget->thumbstick_diagnostic.cali->at_rest_right.max;
-
-            min->x = std::min (min->x, raw_data.x);
-            min->y = std::min (min->y, raw_data.y);
-
-            max->x = std::max (max->x, raw_data.x);
-            max->y = std::max (max->y, raw_data.y);
-
-            std::cout << min->x << ", " << min->y << std::endl;
-            std::cout << max->x << ", " << max->y << std::endl;
-
-        } else if (menu->state == Menu_State::State_CalibratePhase2) {
-
-            sf::Vector2f* min = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->extremities_left.min : &widget->thumbstick_diagnostic.cali->extremities_right.min;
-
-            sf::Vector2f* max = widget->thumbstick_diagnostic.attached_stick == Thumbstick_Diagnostic_Widget::Stick::Left ? &widget->thumbstick_diagnostic.cali->extremities_left.max : &widget->thumbstick_diagnostic.cali->extremities_right.max;
-
-            min->x = std::min (min->x, raw_data.x);
-            min->y = std::min (min->y, raw_data.y);
-
-            max->x = std::max (max->x, raw_data.x);
-            max->y = std::max (max->y, raw_data.y);
-            
-            std::cout << min->x << ", " << min->y << std::endl;
-            std::cout << max->x << ", " << max->y << std::endl;
+        if (menu->state == Menu_State::State_CalibratePhase2) {
+            auto cali = widget->thumbstick_diagnostic.cali;
+            std::vector<sf::Vector2f>* samples = attached_stick == Thumbstick_Diagnostic_Widget::Left ? &cali->left_stick.samples : &cali->right_stick.samples;
+            if (samples->size() < 1000) {
+               samples->push_back (raw_data);
+            }
         }
     }
 }

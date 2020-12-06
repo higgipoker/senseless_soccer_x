@@ -74,6 +74,7 @@ struct Frame_Widget {
 // ***************************
 struct ListRow_Widget {
     Button_Widget       button;               // a list row is implemented in terms of a button (has caption, can be active, pressed etc)
+    int                 index {-1};
     int                 fill_color      {-1}; // need to save this because it is changed depending on the row
     int                 number_siblings {0};
     static const int    MAX_LIST_ROWS   {8};
@@ -209,7 +210,6 @@ inline void set_widget_selected (Widget* widget, bool state) {
     // deselect all siblings
     if (widget->type == Widget::ListItem && state == true && widget->list.number_siblings) {
         for (int i = 0; i < widget->list.number_siblings; ++i) {
-            assert (widget->list.siblings[i] != widget);
             widget->list.siblings[i]->states[Widget::Selected] = false;
         }
     }
@@ -258,3 +258,4 @@ inline bool widget_interactive (const Widget* widget) {
 }
 } // namespace
 } // namespace
+

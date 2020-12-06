@@ -14,6 +14,7 @@ public:
     void update();
     ControllerType type = ControllerType::Gamepad;
     ControllerState state;
+    void setId(const size_t id);
     bool up();
     bool down();
     bool left();

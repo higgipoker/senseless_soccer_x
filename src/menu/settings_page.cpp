@@ -2,6 +2,7 @@
 #include "widgets.h"
 #include "menu.h"
 #include "../files/files.h"
+#include "../math/vector.hpp"
 #include <iostream>
 namespace ss {
 namespace menu {
@@ -9,6 +10,8 @@ namespace settings {
 
 void show_phase_1 (Menu* menu) {
     menu->state = Menu_State::State_CalibratePhase1;
+    calibration::Calibration* cali = &get_selected_controller (menu)->act_calibration;
+    on_calibration_started (cali);
     if (menu->settings_layout.selected_gamepad_index >= 0) {
         //
         // stuff on the left side of the screen
@@ -37,20 +40,28 @@ void show_phase_1 (Menu* menu) {
         menu->active_widget = &menu->page_settings[menu->settings_layout.widget_idx.btn_done];
 
         // attach the left stick to left cali widget
-        attach_controller (&menu->settings_layout.leftstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Left, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &menu->controllers[menu->settings_layout.selected_gamepad_index].act_calibration);
+        attach_controller (&menu->settings_layout.leftstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Left, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &get_selected_controller (menu)->act_calibration);
 
         // attach the right stick to right cali widget
-        attach_controller (&menu->settings_layout.rightstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Right, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &menu->controllers[menu->settings_layout.selected_gamepad_index].act_calibration);
+        attach_controller (&menu->settings_layout.rightstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Right, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &get_selected_controller (menu)->act_calibration);
     }
 }
 
 void show_phase_2 (Menu* menu) {
+    calibration::Calibration* cali = &get_selected_controller (menu)->act_calibration;
+    cali->left_stick.at_rest_before = menu->controllers[menu->settings_layout.selected_gamepad_index].state.left_stick_raw;
+    cali->right_stick.at_rest_before = menu->controllers[menu->settings_layout.selected_gamepad_index].state.right_stick_raw;
     menu->state = Menu_State::State_CalibratePhase2;
     label (menu, menu->settings_layout.cali_instructions->label.text).setString ("MOVE BOTH THUMBSTICKS TO THE EXTREMITIES \nAND PRESS A BUTTON");
 }
 
 void calibration_finished (Menu* menu) {
     menu->state = Menu_State::State_SettingsPage;
+    auto cali = &get_selected_controller (menu)->act_calibration;
+    cali->left_stick.at_rest_after = menu->controllers[menu->settings_layout.selected_gamepad_index].state.left_stick_raw;
+    cali->right_stick.at_rest_after = menu->controllers[menu->settings_layout.selected_gamepad_index].state.right_stick_raw;
+    on_calibration_finished (cali, menu->settings_layout.selected_gamepad_index);
+    
     //
     //  stuff on the left side of the screen
     //
@@ -64,8 +75,6 @@ void calibration_finished (Menu* menu) {
     }
     menu->active_widget = &menu->page_settings[menu->settings_layout.widget_idx.btn_calibrate];
     //
-
-    //
     // stuff on the right side of the screen
     //
     set_widget_visible (menu->settings_layout.gamepad_widget, true);
@@ -75,19 +84,10 @@ void calibration_finished (Menu* menu) {
     // done and cancel
     set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_cancel], false);
     set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_done], false);
-    //
-    // save the calibration to file
-    //
-    files::File file;
-    files::open(file, files::working_dir() +"/data/calibration.cfg");
-    
-    files::close(file);
-    
-    
 }
 
-void cancel(Menu* menu){
-    calibration_finished(menu);
+void cancel (Menu* menu) {
+    calibration_finished (menu);
 }
 
 void handle_event (const Event event, Menu* menu) {
@@ -135,21 +135,22 @@ void handle_event (const Event event, Menu* menu) {
             set_widget_visible (menu->settings_layout.leftstick_diag, true);
             set_widget_visible (menu->settings_layout.rightstick_diag, true);
             set_widget_visible (menu->settings_layout.cali_instructions, true);
-            attach_controller (&menu->settings_layout.leftstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Left, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &menu->controllers[menu->settings_layout.selected_gamepad_index].act_calibration);
-            attach_controller (&menu->settings_layout.rightstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Right, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &menu->controllers[menu->settings_layout.selected_gamepad_index].act_calibration);
+            attach_controller (&menu->settings_layout.leftstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Left, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &get_selected_controller (menu)->act_calibration);
+            attach_controller (&menu->settings_layout.rightstick_diag->thumbstick_diagnostic, Thumbstick_Diagnostic_Widget::Right, &menu->controllers[menu->settings_layout.selected_gamepad_index].state, &get_selected_controller (menu)->act_calibration);
         }
         break;
 
-    case Event::Done:
-        for (int i = 0; i < 8; ++i) {
-            if (menu->settings_layout.active_rows[i]) {
-                set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.listrow[i]], true);
+    case Event::Done: {
+            for (int i = 0; i < 8; ++i) {
+                if (menu->settings_layout.active_rows[i]) {
+                    set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.listrow[i]], true);
+                }
             }
-        }
 
-        set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_test], true);
-        set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_calibrate], true);
-        set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_exit], true);
+            set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_test], true);
+            set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_calibrate], true);
+            set_widget_enabled (&menu->page_settings[menu->settings_layout.widget_idx.btn_exit], true);
+        }
         break;
     default:
         break;

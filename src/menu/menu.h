@@ -140,7 +140,7 @@ struct Menu {
     } resources;
 };
 //
-// functions
+// internal functions
 //
 static void     handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window);
 static void     handle_keyboard (Keyboard* keyboard, Menu* menu);
@@ -149,13 +149,19 @@ static void     handle_gamepad (GamepadController* gamepad, Menu* menu);
 static void     init_resources (Menu* menu);
 static void     init_main_page (Menu* menu);
 static void     init_settings_page (Menu* menu);
+static void     init_controllers(Menu* menu);
 static void     update_active_animation (Menu* menu);
 static void     next_active_widget (Menu* menu, const Event trigger);
 static void     set_active_widget (Widget* widget, Menu* menu);
 static void     detect_and_load_gamepads (Menu* menu);
 static void     handle_event(Menu* menu, const Event trigger);
 static int      run_menu (Menu* menu, sf::RenderWindow* window);
-
+//
+// helper functions
+//
+inline Controller* get_selected_controller(Menu* menu){
+    return &menu->controllers[menu->settings_layout.selected_gamepad_index];
+}
 //
 // functions to acquire resources
 //

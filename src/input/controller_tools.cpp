@@ -1,7 +1,8 @@
 #include "controller_tools.hpp"
 #include "../utils/utils.h"
+#include <SFML/Window/Joystick.hpp>
 #include <iostream>
-
+#include <cmath>
 #include <cassert>
 
 namespace ss {
@@ -30,44 +31,25 @@ bool load_from_file (std::map<int, Calibration>& calibrations, files::File& file
             calibrations[id].product_id = atoi (entry.value.c_str());
         } else if (entry.key == "vendor") {
             calibrations[id].vendor_id = atoi (entry.value.c_str());
-        } else if (entry.key == "left_rest_min") {
+
+        } else if (entry.key == "left_dead_inner") {
             auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].at_rest_left.min = {    static_cast<float> (atof (tokens[0].c_str())),
-                                                     static_cast<float> (atof (tokens[1].c_str()))
-                                                };
-        } else if (entry.key == "left_rest_max") {
+            calibrations[id].left_stick.inner_dead_zone = {    static_cast<float> (atof (tokens[0].c_str())),
+                                                               static_cast<float> (atof (tokens[1].c_str()))
+                                                          };
+        } else if (entry.key == "left_outer") {
             auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].at_rest_left.max = {    static_cast<float> (atof (tokens[0].c_str())),
-                                                     static_cast<float> (atof (tokens[1].c_str()))
-                                                };
-        } else if (entry.key == "left_ext_min") {
-            auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].extremities_left.min = {    static_cast<float> (atof (tokens[0].c_str())),
+            calibrations[id].left_stick.outer_max = {    static_cast<float> (atof (tokens[0].c_str())),
                                                          static_cast<float> (atof (tokens[1].c_str()))
                                                     };
-        } else if (entry.key == "left_ext_max") {
+        } else if (entry.key == "right_dead_inner") {
             auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].extremities_left.max = {    static_cast<float> (atof (tokens[0].c_str())),
-                                                         static_cast<float> (atof (tokens[1].c_str()))
-                                                    };
-        } else if (entry.key == "right_rest_min") {
+            calibrations[id].right_stick.inner_dead_zone = {    static_cast<float> (atof (tokens[0].c_str())),
+                                                                static_cast<float> (atof (tokens[1].c_str()))
+                                                           };
+        } else if (entry.key == "right_outer") {
             auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].at_rest_right.min = {    static_cast<float> (atof (tokens[0].c_str())),
-                                                      static_cast<float> (atof (tokens[1].c_str()))
-                                                 };
-        } else if (entry.key == "right_rest_max") {
-            auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].at_rest_right.max = {    static_cast<float> (atof (tokens[0].c_str())),
-                                                      static_cast<float> (atof (tokens[1].c_str()))
-                                                 };
-        } else if (entry.key == "right_ext_min") {
-            auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].extremities_right.min = {    static_cast<float> (atof (tokens[0].c_str())),
-                                                          static_cast<float> (atof (tokens[1].c_str()))
-                                                     };
-        } else if (entry.key == "right_ext_max") {
-            auto tokens = utils::split_string (entry.value, ',');
-            calibrations[id].extremities_right.max = {    static_cast<float> (atof (tokens[0].c_str())),
+            calibrations[id].right_stick.outer_max = {    static_cast<float> (atof (tokens[0].c_str())),
                                                           static_cast<float> (atof (tokens[1].c_str()))
                                                      };
         }
@@ -89,27 +71,81 @@ bool write_to_file (const int id, const Calibration& calibration, files::File& f
         files::write_line (file, std::to_string (cali.first) + ":" + "name:" + cali.second.name);
         files::write_line (file, std::to_string (cali.first) + ":" + "product:" + std::to_string (cali.second.product_id));
         files::write_line (file, std::to_string (cali.first) + ":" + "vendor:" + std::to_string (cali.second.vendor_id));
-        files::write_line (file, std::to_string (cali.first) + ":" + "left_rest_min:" + std::to_string (cali.second.at_rest_left.min.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.min.y));
-        files::write_line (file, std::to_string (cali.first) + ":" + "left_rest_max:" + std::to_string (cali.second.at_rest_left.max.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.max.y));
-        files::write_line (file, std::to_string (cali.first) + ":" + "left_extt_min:" + std::to_string (cali.second.extremities_left.min.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.min.y));
-        files::write_line (file, std::to_string (cali.first) + ":" + "left_extt_max:" + std::to_string (cali.second.extremities_left.max.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.max.y));
-        
-        files::write_line (file, std::to_string (cali.first) + ":" + "right_rest_min:" + std::to_string (cali.second.at_rest_right.min.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.min.y));
-        files::write_line (file, std::to_string (cali.first) + ":" + "right_rest_max:" + std::to_string (cali.second.at_rest_right.max.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.max.y));
-        files::write_line (file, std::to_string (cali.first) + ":" + "right_extt_min:" + std::to_string (cali.second.extremities_right.min.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.min.y));
-        files::write_line (file, std::to_string (cali.first) + ":" + "right_extt_max:" + std::to_string (cali.second.extremities_right.max.x) + ", " +
-                           std::to_string (cali.second.at_rest_left.max.y));
+
+        files::write_line (file, std::to_string (cali.first) + ":" + "left_dead_inner:" + std::to_string (cali.second.left_stick.inner_dead_zone.x) + ", " +
+                           std::to_string (cali.second.left_stick.inner_dead_zone.y));
+        files::write_line (file, std::to_string (cali.first) + ":" + "left_outer:" + std::to_string (cali.second.left_stick.outer_max.x) + ", " +
+                           std::to_string (cali.second.left_stick.outer_max.y));
+
+        files::write_line (file, std::to_string (cali.first) + ":" + "right_dead_inner:" + std::to_string (cali.second.right_stick.inner_dead_zone.x) + ", " +
+                           std::to_string (cali.second.left_stick.inner_dead_zone.y));
+        files::write_line (file, std::to_string (cali.first) + ":" + "right_outer:" + std::to_string (cali.second.right_stick.outer_max.x) + ", " +
+                           std::to_string (cali.second.left_stick.outer_max.y));
     }
 
     return true;
 }
+void on_calibration_started (Calibration* cali) {
+    cali->calibrating = true;
+    cali->left_stick.samples.clear();
+    cali->right_stick.samples.clear();
 
 }
+
+void on_calibration_finished (Calibration* cali, int id) {
+    cali->calibrating = false;
+
+    //
+    // analyze the samples and save
+    //
+    // left stick
+    cali->left_stick.inner_dead_zone = {std::max (cali->left_stick.at_rest_before.x, cali->left_stick.at_rest_after.x), std::max (cali->left_stick.at_rest_before.y, cali->left_stick.at_rest_after.y) };
+
+    sf::Vector2f biggest {0, 0};
+    for (auto& sample : cali->left_stick.samples) {
+        if (sample.x > biggest.x) biggest.x = sample.x;
+        if (sample.y > biggest.y) biggest.y = sample.y;
+    }
+    cali->left_stick.outer_max = {biggest.x, biggest.y};
+    cali->left_stick.samples.clear();
+
+
+    // right stick
+    cali->right_stick.inner_dead_zone = {std::max (cali->right_stick.at_rest_before.x, cali->right_stick.at_rest_after.x), std::max (cali->right_stick.at_rest_before.y, cali->right_stick.at_rest_after.y) };
+
+    for (auto& sample : cali->right_stick.samples) {
+        if (sample.x > biggest.x) biggest.x = sample.x;
+        if (sample.y > biggest.y) biggest.y = sample.y;
+    }
+    cali->right_stick.outer_max = {biggest.x, biggest.y};
+    cali->right_stick.samples.clear();
+
+
+    sf::Joystick::Identification identification = sf::Joystick::getIdentification (id);
+    cali->name =  identification.name;
+    cali->vendor_id = identification.vendorId;
+    cali->product_id = identification.productId;
+    files::File file;
+    files::open (file, files::working_dir() + "/data/calibration.cfg");
+    files::read_lines (file);
+    calibration::write_to_file (id, *cali, file);
+    files::close (file);
+
+    //
+    // calculate ranges based on raw data
+    //
+    cali->left_stick.range = {fabsf(cali->left_stick.outer_max.x) - fabsf(cali->left_stick.inner_dead_zone.x), fabsf(cali->left_stick.outer_max.y) - fabsf(cali->left_stick.inner_dead_zone.y)};
+   
+    cali->right_stick.range = {fabsf(cali->right_stick.outer_max.x) - fabsf(cali->right_stick.inner_dead_zone.x), fabsf(cali->right_stick.outer_max.y) - fabsf(cali->right_stick.inner_dead_zone.y)};
+
 }
+
+void on_calibration_cancelled (Calibration* cali) {
+    cali->calibrating = false;
+    cali->left_stick.samples.clear();
+    cali->right_stick.samples.clear();
+}
+
+
+} // namespace
+} // namespace
