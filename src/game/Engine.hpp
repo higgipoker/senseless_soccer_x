@@ -5,62 +5,60 @@
 #include "../input/Controller.hpp"
 #include "../graphics/Sprite.hpp"
 #include "../graphics/TileMap.hpp"
-#include "../drawables/DrawableGamepad.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 
-
-#include <map>
-#include <cassert>
-
 namespace ss {
-namespace game {
+namespace engine {
 
-const size_t MAX_SPRITES = 100;             // arbitrary, tweak later
-const size_t MAX_PLAYERS = 22 + 12 + 2 + 3; // players + subs + managers + referee/linesmen
-const size_t MAX_CONTROLLERS = 22;          // should never need more than one per player
+const size_t MAX_SPRITES      = 100;              // arbitrary, tweak later
+const size_t MAX_PLAYERS      = 22 + 12 + 2 + 3;  // players + subs + managers + referee/linesmen
+const size_t MAX_CONTROLLERS  = 22;               // never need more than one per player
 
-class Engine {
-public:
-    explicit Engine (sf::RenderWindow& wnd);
-
-    int             addPlayer ();
-    sprite::Sprite*         getSprite (size_t id);
-    Player*         getPlayer(size_t id);
-    int             addController();
-    Controller*     getController(size_t id);
-    void            attachController(const size_t controller_id, const size_t player_id);
-    void            frame();
-    
+struct MatchEngine {
     bool paused = false;
+    std::vector<sprite::Sprite*> sprites; // a vector for sorting depending on draw z
 
-    
-// *******************************************************
-#ifndef NDEBUG
-    std::vector<std::unique_ptr<sf::Drawable>> primitives;
-    //drawables::DrawableGamepad debug_controller;
-#endif
- // *******************************************************
-    
-private:
-    sf::RenderWindow&   window;
-    TileMap             pitch;
-    Ball                ball;
-    
-    std::vector<sprite::Sprite*>                        sprites;        // sortable sprites for drawing order
-    std::array<sprite::Sprite, MAX_SPRITES>     sprite_pool;    // cache friendly sprite pool
-    std::array<Player, MAX_PLAYERS>             players;        // cache friendly player pool
-    std::array<Controller, MAX_CONTROLLERS>     controllers;    // cache freindly controller pool
-    std::array<size_t, MAX_CONTROLLERS>         control_list;   // maps entries in controller pool to sprite pool 
-    
-    size_t number_players = 0;
-    size_t number_controllers = 0;
+    // resources
+    sprite::Sprite               sprite_pool            [MAX_SPRITES];    // sprites
+    sprite::Animation            animations             [MAX_SPRITES];    // sprite animations
+    Player                       players                [MAX_PLAYERS];    // players
+    Controller                   controllers            [MAX_CONTROLLERS];// controllers
+    int                          controller_assignments [MAX_CONTROLLERS];// maps entries in controller pool to sprite pool 
 
-    void get_input();
-    void update();
-    void draw();
+    // resource counters
+    int used_sprites      = 0;
+    int used_animations   = 0;
+    int used_players      = 0;
+    int used_controllers  = 0
 
+    TileMap pitch;
+    Ball    ball;
 };
-}// namespace game
+
+void frame             (MatchEngine* engine, const float dt = 0.01f);
+void attach_controller (MatchEngine* engine, const int controller, const int player);
+void detatch_controller(MatchEngine* engine, const int controller);
+//
+// resource acquisition
+//
+inline int acquire_sprite(MatchEngine* engine){
+  // special case acquisition for sprites -> add to the sortable list (std::vector)
+  int id = engine->used_sprites;
+  engine->sprites.push_back(&engine->sprites[id]);
+  engine->used_sprites++;
+  return id;
+}
+inline int acquire_player(MatchEngine* engine){
+  return engine->used_players++;
+}
+inline int acquire_animation(MatchEngine* engine){
+  return engine->used_animations++;
+}
+inline int acquire_controller(MatchEngine* engine){
+  return engine->used_controllers++;
+}
+
+}// namespace engine
 }// namespace ss
 
 

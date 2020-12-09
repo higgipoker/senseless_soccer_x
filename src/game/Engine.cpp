@@ -3,9 +3,7 @@
 #include "player_animations.h"
 #include "../graphics/Sprite.hpp"
 #include "../sfml/sfml_tools.hpp"
-
 #include <iostream>
-#include <memory>
 
 namespace ss {
 namespace game {
@@ -16,70 +14,48 @@ struct {
     }
 } sprite_comparitor;
 
-Engine::Engine (sf::RenderWindow& wnd) : window (wnd) {
+static void sort_sprites(sprite::Sprite* sprites){
+
 }
 
-int Engine::addPlayer () {
-    int id = number_players++;
-    sprite::init(&sprite_pool[id], &MatchResources::getPlayerSpriteDef());
-    sprite::Sprite* to_add = &sprite_pool[id];
-    sprites.push_back (to_add);
-    return id;
-}
-
-Sprite* Engine::getSprite (size_t id) {
-    assert (id < sprites.size());
-    return &sprite_pool[id];
-}
-
-Player* Engine::getPlayer (size_t id) {
-    assert (id < number_players);
-    return &players[id];
-}
-
-int Engine::addController() {
-    int id = number_controllers++;
-    return id;
-}
-
-Controller* Engine::getController (size_t id) {
-    assert (id < MAX_CONTROLLERS);
-    return &controllers[id];
-}
-
-void Engine::attachController (const size_t controller_id, const size_t player_id) {
-    assert (controller_id < MAX_CONTROLLERS);
-    assert (player_id < players.size());
-    control_list[controller_id] = player_id;
-
-#ifndef NDEBUG
-//    debug_controller.controller_state = &controllers[controller_id].state;
-//    debug_controller.setPosition({100,400});
-//    debug_controller.setScale(0.5f);
-#endif
-}
-
-void Engine::frame() {
-    get_input();
-    update();
-    draw();
-}
-
-void Engine::get_input () {
-    for (size_t i = 0; i < number_controllers; ++i) {
-        controllers[i].update();
-        // is this controller attached to a player?
-        if (std::find (control_list.begin(), control_list.end(), i) != control_list.end()) {
-            players[i].handleInput (controllers[i].state);
-        }
+static void handle_input (MatchEngine* engine){
+  for(int i=0; i<engine->number_controllers; ++i){
+    update_controller(&engine->controllers[i]);
+    if(engine->controller_assignments[i]>=0){
+      player::handle_input(&engine->players[engine->controller_assignments[i]], engine->controllers[i]);
     }
+  }
 }
 
-void Engine::update() {
-    for (size_t i = 0; i < number_players; ++i) {
-        players[i].update();
-    }
-    ball.update();
+static void simulate(MatchEngine* engine, const float dt){
+  for(int i=0; i<engine->number_players; ++i){
+    player::simulate(engine->players[i]);
+  }
+  ball::simulate(engine->ball);
+}
+
+static void draw (MatchEngine* engine, sf::RenderWindow* window){
+  engine->window->clear(sf::Color::Red);
+  window->draw(engine->pitch);
+
+  sort_sprites(engine->sprites);
+  for(auto& sprite : engine->sprites){
+    engine->window->draw(*sprite);
+  }
+}
+
+void frame(MatchEngine* engine, const float dt){
+  engine->handle_input(engine);
+  engine->simulate(engine, dt);
+  engine->draw(engine);
+}
+
+void attach_controller(MatchEngine* engine, const int controller, const int player){
+  engine->controller_assignments[controller] = player;
+}
+
+void detatch_controller(MatchEngine* engine, const int controller){
+  engine->controller_assignments[controller] = -1;
 }
 
 void Engine::draw() {
