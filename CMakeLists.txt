@@ -28,7 +28,7 @@ link_directories(${CMAKE_BINARY_DIR})
 add_executable(senseless_soccer3
     src/main.cpp
     src/files/files.cpp
-    src/game/Engine.cpp
+    src/game/engine.cpp
     src/game/Entity.cpp
     src/game/Movable.cpp
     src/game/Renderable.cpp
@@ -36,7 +36,7 @@ add_executable(senseless_soccer3
     src/game/Match.cpp
     src/game/MatchState.cpp
     src/game/MatchPlay.cpp
-    src/game/Player.cpp
+    src/game/player.cpp
     src/game/PlayerState.cpp
     src/game/PlayerStateStand.cpp
     src/game/PlayerStateRun.cpp

@@ -138,6 +138,12 @@ inline static float vec_angle (const sf::Vector3f& vec) {
     return degrees (rads);
 }
 
+inline static float vec_angle(const sf::Vector2f& vec){
+    sf::Vector2f normalized = vec_normalized(vec);
+    float rads = atan2f(normalized.x, normalized.y);
+    return degrees(rads);
+}
+
 inline static void vec_rotateTowards (sf::Vector3f& v, const sf::Vector3f& target, const float degrees) {
     if (v == target) return;
     auto current_angle = vec_angle (v);

@@ -3,7 +3,7 @@
 #include <iostream>
 
 namespace ss {
-
+namespace graphics{
 bool TileMap::init (const sf::RenderTexture& tex, const sf::IntRect texture_rect, sf::Vector2u tileSize, const int* tiles, unsigned int width, unsigned int height, const int blank_tile) {
     texture = tex.getTexture();
 
@@ -52,6 +52,6 @@ void TileMap::draw (sf::RenderTarget& target, sf::RenderStates states) const {
     // draw the vertex array
     target.draw (m_vertices, states);
 }
-
+}
 } // namespace senseless
 

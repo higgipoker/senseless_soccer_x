@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Player.hpp"
+#include "player.h"
 #include "Ball.h"
 #include "../input/Controller.hpp"
 #include "../graphics/Sprite.hpp"
@@ -16,12 +16,12 @@ const size_t MAX_CONTROLLERS  = 22;               // never need more than one pe
 
 struct MatchEngine {
     bool paused = false;
-    std::vector<sprite::Sprite*> sprites; // a vector for sorting depending on draw z
+    sprite::Sprite* sprites[MAX_SPRITES]; // for sorting depending on draw z
 
     // resources
     sprite::Sprite               sprite_pool            [MAX_SPRITES];    // sprites
-    sprite::Animation            animations             [MAX_SPRITES];    // sprite animations
-    Player                       players                [MAX_PLAYERS];    // players
+    sprite::SpriteAnimation      animations             [MAX_SPRITES];    // sprite animations
+    player::Player               players                [MAX_PLAYERS];    // players
     Controller                   controllers            [MAX_CONTROLLERS];// controllers
     int                          controller_assignments [MAX_CONTROLLERS];// maps entries in controller pool to sprite pool 
 
@@ -29,22 +29,22 @@ struct MatchEngine {
     int used_sprites      = 0;
     int used_animations   = 0;
     int used_players      = 0;
-    int used_controllers  = 0
+    int used_controllers  = 0;
 
-    TileMap pitch;
-    Ball    ball;
+    graphics::TileMap pitch;
+    ball::Ball    ball;
 };
 
-void frame             (MatchEngine* engine, const float dt = 0.01f);
+void frame             (MatchEngine* engine, sf::RenderWindow* window, const float dt = 0.01f);
 void attach_controller (MatchEngine* engine, const int controller, const int player);
 void detatch_controller(MatchEngine* engine, const int controller);
 //
 // resource acquisition
 //
 inline int acquire_sprite(MatchEngine* engine){
-  // special case acquisition for sprites -> add to the sortable list (std::vector)
+  // special case acquisition for sprites -> add to the sortable list
   int id = engine->used_sprites;
-  engine->sprites.push_back(&engine->sprites[id]);
+  engine->sprites[id] = &engine->sprite_pool[id];
   engine->used_sprites++;
   return id;
 }
@@ -56,6 +56,12 @@ inline int acquire_animation(MatchEngine* engine){
 }
 inline int acquire_controller(MatchEngine* engine){
   return engine->used_controllers++;
+}
+//
+// resource access
+//
+inline player::Player* player(MatchEngine* engine, int id){
+    return &engine->players[id];
 }
 
 }// namespace engine

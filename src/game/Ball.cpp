@@ -1,7 +1,7 @@
 #include "Ball.h"
 
 namespace ss {
-namespace game {
+namespace ball {
 void Ball::update() {
 
 }

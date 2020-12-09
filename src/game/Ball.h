@@ -1,6 +1,6 @@
 #pragma once
 namespace ss {
-namespace game {
+namespace ball {
 class Ball {
 public:
     void update();

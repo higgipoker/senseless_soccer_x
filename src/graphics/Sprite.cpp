@@ -41,26 +41,25 @@ void set_frame (Sprite* sprite, const int frame) {
 }
 
 void init_animation(Sprite* sprite, const int id, const AnimationDefinition* anim_def){
-  sprite->animations[id].init(*anim_def);
 }
 
 void set_animation(Sprite* sprite, const int id){
-  if(sprite->current_animation){
-    sprite->current_animation->stop();
-  }
-  sprite->current_animation = &sprite->animations[id];
-  sprite->current_animation->start();
+//   if(sprite->current_animation){
+//     sprite->current_animation->stop();
+//   }
+//   sprite->current_animation = &sprite->animations[id];
+//   sprite->current_animation->start();
 }
 
 void animate(Sprite* sprite){
-  if(sprite->current_animation){
-    sprite->current_animation->update();
-    set_frame(sprite, sprite->current_animation->act_frame);
-    if(sprite->current_animation->running == false){
-      sprite->current_animation->stop();
-      sprite->current_animation = nullptr;
-    }
-  }
+//   if(sprite->current_animation){
+//     sprite->current_animation->update();
+//     set_frame(sprite, sprite->current_animation->act_frame);
+//     if(sprite->current_animation->running == false){
+//       sprite->current_animation->stop();
+//       sprite->current_animation = nullptr;
+//     }
+//   }
 }
 
 }// namespace

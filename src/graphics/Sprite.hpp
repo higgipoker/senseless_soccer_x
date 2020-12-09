@@ -2,6 +2,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <array>
+#include "SpriteAnimation.hpp"
 
 namespace ss {
 namespace sprite {
@@ -28,7 +29,7 @@ struct SpriteAnimation {
   bool loop            {true};
   int  ticks_per_frame {0};
   int  current_ticks   {0};
-}
+};
 // ********************
 // Sprite 
 // ********************
