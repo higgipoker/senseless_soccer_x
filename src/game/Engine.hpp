@@ -24,7 +24,7 @@ public:
     explicit Engine (sf::RenderWindow& wnd);
 
     int             addPlayer ();
-    Sprite*         getSprite (size_t id);
+    sprite::Sprite*         getSprite (size_t id);
     Player*         getPlayer(size_t id);
     int             addController();
     Controller*     getController(size_t id);
@@ -46,8 +46,8 @@ private:
     TileMap             pitch;
     Ball                ball;
     
-    std::vector<Sprite*>                        sprites;        // sortable sprites for drawing order
-    std::array<Sprite, MAX_SPRITES>             sprite_pool;    // cache friendly sprite pool
+    std::vector<sprite::Sprite*>                        sprites;        // sortable sprites for drawing order
+    std::array<sprite::Sprite, MAX_SPRITES>     sprite_pool;    // cache friendly sprite pool
     std::array<Player, MAX_PLAYERS>             players;        // cache friendly player pool
     std::array<Controller, MAX_CONTROLLERS>     controllers;    // cache freindly controller pool
     std::array<size_t, MAX_CONTROLLERS>         control_list;   // maps entries in controller pool to sprite pool 

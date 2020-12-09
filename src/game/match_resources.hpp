@@ -15,8 +15,8 @@ public:
     static KitPalette makeStandardRedKit();
     static KitPalette makeStandardBlueKit();
     static sf::RenderTexture match_texture;
-    static Sprite match_sprite;
-    static SpriteDefinition getPlayerSpriteDef (int which = 1);
+    static sprite::Sprite match_sprite;
+    static sprite::SpriteDefinition getPlayerSpriteDef (int which = 1);
 private:
     static bool inited;
     static sf::Vector2f player1_origin, player2_origin;

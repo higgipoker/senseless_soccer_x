@@ -163,4 +163,7 @@ inline static void vec_rotateTowards (sf::Vector3f& v, const sf::Vector3f& targe
     vec_dampen (v);
 }
 
+inline static sf::Vector2f vec_multiply(const sf::Vector2f& v1, const sf::Vector2f& v2){
+    return {v1.x*v2.x, v1.y*v2.y};
+}
 };

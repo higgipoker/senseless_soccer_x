@@ -8,7 +8,7 @@ namespace ss {
 namespace game {
 
 bool MatchResources::inited = false;
-Sprite MatchResources::match_sprite;
+sprite::Sprite MatchResources::match_sprite;
 sf::RenderTexture MatchResources::match_texture;
 sf::Vector2f MatchResources::player1_origin;
 sf::Vector2f MatchResources::player2_origin;

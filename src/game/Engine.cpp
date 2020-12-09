@@ -1,6 +1,7 @@
 #include "Engine.hpp"
 #include "match_resources.hpp"
 #include "player_animations.h"
+#include "../graphics/Sprite.hpp"
 #include "../sfml/sfml_tools.hpp"
 
 #include <iostream>
@@ -10,7 +11,7 @@ namespace ss {
 namespace game {
 
 struct {
-    bool operator() (const Sprite* a, const Sprite* b) const {
+    bool operator() (const sprite::Sprite* a, const sprite::Sprite* b) const {
         return  a->z < b->z;
     }
 } sprite_comparitor;
@@ -20,8 +21,8 @@ Engine::Engine (sf::RenderWindow& wnd) : window (wnd) {
 
 int Engine::addPlayer () {
     int id = number_players++;
-    sprite_pool[id].init (MatchResources::getPlayerSpriteDef());
-    Sprite* to_add = &sprite_pool[id];
+    sprite::init(&sprite_pool[id], &MatchResources::getPlayerSpriteDef());
+    sprite::Sprite* to_add = &sprite_pool[id];
     sprites.push_back (to_add);
     return id;
 }

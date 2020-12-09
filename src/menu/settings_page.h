@@ -30,13 +30,19 @@ struct Settings_Page_Layout {
     } widget_idx;
     int active_rows[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 };
+void show_calibrate_phase1   (Menu* menu);
+void show_calibrate_phase2   (Menu* menu);
+void calibrate_finished      (Menu* menu);
+void cancel_calibrate        (Menu* menu);
 
-void handle_event (const Event event, Menu* menu);
-
-void show_phase_1(Menu* menu);
-void show_phase_2(Menu* menu);
-void calibration_finished(Menu* menu);
-void cancel(Menu* menu);
+void show_test               (Menu* menu);
+void test_finished           (Menu* menu);
+void disable_left_widgets    (Menu* menu);
+void enable_left_widgets     (Menu* menu);
+void show_calibrate_widget   (Menu* menu);
+void hide_calibrate_widget   (Menu* menu);
+void show_gamepad_widget     (Menu* menu);
+void hide_gamepad_widget     (Menu* menu);
 }
 }
 }

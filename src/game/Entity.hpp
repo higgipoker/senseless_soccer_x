@@ -8,8 +8,8 @@ namespace game {
 class Entity {
 public:
     Entity();
-    Movable     movable;
-    Sprite      sprite;
+    Movable             movable;
+    sprite::Sprite      sprite;
 
 private:
 };

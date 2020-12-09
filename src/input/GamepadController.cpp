@@ -9,16 +9,15 @@ namespace ss {
 using namespace sf;
 
 GamepadController::GamepadController() {
-    setSaneDefaults();
 }
 
 void GamepadController::update (ControllerState& s) {
     // analog stick direction
-    std::pair<sf::Vector2f, sf::Vector2f> data = get_axis_vector (sf::Joystick::X, sf::Joystick::Y, calibration, calibration::Stick::Left);
+    std::pair<sf::Vector2f, sf::Vector2f> data = get_axis_vector (sf::Joystick::X, sf::Joystick::Y, Stick::Left);
     s.left_stick_raw = data.first;
     s.left_stick_vector =  data.second;
 
-    data = get_axis_vector (sf::Joystick::U, sf::Joystick::V, calibration, calibration::Stick::Right);
+    data = get_axis_vector (sf::Joystick::U, sf::Joystick::V, Stick::Right);
     s.right_stick_raw = data.first;
     s.right_stick_vector = data.second;
 
@@ -80,23 +79,24 @@ void GamepadController::update (ControllerState& s) {
         if (Joystick::getAxisPosition (sf_joystick_index, Joystick::Axis::PovY) >
                 0) {
             directionmask |= mask_dpad_down;
+
         }
     }
     {
         // set stick mask
-        if (s.left_stick_vector.y <= -calibration.left_stick.activation_threshhold.y) {
+        if (s.left_stick_vector.y < -calibration.activation_threshhold) {
             directionmask |= mask_stick_up;
         }
 
-        if (s.left_stick_vector.y >= calibration.left_stick.activation_threshhold.y) {
+        if (s.left_stick_vector.y > calibration.activation_threshhold) {
             directionmask |= mask_stick_down;
         }
 
-        if (s.left_stick_vector.x <= -calibration.left_stick.activation_threshhold.x) {
+        if (s.left_stick_vector.x < -calibration.activation_threshhold) {
             directionmask |= mask_stick_left;
         }
 
-        if (s.left_stick_vector.x >= calibration.left_stick.activation_threshhold.x) {
+        if (s.left_stick_vector.x > calibration.activation_threshhold) {
             directionmask |= mask_stick_right;
         }
     }
@@ -165,26 +165,33 @@ void GamepadController::update (ControllerState& s) {
     }
 }
 
-std::pair<sf::Vector2f, sf::Vector2f> GamepadController::get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const calibration::Calibration& calibration, const calibration::Stick stick) {
+std::pair<sf::Vector2f, sf::Vector2f> GamepadController::get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const  Stick stick) {
     std::pair<sf::Vector2f, sf::Vector2f> ret;
     ret.first = ret.second =  {   Joystick::getAxisPosition (sf_joystick_index, axis1),
                                   Joystick::getAxisPosition (sf_joystick_index, axis2),
                               };
 
-    if (calibrated) {
-        // raw vals are lower than calibreated dead zone -> set them to zero
-        sf::Vector2f dead_zone = stick == calibration::Stick::Left ? calibration.left_stick.inner_dead_zone : calibration.right_stick.inner_dead_zone;
-        if (fabsf (ret.second.x) < dead_zone.x) ret.second.x = 0;
-        if (fabsf (ret.second.y) < dead_zone.y) ret.second.y = 0;
-
-        // normalize to values between -1 and 1
-        sf::Vector2f range = stick == calibration::Stick::Left ? calibration.left_stick.range : calibration.right_stick.range;
-        ret.second.x /= range.x;
-        ret.second.y /= range.y;
-
-        ret.second.x = std::clamp (ret.second.x, -1.f, 1.f);
-        ret.second.y = std::clamp (ret.second.y, -1.f, 1.f);
+    // raw vals are lower than calibreated dead zone -> set them to zero
+    sf::Vector2f dead_zone = stick ==  Stick::Left ? calibration.left_stick.inner_dead_zone : calibration.right_stick.inner_dead_zone;
+    if(less_than_or_equal(vec_magnitude(ret.second), vec_magnitude(dead_zone))){
+        vec_reset(ret.second);
     }
+
+//     dead_zone = stick ==  Stick::Left ? calibration.left_stick.outer_dead_zone : calibration.right_stick.outer_dead_zone;
+//     if (fabsf (ret.second.x) > dead_zone.x)
+//         ret.second.x = dead_zone.x;
+//     if (fabsf (ret.second.y) > dead_zone.y)
+//         ret.second.y = dead_zone.y;
+
+    // normalize to values between -1 and 1
+    sf::Vector2f range = stick ==  Stick::Left ? calibration.left_stick.range : calibration.right_stick.range;
+    ret.second.x = std::min (ret.second.x, range.x);
+    ret.second.y = std::min (ret.second.y, range.y);
+    ret.second.x /= range.x;
+    ret.second.y /= range.y;
+
+    ret.second.x = std::clamp (ret.second.x, -1.f, 1.f);
+    ret.second.y = std::clamp (ret.second.y, -1.f, 1.f);
 
     return ret;
 }
@@ -195,19 +202,22 @@ sf::Vector2f GamepadController::get_dpad_vector() {
     return dpad;
 }
 
-void GamepadController::setSaneDefaults() {
+void GamepadController::calibrate (Calibration* cali) {
     calibrated = true;
-    calibration.left_stick.inner_dead_zone = {10, 10};
-    calibration.left_stick.outer_max = {100, 100};
-    calibration.left_stick.activation_threshhold = {0.5f, 0.5f};
-    calibration.left_stick.range = calibration.left_stick.outer_max - calibration.left_stick.inner_dead_zone;
-    
-    calibration.right_stick = calibration.left_stick;
-}
 
-void GamepadController::calibrate (const calibration::Calibration& cali) {
-    calibrated = true;
-    calibration = cali;
+    calibration.name = cali->name;
+    calibration.vendor_id = cali->vendor_id;
+    calibration.product_id = cali->product_id;
+
+    calibration.left_stick.inner_dead_zone = {cali->left_stick.inner_dead_zone};
+    calibration.left_stick.outer_dead_zone = {cali->left_stick.outer_max * 0.9f}; // TODO calc proper outer dead zone
+    calibration.left_stick.range = {fabsf (calibration.left_stick.outer_dead_zone.x) - fabsf (calibration.left_stick.inner_dead_zone.x), fabsf (cali->left_stick.outer_max.y) - fabsf (cali->left_stick.inner_dead_zone.y) };
+
+
+    calibration.right_stick.inner_dead_zone = {cali->right_stick.inner_dead_zone};
+    calibration.right_stick.outer_dead_zone = {cali->right_stick.outer_max * 0.9f}; // TODO calc proper outer dead zone
+    calibration.right_stick.range = {fabsf (cali->right_stick.outer_max.x) - fabsf (cali->right_stick.inner_dead_zone.x), fabsf (cali->right_stick.outer_max.y) - fabsf (cali->right_stick.inner_dead_zone.y) };
+
 }
 
 void GamepadController::unCalibrate() {
@@ -258,3 +268,5 @@ bool GamepadController::fire() {
     return ( (buttonmask & mask_a) || (buttonmask & mask_b) || (buttonmask & mask_x) || (buttonmask & mask_y) || (buttonmask & mask_start));
 }
 }
+
+

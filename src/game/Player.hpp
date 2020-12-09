@@ -23,7 +23,7 @@ public:
     sf::Vector3f force;
     float speed = 0.2;
     float acceleration = 10;
-    Sprite* sprite = nullptr;
+    sprite::Sprite* sprite = nullptr;
     
 private:
     void update_position();

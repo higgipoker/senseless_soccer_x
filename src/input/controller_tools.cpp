@@ -6,7 +6,11 @@
 #include <cassert>
 
 namespace ss {
-namespace calibration {
+    
+void open_calibration_file(files::File& file){
+    
+}    
+    
 bool load_from_file (std::map<int, Calibration>& calibrations, files::File& file) {
     calibrations.clear();
     struct Entry {
@@ -100,6 +104,7 @@ void on_calibration_finished (Calibration* cali, int id) {
     //
     // left stick
     cali->left_stick.inner_dead_zone = {std::max (cali->left_stick.at_rest_before.x, cali->left_stick.at_rest_after.x), std::max (cali->left_stick.at_rest_before.y, cali->left_stick.at_rest_after.y) };
+    cali->left_stick.inner_dead_zone *=2.f; // TODO fix this
 
     sf::Vector2f biggest {0, 0};
     for (auto& sample : cali->left_stick.samples) {
@@ -111,7 +116,9 @@ void on_calibration_finished (Calibration* cali, int id) {
 
 
     // right stick
+    biggest = {0,0};
     cali->right_stick.inner_dead_zone = {std::max (cali->right_stick.at_rest_before.x, cali->right_stick.at_rest_after.x), std::max (cali->right_stick.at_rest_before.y, cali->right_stick.at_rest_after.y) };
+    cali->right_stick.inner_dead_zone *=2.f; // TODO fix this
 
     for (auto& sample : cali->right_stick.samples) {
         if (sample.x > biggest.x) biggest.x = sample.x;
@@ -127,17 +134,14 @@ void on_calibration_finished (Calibration* cali, int id) {
     cali->product_id = identification.productId;
     files::File file;
     files::open (file, files::working_dir() + "/data/calibration.cfg");
-    files::read_lines (file);
-    calibration::write_to_file (id, *cali, file);
+     write_to_file (id, *cali, file);
     files::close (file);
 
     //
     // calculate ranges based on raw data
     //
-    cali->left_stick.range = {fabsf(cali->left_stick.outer_max.x) - fabsf(cali->left_stick.inner_dead_zone.x), fabsf(cali->left_stick.outer_max.y) - fabsf(cali->left_stick.inner_dead_zone.y)};
-   
-    cali->right_stick.range = {fabsf(cali->right_stick.outer_max.x) - fabsf(cali->right_stick.inner_dead_zone.x), fabsf(cali->right_stick.outer_max.y) - fabsf(cali->right_stick.inner_dead_zone.y)};
-
+    
+    std::cout << "successfully calibrated gamepad " << id << std::endl;
 }
 
 void on_calibration_cancelled (Calibration* cali) {
@@ -147,5 +151,4 @@ void on_calibration_cancelled (Calibration* cali) {
 }
 
 
-} // namespace
 } // namespace

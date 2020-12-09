@@ -20,8 +20,7 @@ void Controller::setId (const size_t id) {
     }
 }
 
-void Controller::calibrate (const calibration::Calibration& cali) {
-    act_calibration = cali;
+void Controller::calibrate (Calibration* cali) {
     if (type == ControllerType::Gamepad) {
         gamepad.calibrate (cali);
     }
@@ -36,7 +35,6 @@ bool Controller::isCalibrated() {
 
 void Controller::init() {
     if (type == ControllerType::Gamepad) {
-        gamepad.setSaneDefaults();
     }
 }
 
@@ -106,6 +104,9 @@ bool Controller::fire() {
     return false;
 }
 bool Controller::anyInput() {
-    return state.last_event!=ButtonEvent::None || vec_magnitude(state.dpad_vector) || vec_magnitude(state.left_stick_vector) || vec_magnitude(state.right_stick_vector);
+    if( 
+    state.last_event!=ButtonEvent::None || vec_magnitude(state.dpad_vector) || vec_magnitude(state.left_stick_vector) || vec_magnitude(state.right_stick_vector)) 
+        return true;
+    return false;
 }
 } // namespace ss

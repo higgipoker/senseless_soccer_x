@@ -1,9 +1,9 @@
 #include "Match.hpp"
 #include "Player.hpp"
 #include "player_animations.h"
+#include "../graphics/Sprite.hpp"
 #include "../global.hpp"
 #include <SFML/Window/Keyboard.hpp>
-
 namespace ss {
 namespace game {
 

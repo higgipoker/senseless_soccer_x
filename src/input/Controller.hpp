@@ -21,11 +21,10 @@ public:
     bool right();
     bool fire();
     bool anyInput();
-    void calibrate (const calibration::Calibration& cali);
+    void calibrate (Calibration *cali);
     bool isCalibrated();
     void init();
     void unCalibrate();
-    calibration::Calibration act_calibration;
 private:
     KeyboardController kb;
     GamepadController gamepad;

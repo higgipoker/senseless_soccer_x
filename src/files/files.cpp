@@ -26,6 +26,9 @@ void open (File& file, const std::string& path, const std::ios_base::openmode mo
     }
     file.path = path;
     file.fs.open (path, mode);
+    if(file.fs.is_open()){
+        read_lines(file);
+    }
 }
 
 void close (File& file) {
@@ -45,9 +48,8 @@ void read_lines (File& file) {
     file.lines.clear();
     while (getline (file.fs, line)) {
         file.lines.push_back (line);
-        std::cout << line << std::endl;
     }
 }
 
-}
-}
+}// namespace
+}// namespace

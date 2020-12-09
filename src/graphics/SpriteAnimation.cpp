@@ -1,5 +1,4 @@
 #include "SpriteAnimation.hpp"
-#include "Sprite.hpp"
 
 namespace ss {
 

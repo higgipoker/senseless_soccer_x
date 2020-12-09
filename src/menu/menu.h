@@ -1,8 +1,9 @@
 #pragma once
-#include "menu_states.h"
+
+#include "events.h"
+#include "states.h"
 #include "widgets.h"
 #include "settings_page.h"
-#include "events.h"
 #include "../input/Controller.hpp"
 #include "../input/GamepadController.hpp"
 #include <SFML/Window/Keyboard.hpp>
@@ -85,7 +86,8 @@ struct Menu {
     Widget page_settings  [MAX_WIDGETS_PER_PAGE];
 
     // controllers
-    Controller controllers[MAX_CONTROLLERS];
+    Controller  controllers[MAX_CONTROLLERS];
+    Calibration calibrations[MAX_CONTROLLERS];
     int active_controller = 0;
     // this kind of info is not embedded in the controller so do it here
     struct {
@@ -151,19 +153,19 @@ struct Menu {
 //
 // internal functions
 //
-static void     handle_mouse (Mouse* mouse, Menu* menu, sf::RenderWindow* window);
-static void     handle_keyboard (Keyboard* keyboard, Menu* menu);
-static void     handle_window (sf::RenderWindow* window, Menu* menu);
-static void     handle_gamepad (Menu* menu);
-static void     init_resources (Menu* menu);
-static void     init_main_page (Menu* menu);
-static void     init_settings_page (Menu* menu);
-static void     init_controllers (Menu* menu);
-static void     update_active_animation (Menu* menu);
-static void     next_active_widget (Menu* menu, const Event trigger);
-static void     detect_and_load_gamepads (Menu* menu);
-static void     handle_event (Menu* menu, const Event trigger);
-static int      run_menu (Menu* menu, sf::RenderWindow* window);
+static void     handle_mouse                (Mouse* mouse, Menu* menu, sf::RenderWindow* window);
+static void     handle_keyboard             (Keyboard* keyboard, Menu* menu);
+static void     handle_window               (sf::RenderWindow* window, Menu* menu);
+static void     handle_gamepad              (Menu* menu);
+static void     init_resources              (Menu* menu);
+static void     init_main_page              (Menu* menu);
+static void     init_settings_page          (Menu* menu);
+static void     init_controllers            (Menu* menu);
+static void     update_active_animation     (Menu* menu);
+static void     next_active_widget          (Menu* menu, const Event trigger);
+static void     handle_event                (Menu* menu, const Event trigger);
+static void     detect_and_load_gamepads    (Menu* menu);
+static int      run_menu                    (Menu* menu, sf::RenderWindow* window);
 //
 // helper functions
 //
@@ -222,30 +224,15 @@ inline static int acquire_transform (Menu* menu) {
     menu->object_pool.used_transforms++;
     return id;
 }
-
-// shorthand accessors
-inline sf::RectangleShape&  rect (Menu* menu, int id) {
-    return menu->object_pool.rects[id];
-}
-inline sf::CircleShape&     circle (Menu* menu, int id) {
-    return menu->object_pool.circles[id];
-}
-inline sf::Text&            label (Menu* menu, int id) {
-    return menu->object_pool.labels[id];
-}
-inline sf::Color&           color (Menu* menu, int id) {
-    return menu->object_pool.colors[id];
-}
-inline sf::Font&            font (Menu* menu, int id) {
-    return menu->object_pool.fonts[id];
-}
-inline sf::Texture&         texture (Menu* menu, int id) {
-    return menu->object_pool.textures[id];
-}
-inline sf::Transform&       transform (Menu* menu, int id) {
-    return menu->object_pool.transforms[id];
-}
+//
+// shorthand accessors to objects in the object pool
+//
+inline sf::RectangleShape&  rect        (Menu* menu, int id)  { return menu->object_pool.rects[id];       }
+inline sf::CircleShape&     circle      (Menu* menu, int id)  { return menu->object_pool.circles[id];     }
+inline sf::Text&            label       (Menu* menu, int id)  { return menu->object_pool.labels[id];      }
+inline sf::Color&           color       (Menu* menu, int id)  { return menu->object_pool.colors[id];      }
+inline sf::Font&            font        (Menu* menu, int id)  { return menu->object_pool.fonts[id];       }
+inline sf::Texture&         texture     (Menu* menu, int id)  { return menu->object_pool.textures[id];    }
+inline sf::Transform&       transform   (Menu* menu, int id)  { return menu->object_pool.transforms[id];  }
 } // namespace
 } // namespace
-
-

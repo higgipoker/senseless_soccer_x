@@ -5,8 +5,6 @@ namespace ss {
 
 const int MAX_ANIMATION_FRAMES = 32;
 
-class Sprite;
-
 struct AnimationDefinition {
     bool loop = false;
     int frames_per_frame = 0;

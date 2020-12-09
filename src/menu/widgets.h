@@ -81,17 +81,6 @@ struct ListRow_Widget {
     Widget*             siblings[MAX_LIST_ROWS];
 };
 // ***************************
-// Gamepad
-// ***************************
-struct Gamepad_Widget {
-    int background     {-1};
-    int left_stick     {-1};
-    int right_stick    {-1};
-    sf::Vector2f       left_stick_origin;
-    sf::Vector2f       right_stick_origin;
-    ControllerState*   controller_state {nullptr};
-};
-// ***************************
 // Calibrate
 // ***************************
 struct Thumbstick_Diagnostic_Widget {
@@ -99,7 +88,7 @@ struct Thumbstick_Diagnostic_Widget {
     int input_circle  {-1};
     int outer_rect    {-1};
     ControllerState*   controller_state {nullptr};
-    calibration::Calibration* cali {nullptr};
+     Calibration* cali {nullptr};
 };
 // ***************************
 // Test
@@ -109,7 +98,18 @@ struct Thumbstick_Test_Widget {
     int input_circle   {-1};
     int colored_circle {-1};
     int outer_circle   {-1};
+    int bg_circle      {-1};
+    int x_circle       {-1};
     sf::Vertex line    [2];
+    ControllerState*   controller_state {nullptr};
+};
+// ***************************
+// Gamepad
+// ***************************
+struct Gamepad_Widget {
+    int background     {-1};
+    int left_stick;
+    int right_stick;
     ControllerState*   controller_state {nullptr};
 };
 // ***************************
@@ -122,7 +122,7 @@ struct Image_Widget {
 // Widget
 // ***************************
 struct Widget {
-    enum Type {Anonymous, Label, Button, Frame, ListItem, Gamepad, Calibrate, Image} type;
+    enum Type {Anonymous, Label, Button, Frame, ListItem, Gamepad, Calibrate, Test, Image} type;
     enum {Visible, Active, Enabled, Selected, Interactive} state;
     // ideally this would be a union, but we can't have nice things because of all the sfml oo cruft. Next time...
     // union {
@@ -133,6 +133,7 @@ struct Widget {
     Gamepad_Widget                  gamepad;
     Image_Widget                    image;
     Thumbstick_Diagnostic_Widget    thumbstick_diagnostic;
+    Thumbstick_Test_Widget          thumbstick_test;
     // };
 
     // common data
@@ -156,38 +157,41 @@ struct Widget {
 //
 // --------------------------------------------------------------------------------
 // inits
-void            init_widget            (Widget* widget, Menu* menu, const Widget::Type type);
-void            init_button_widget     (Widget* widget, Menu* menu, const Button_Attributes& attribs);
-void            init_image_widget      (Widget* widget, Menu* menu, const sf::Vector2f dimensions, const sf::Texture* texture) ;
-void            init_listrow_widget    (Widget* widget, const Button_Attributes& btn_attribs);
-void            init_gamepad_widget    (Widget* widget, Menu* menu = nullptr);
-void            init_calibrate_widget  (Widget* widget, Menu* menu = nullptr);
+void            init_widget                         (Widget* widget, Menu* menu, const Widget::Type type);
+void            init_button_widget                  (Widget* widget, Menu* menu, const Button_Attributes& attribs);
+void            init_image_widget                   (Widget* widget, Menu* menu, const sf::Vector2f dimensions, const sf::Texture* texture) ;
+void            init_listrow_widget                 (Widget* widget, const Button_Attributes& btn_attribs);
+void            init_gamepad_widget                 (Widget* widget, Menu* menu = nullptr);
+void            init_thumbstick_calibrate_widget    (Widget* widget, Menu* menu = nullptr);
+void            init_thumbstick_test_widget         (Widget* widget, Menu* menu = nullptr);
 
 // updates
-void            update_button_widget   (Widget* widget,  Menu* menu = nullptr);
-void            update_list_widget     (Widget* widget,  Menu* menu = nullptr);
-void            update_gamepad_widget  (Widget* widget,  Menu* menu = nullptr);
-void            update_thumbstick_diagnostic_widget (Widget* widget,  Menu* menu = nullptr);
-void            update_widget          (Widget* widget,  Menu* menu = nullptr);
-
-// set positions
-void            set_widget_position    (Widget* widget, Menu* menu, const sf::Vector2f& pos);
-
-// get positions
-sf::Vector2f    get_widget_position    (Widget* widget, Menu* menu);
+void            update_button_widget                (Widget* widget, Menu* menu = nullptr);
+void            update_list_widget                  (Widget* widget, Menu* menu = nullptr);
+void            update_gamepad_widget               (Widget* widget, Menu* menu = nullptr);
+void            update_thumbstick_calibrate_widget  (Widget* widget, Menu* menu = nullptr);
+void            update_thumbstick_test_widget       (Widget* widget, Menu* menu = nullptr);
+void            update_widget                       (Widget* widget, Menu* menu = nullptr);
 
 // draws
-void            draw_calibrate         (const Widget* widget, Menu *menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_label             (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_frame             (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_image             (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_listrow           (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_gamepad           (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
-void            draw_widget            (const Widget* widget, Menu* menu, sf::RenderWindow* window);
+void            draw_thumbstick_calibrate   (const Widget* widget, Menu *menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_thumbstick_test        (const Widget* widget, Menu *menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_label                  (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_frame                  (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_image                  (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_listrow                (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_gamepad                (const Widget* widget, Menu* menu, sf::RenderWindow* window, const sf::RenderStates* states);
+void            draw_widget                 (const Widget* widget, Menu* menu, sf::RenderWindow* window);
+
+// positions
+void            set_widget_position    (Widget* widget, Menu* menu, const sf::Vector2f& pos);
+sf::Vector2f    get_widget_position    (const Widget* widget, Menu* menu);
 
 // misc
-void            attach_controller      (Gamepad_Widget* widget, ControllerState* state);
-void            attach_controller      (Thumbstick_Diagnostic_Widget* widget, Thumbstick_Diagnostic_Widget::Stick stick, ControllerState* state, calibration::Calibration* cali);
+void            attach_controller      (Thumbstick_Test_Widget* widget,Thumbstick_Test_Widget::Stick stick, ControllerState* state);
+void            detatch_controller     (Thumbstick_Test_Widget* widget);
+void            attach_controller      (Thumbstick_Diagnostic_Widget* widget, Thumbstick_Diagnostic_Widget::Stick stick, ControllerState* state,  Calibration* cali);
+void            detatch_controller     (Thumbstick_Diagnostic_Widget* widget);
 sf::FloatRect   get_widget_bounds      (const Widget* widget, Menu* menu);
 std::string     get_widget_caption     (const Widget* widget, Menu* menu);
 bool            has_mouse              (const Widget* widget, Menu* menu, const sf::Vector2f&  mouse);
@@ -264,4 +268,5 @@ inline bool widget_interactive (const Widget* widget) {
 }
 } // namespace
 } // namespace
+
 

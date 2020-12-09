@@ -30,8 +30,7 @@ class GamepadController {
 public:
     GamepadController();
     void update (ControllerState& s);
-    void setSaneDefaults();
-    void calibrate (const calibration::Calibration& cali);
+    void calibrate (Calibration* cali);
     void unCalibrate();
     bool up();
     bool down();
@@ -40,17 +39,15 @@ public:
     bool fire();
 
     size_t sf_joystick_index = 0;
-    calibration::Calibration calibration;
-
     size_t thumbstick_threshold_x = 0;
     size_t thumbstick_threshold_y = 0;
 
     bool calibrated = false;
     bool thumbsticks_enabled = true;
     bool dpad_enabled = true;
-    
+
 private:
-    
+
     struct {
         int FireLength          = 0;
         int FireLengthCached    = 0;
@@ -62,15 +59,34 @@ private:
         int fire_double_tap_length = 12;
     } fire_params;
 
+    struct {
+        std::string name;
+        int vendor_id {-1};
+        int product_id{-1};
+        struct {
+            sf::Vector2f inner_dead_zone    {10, 10};
+            sf::Vector2f outer_dead_zone    {90, 90};
+            sf::Vector2f range              {80, 80};
+        } left_stick, right_stick;
+        
+        // tmp when analog sticks register as a direction in menus
+        float activation_threshhold = 0.4f;
+    } calibration;
+    void reset_calibration(){
+        calibration.left_stick.inner_dead_zone = {10,10};
+        calibration.left_stick.outer_dead_zone = {90,90};
+        calibration.left_stick.range = {80,80};
+        calibration.activation_threshhold = 0.4f;
+    }
+
     unsigned char buttonmask{0x0};
     unsigned char directionmask{0x0};
     unsigned char old_buttonmask{0x0};
 
-    std::pair<sf::Vector2f, sf::Vector2f> get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const calibration::Calibration& calibration, const calibration::Stick stick);
+    std::pair<sf::Vector2f, sf::Vector2f> get_axis_vector (const sf::Joystick::Axis axis1, const sf::Joystick::Axis axis2, const  Stick stick);
     sf::Vector2f get_dpad_vector();
     float inner_activation_radius = 0.3f;
     float outer_activation_radius = 0.8f;
 
 };
 }
-

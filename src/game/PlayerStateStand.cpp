@@ -1,6 +1,7 @@
 #include "PlayerStateStand.hpp"
 #include "Player.hpp"
 #include "player_animations.h"
+#include "../graphics/Sprite.hpp"
 #include "../math/vector.hpp"
 
 namespace ss {
@@ -13,8 +14,8 @@ PlayerStateStand::PlayerStateStand (Player& p) : PlayerState (p) {
 void PlayerStateStand::start() {
     PlayerState::start();
     player.heading = vec_normalized (player.heading);
-    player.sprite->setRotation (vec_angle (vec_normalized ({player.heading.x, -player.heading.y, 0})) - 90);
-    player.sprite->setActiveAnimation (player_animations::ID_STAND);
+    player.sprite->sprite.setRotation (vec_angle (vec_normalized ({player.heading.x, -player.heading.y, 0})) - 90);
+    player.sprite->sprite.setActiveAnimation (player_animations::ID_STAND);
 }
 
 void PlayerStateStand::stop() {

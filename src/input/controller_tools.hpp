@@ -52,12 +52,11 @@ struct ControllerState {
     ButtonEvent last_event {ButtonEvent::None};
 };
 
-namespace calibration {
 enum class Stick {Left, Right};
 struct Calibration {
     std::string name;
-    int product_id = 0;
-    int vendor_id = 0;
+    unsigned int product_id = 0;
+    unsigned int vendor_id = 0;
     bool calibrating = false;
 
     struct {
@@ -67,7 +66,6 @@ struct Calibration {
         sf::Vector2f inner_dead_zone;
         sf::Vector2f outer_max;
         sf::Vector2f activation_threshhold;
-        sf::Vector2f range;
 
     } left_stick, right_stick;
 };
@@ -76,5 +74,4 @@ void on_calibration_finished (Calibration* cali, int id);
 void on_calibration_cancelled (Calibration* cali);
 bool load_from_file (std::map<int, Calibration>& calibrations, files::File& file);
 bool write_to_file (const int id, const Calibration& calibration, files::File& file);
-}
 }

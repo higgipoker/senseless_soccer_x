@@ -26,20 +26,6 @@ int main() {
     Match match (window);
     window.setFramerateLimit (60);
     
-    
-    // test file handling
-    files::File file;
-    files::open(file, files::working_dir() +"/data/calibration.cfg");
-    files::read_lines(file);
-    
-    std::map<int, calibration::Calibration> c;
-    
-    calibration::load_from_file(c, file);
-    
-    
-    files::close(file);
-    
-
     while (window.isOpen()) {
 
         int return_code = run_menu (&main_menu, &window);
