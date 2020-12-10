@@ -1,7 +1,5 @@
 #pragma once
 
-#include "player.h"
-#include "Ball.h"
 #include "../input/Controller.hpp"
 #include "../graphics/Sprite.hpp"
 #include "../graphics/TileMap.hpp"
@@ -9,6 +7,27 @@
 
 namespace ss {
 namespace engine {
+
+using namespace sprite;
+using namespace graphics;
+
+struct Movable {
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    sf::Vector2f acceleration;
+    sf::Vector2f heading;
+    sf::Vector2f target_heading;
+    sf::Vector2f applied_force;
+    float max_speed = 0;
+};
+
+struct Movable_Ball {
+    sf::Vector3f position;
+    sf::Vector3f velocity;
+    sf::Vector3f acceleration;
+    sf::Vector3f target_heading;
+    sf::Vector3f applied_force;
+};
 
 const size_t MAX_SPRITES      = 100;              // arbitrary, tweak later
 const size_t MAX_PLAYERS      = 22 + 12 + 2 + 3;  // players + subs + managers + referee/linesmen
@@ -20,10 +39,10 @@ struct MatchEngine {
 
     // resources
     sprite::Sprite               sprite_pool            [MAX_SPRITES];    // sprites
-    sprite::SpriteAnimation      animations             [MAX_SPRITES];    // sprite animations
-    player::Player               players                [MAX_PLAYERS];    // players
+    SpriteAnimation              animations             [MAX_SPRITES];    // sprite animations
+    Movable                      players                [MAX_PLAYERS];    // players
     Controller                   controllers            [MAX_CONTROLLERS];// controllers
-    int                          controller_assignments [MAX_CONTROLLERS];// maps entries in controller pool to sprite pool 
+    int                          controller_assignments [MAX_CONTROLLERS];// maps entries in controller pool to sprite pool
 
     // resource counters
     int used_sprites      = 0;
@@ -31,37 +50,40 @@ struct MatchEngine {
     int used_players      = 0;
     int used_controllers  = 0;
 
-    graphics::TileMap pitch;
-    ball::Ball    ball;
+    TileMap          pitch;
+    Movable_Ball     ball;
 };
 
-void frame             (MatchEngine* engine, sf::RenderWindow* window, const float dt = 0.01f);
+void frame (MatchEngine* engine, sf::RenderWindow* window, const float dt = 0.01f);
 void attach_controller (MatchEngine* engine, const int controller, const int player);
-void detatch_controller(MatchEngine* engine, const int controller);
+void detatch_controller (MatchEngine* engine, const int controller);
 //
 // resource acquisition
 //
-inline int acquire_sprite(MatchEngine* engine){
-  // special case acquisition for sprites -> add to the sortable list
-  int id = engine->used_sprites;
-  engine->sprites[id] = &engine->sprite_pool[id];
-  engine->used_sprites++;
-  return id;
+inline int acquire_sprite (MatchEngine* engine) {
+    // special case acquisition for sprites -> add to the sortable list
+    int id = engine->used_sprites;
+    engine->sprites[id] = &engine->sprite_pool[id];
+    engine->used_sprites++;
+    return id;
 }
-inline int acquire_player(MatchEngine* engine){
-  return engine->used_players++;
+inline int acquire_player (MatchEngine* engine) {
+    return engine->used_players++;
 }
-inline int acquire_animation(MatchEngine* engine){
-  return engine->used_animations++;
+inline int acquire_animation (MatchEngine* engine) {
+    return engine->used_animations++;
 }
-inline int acquire_controller(MatchEngine* engine){
-  return engine->used_controllers++;
+inline int acquire_controller (MatchEngine* engine) {
+    return engine->used_controllers++;
 }
 //
 // resource access
 //
-inline player::Player* player(MatchEngine* engine, int id){
+inline Movable* player (MatchEngine* engine, int id) {
     return &engine->players[id];
+}
+inline Sprite* sprite(MatchEngine* engine, int id){
+    return &engine->sprite_pool[id];
 }
 
 }// namespace engine

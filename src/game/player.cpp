@@ -9,7 +9,7 @@ namespace player {
 
 using namespace engine;
 
-void simulate (Player* player, MatchEngine* engine, const float dt) {
+void update (Player* player, MatchEngine* engine) {
 
     // state machine
     switch (player->state) {
@@ -21,29 +21,12 @@ void simulate (Player* player, MatchEngine* engine, const float dt) {
         break;
     }
 
-    // physics sim
-    player->acceleration = player->acceleration * player->attributes.acceleration; // acceleration is applied by controller input
-    player->velocity += player->acceleration;                                       // TODO limit to player top speed attribute
-    player->position = player->position + player->velocity;
-
-    // damp very low velocities
-    static const float DAMP_VELOCITY = 0.1f;
-    if (less_than (vec_magnitude (player->velocity), DAMP_VELOCITY)) {
-        vec_reset (player->velocity);
-    }
-    // reset acceleration for next frames input
-    vec_reset (player->acceleration);
-
     // update sprite
-    engine->sprite_pool[player->id].sprite.setPosition({player->position.x, player->position.y});
-    engine->sprite_pool[player->id].sprite.setRotation (vec_angle (player->velocity) - 90);
+    engine::sprite(engine, player->id)->sprite.setPosition({engine::player(engine, player->id)->position.x, engine::player(engine, player->id)->position.y});
+    engine::sprite(engine, player->id)->sprite.setRotation (vec_angle (engine::player(engine, player->id)->velocity) - 90);
 }
 
 void handle_input (Player* player, const ControllerState& controller) {
-}
-
-void rotate_towards (Player* player, const sf::Vector2f& dir) {
-    player->target_heading = dir;
 }
 
 }// namespace player

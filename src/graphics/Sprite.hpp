@@ -21,6 +21,16 @@ struct SpriteDefinition {
     int                     spritesheet_cols {0};
 };
 // ********************
+// Animation Definition
+// ********************
+struct AnimationDefinition {
+    bool loop = false;
+    int number_frames = 0;
+    int frames_per_frame = 0;
+    int frames[MAX_ANIMATION_FRAMES]; 
+};
+
+// ********************
 // SpriteAnimation 
 // ********************
 struct SpriteAnimation {

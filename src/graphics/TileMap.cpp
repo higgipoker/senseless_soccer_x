@@ -3,7 +3,8 @@
 #include <iostream>
 
 namespace ss {
-namespace graphics{
+namespace graphics {
+    
 bool TileMap::init (const sf::RenderTexture& tex, const sf::IntRect texture_rect, sf::Vector2u tileSize, const int* tiles, unsigned int width, unsigned int height, const int blank_tile) {
     texture = tex.getTexture();
 

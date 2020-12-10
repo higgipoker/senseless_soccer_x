@@ -1,6 +1,8 @@
 #include "engine.h"
+#include "player.h"
 #include "match_resources.hpp"
 #include "player_animations.h"
+#include "../math/vector.hpp"
 #include "../graphics/Sprite.hpp"
 #include "../sfml/sfml_tools.hpp"
 #include <SFML/Window/Event.hpp>
@@ -11,6 +13,26 @@ namespace engine {
 
 static void sort_sprites (sprite::Sprite* sprites) {
 
+}
+
+static void handle_input(Movable* movable, const ControllerState* controller){
+}
+
+static void simulate_player(Movable* movable, MatchEngine* engine, const float dt){
+    movable->acceleration =  movable->acceleration + movable->applied_force; // acceleration is applied by controller input
+    movable->velocity += movable->acceleration;                              // TODO limit to player top speed attribute
+    movable->position = movable->position + movable->velocity;
+
+    // damp very low velocities
+    static const float DAMP_VELOCITY = 0.1f;
+    if (less_than (vec_magnitude (movable->velocity), DAMP_VELOCITY)) {
+        vec_reset (movable->velocity);
+    }
+    // reset force for next frames input
+    vec_reset (movable->applied_force);
+}
+
+static void simulate_ball(Movable_Ball* ball){
 }
 
 static void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
@@ -26,7 +48,7 @@ static void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
     for (int i = 0; i < engine->used_controllers; ++i) {
         engine->controllers[i].update();
         if (engine->controller_assignments[i] >= 0) {
-            player::handle_input (&engine->players[engine->controller_assignments[i]], engine->controllers[i].state);
+            handle_input (&engine->players[engine->controller_assignments[i]], &engine->controllers[i].state);
         }
     }
 }
@@ -34,9 +56,9 @@ static void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
 static void simulate (MatchEngine* engine, const float dt) {
     // palyers
     for (int i = 0; i < engine->used_players; ++i) {
-        player::simulate (&engine->players[i], engine, dt);
+        simulate_player (&engine->players[i], engine, dt);
     }
-    //ball::simulate(engine->ball);
+    simulate_ball(&engine->ball);
 }
 
 static void draw (MatchEngine* engine, sf::RenderWindow* window) {
