@@ -2,8 +2,10 @@
 namespace ss {
 namespace match {
     
-void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) {
+void frame (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) {
     while(match->state != Finished){
+
+        
        
         switch (match->state){
             case Prematch:  break;

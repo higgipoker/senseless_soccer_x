@@ -14,8 +14,10 @@ namespace match {
         Resources   resources;
         State       state       = Prematch;
     };
-    
-    void play(Match* match, engine::MatchEngine* engine, sf::RenderWindow* window);
+    void init_match           (Match* match);
+    void init_match_resources (Resources* resources);
+    void frame                (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window);
+
 } // namespace
 } // namespace
 

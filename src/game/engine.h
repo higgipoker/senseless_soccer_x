@@ -54,8 +54,8 @@ struct MatchEngine {
     Movable_Ball     ball;
 };
 
-void frame (MatchEngine* engine, sf::RenderWindow* window, const float dt = 0.01f);
-void attach_controller (MatchEngine* engine, const int controller, const int player);
+void frame              (MatchEngine* engine, sf::RenderWindow* window, const float dt = 0.01f);
+void attach_controller  (MatchEngine* engine, const int controller, const int player);
 void detatch_controller (MatchEngine* engine, const int controller);
 //
 // resource acquisition
