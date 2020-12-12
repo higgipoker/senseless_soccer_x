@@ -9,7 +9,11 @@ namespace player {
 
 using namespace engine;
 
-void update (Player* player, MatchEngine* engine) {
+void init (Player* player) {
+    player->movable.type = engine::Movable::Two_D;
+}
+
+void simulate (Player* player, MatchEngine* engine, const float dt) {
 
     // state machine
     switch (player->state) {
@@ -22,11 +26,16 @@ void update (Player* player, MatchEngine* engine) {
     }
 
     // update sprite
-    engine::sprite(engine, player->id)->sprite.setPosition({engine::player(engine, player->id)->position.x, engine::player(engine, player->id)->position.y});
-    engine::sprite(engine, player->id)->sprite.setRotation (vec_angle (engine::player(engine, player->id)->velocity) - 90);
+    auto sprite = engine::sprite (engine, player->id);
+    sprite->sprite.setPosition (player->movable.movable2.position);
+    sprite->sprite.setRotation (vec_angle (player->movable.movable2.velocity) - 90);
 }
 
 void handle_input (Player* player, const ControllerState& controller) {
+
+    if (vec_magnitude (controller.left_stick_vector)) {
+        std::cout << controller.left_stick_vector.y << std::endl;
+    }
 }
 
 }// namespace player

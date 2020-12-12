@@ -40,8 +40,10 @@ add_executable(senseless_soccer3
     src/game/PlayerState.cpp
     src/game/PlayerStateStand.cpp
     src/game/PlayerStateRun.cpp
-    src/game/Ball.cpp
+    src/game/ball.cpp
     src/game/match_resources.cpp
+    src/game/camera.cpp
+    src/game/entity.cpp
     src/graphics/Sprite.cpp
     src/graphics/SpriteAnimation.cpp
     src/graphics/TileMap.cpp
@@ -49,6 +51,7 @@ add_executable(senseless_soccer3
     src/menu/widgets.cpp
     src/menu/menu.cpp
     src/menu/settings_page.cpp
+    src/input/input.cpp
     src/input/controller_tools.cpp
     src/input/Keyboard.cpp
     src/input/Controller.cpp

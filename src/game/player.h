@@ -1,5 +1,6 @@
 #pragma once
-#include "engine.h"
+
+#include "entity.h"
 #include "../input/controller_tools.hpp"
 #include <SFML/System/Vector2.hpp>
 #include <iostream>
@@ -21,10 +22,11 @@ enum State {Standing, Running, Strafing };
 
 struct Player {
     State state = State::Standing;
+    engine::Movable movable;
     int  id     = -1;
 };
-
-void update (Player* player, engine::MatchEngine* engine);
+void init(Player* player);
+void simulate (Player* player, engine::MatchEngine* engine, const float dt);
 void handle_input (Player* player, const ControllerState& controller);
 }// namespace player
 }// namespace ss

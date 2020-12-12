@@ -1,7 +1,9 @@
 #include "engine.h"
 #include "player.h"
+#include "ball.h"
 #include "match_resources.hpp"
 #include "player_animations.h"
+#include "../input/input.hpp"
 #include "../math/vector.hpp"
 #include "../graphics/Sprite.hpp"
 #include "../sfml/sfml_tools.hpp"
@@ -15,27 +17,43 @@ static void sort_sprites (sprite::Sprite* sprites) {
 
 }
 
-static void handle_input (Movable* movable, const ControllerState* controller) {
+void init(MatchEngine* engine){
+    // gamepads 
+    std::map<int,  Calibration> calibrations;
+    input::load_gamepads(engine->controllers);
+    
+    // assigned controllers
+    for(size_t i=0;i<MAX_CONTROLLERS;++i){
+       engine->controller_assignments[i] =-1;
+        
+    }
+    attach_controller(engine, 0, 0);
+   
+    // ball
+    ball::init(&engine->ball);
+    
+    // camera
+    engine->camera.view.setSize(1280, 720);
+    attach_to(&engine->camera, &engine->ball.movable);
 }
 
+
+
 static void simulate_player (Movable* movable, MatchEngine* engine, const float dt) {
-    movable->acceleration =  movable->acceleration + movable->applied_force; // acceleration is applied by controller input
-    movable->velocity += movable->acceleration;                              // TODO limit to player top speed attribute
-    movable->position = movable->position + movable->velocity;
+    movable->movable2.acceleration =  movable->movable2.acceleration + movable->movable2.applied_force; // acceleration is applied by controller input
+    movable->movable2.velocity += movable->movable2.acceleration;                              // TODO limit to player top speed attribute
+    movable->movable2.position = movable->movable2.position + movable->movable2.velocity;
 
     // damp very low velocities
     static const float DAMP_VELOCITY = 0.1f;
-    if (less_than (vec_magnitude (movable->velocity), DAMP_VELOCITY)) {
-        vec_reset (movable->velocity);
+    if (less_than (vec_magnitude (movable->movable2.velocity), DAMP_VELOCITY)) {
+        vec_reset (movable->movable2.velocity);
     }
     // reset force for next frames input
-    vec_reset (movable->applied_force);
+    vec_reset (movable->movable2.applied_force);
 }
 
-static void simulate_ball (Movable_Ball* ball) {
-}
-
-static void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
+void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
     // window events
     static sf::Event event;
     while (window->pollEvent (event)) {
@@ -48,32 +66,33 @@ static void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
     for (int i = 0; i < engine->used_controllers; ++i) {
         engine->controllers[i].update();
         if (engine->controller_assignments[i] >= 0) {
-            handle_input (&engine->movables[engine->controller_assignments[i]], &engine->controllers[i].state);
+            player::handle_input (&engine->players[engine->controller_assignments[i]], engine->controllers[i].state);
         }
     }
 }
 
-static void simulate (MatchEngine* engine, const float dt) {
+void simulate (MatchEngine* engine, const float dt) {
     // palyers
     for (int i = 0; i < engine->used_movables; ++i) {
-        simulate_player (&engine->movables[i], engine, dt);
+        player::simulate(&engine->players[i], engine, dt);
     }
-    simulate_ball (&engine->ball);
+    ball::simulate (&engine->ball, dt);
 }
 
-static void draw (MatchEngine* engine, sf::RenderWindow* window) {
+void draw (MatchEngine* engine, sf::RenderWindow* window) {
     
     // TODO test camera
  //   engine->camera.view.move(0, 10);
     engine->camera.view.setSize(1280,720);
-    engine->camera.view.setCenter(1280/2, 720/2);
+    update(&engine->camera);
+    
     window->setView(engine->camera.view);
     
     
     window->clear (sf::Color::Red);
-    window->draw (engine->pitch_grass);
-    window->draw (engine->pitch_lines);
-    sort_sprites (*engine->sprites);
+    window->draw  (engine->pitch_grass);
+    window->draw  (engine->pitch_lines);
+    sort_sprites  (*engine->sprites);
     for (int i = 0; i < engine->used_sprites; ++i) {
         window->draw (engine->sprites[i]->sprite);
     }
@@ -96,5 +115,6 @@ void detatch_controller (MatchEngine* engine, const int controller) {
 
 }// namespace game
 }// namespace ss
+
 
 

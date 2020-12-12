@@ -481,13 +481,11 @@ void init_settings_page (Menu* menu) {
 //
 //
 void init_controllers (Menu* menu) {
-
     files::File file;
     files::open (file, files::working_dir() + "/data/calibration.cfg");
     std::map<int,  Calibration> calibrations;
     load_from_file (calibrations, file);
     files::close (file);
-
 
     for (int i = 0; i < MAX_CONTROLLERS; ++i) {
         menu->controllers[i].setId (i);

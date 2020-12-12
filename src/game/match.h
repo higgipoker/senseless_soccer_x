@@ -2,6 +2,7 @@
 #include "engine.h"
 #include "player.h"
 #include "team.h"
+#include "ball.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -21,6 +22,8 @@ namespace match {
         team::Team teams[2];
         player::Player players[22];
         player::Attributes player_attributes[22];
+        ball::Ball ball;
+        
         
         // just to duisplay the mega texture for debugging
         sprite::Sprite match_sprite;

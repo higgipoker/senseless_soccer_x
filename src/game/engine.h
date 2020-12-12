@@ -1,5 +1,8 @@
 #pragma once
-
+#include "camera.h"
+#include "entity.h"
+#include "player.h"
+#include "ball.h"
 #include "../input/Controller.hpp"
 #include "../graphics/Sprite.hpp"
 #include "../graphics/TileMap.hpp"
@@ -11,31 +14,9 @@ namespace engine {
 using namespace sprite;
 using namespace graphics;
 
-struct Camera {
-   sf::View view; 
-};
-
-struct Movable {
-    sf::Vector2f position;
-    sf::Vector2f velocity;
-    sf::Vector2f acceleration;
-    sf::Vector2f heading;
-    sf::Vector2f target_heading;
-    sf::Vector2f applied_force;
-    float max_speed = 0;
-};
-
-struct Movable_Ball {
-    sf::Vector3f position;
-    sf::Vector3f velocity;
-    sf::Vector3f acceleration;
-    sf::Vector3f target_heading;
-    sf::Vector3f applied_force;
-};
-
 const size_t MAX_SPRITES      = 100;              // arbitrary, tweak later
 const size_t MAX_PLAYERS      = 22 + 12 + 2 + 3;  // players + subs + managers + referee/linesmen
-const size_t MAX_CONTROLLERS  = 22;               // never need more than one per player
+const size_t MAX_CONTROLLERS  = 8;               // never need more than one per player
 
 struct MatchEngine {
     bool paused = false;
@@ -44,7 +25,7 @@ struct MatchEngine {
     // resources
     sprite::Sprite               sprite_pool            [MAX_SPRITES];    // sprites
     SpriteAnimation              animations             [MAX_SPRITES];    // sprite animations
-    Movable                      movables               [MAX_PLAYERS];    // players
+    player::Player               players                [MAX_PLAYERS];    // players
     Controller                   controllers            [MAX_CONTROLLERS];// controllers
     int                          controller_assignments [MAX_CONTROLLERS];// maps entries in controller pool to sprite pool
 
@@ -52,15 +33,18 @@ struct MatchEngine {
     int used_sprites      = 0;
     int used_animations   = 0;
     int used_movables     = 0;
-    int used_controllers  = 0;
+    int used_controllers  = MAX_CONTROLLERS;
 
     Camera           camera;
     TileMap          pitch_grass;
     TileMap          pitch_lines;
-    Movable_Ball     ball;
+    ball::Ball       ball;
 };
-
+void init               (MatchEngine* engine);
 void frame              (MatchEngine* engine, sf::RenderWindow* window, const float dt = 0.01f);
+void handle_input       (MatchEngine* engine, sf::RenderWindow* window);
+void simulate           (MatchEngine* engine, const float dt);
+void draw               (MatchEngine* engine, sf::RenderWindow* window);
 void attach_controller  (MatchEngine* engine, const int controller, const int player);
 void detatch_controller (MatchEngine* engine, const int controller);
 //
@@ -85,8 +69,8 @@ inline int acquire_controller (MatchEngine* engine) {
 //
 // resource access
 //
-inline Movable* player (MatchEngine* engine, int id) {
-    return &engine->movables[id];
+inline player::Player* player (MatchEngine* engine, int id) {
+    return &engine->players[id];
 }
 inline Sprite* sprite(MatchEngine* engine, int id){
     return &engine->sprite_pool[id];

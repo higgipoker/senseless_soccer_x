@@ -88,22 +88,24 @@ void init_match_resources (Match* match, engine::MatchEngine* engine) {
     match->match_sprite.sprite.setTexture (match->resources.match_texture.getTexture());
 
     // tell the engine to use the mega texture for the grass
-    engine->pitch_grass.init (match->resources.match_texture,
-                              global::to_int_rect (grass_sprite.getGlobalBounds()),
-                              global::to_int_vector ({grass_sprite.getLocalBounds().width, grass_sprite.getLocalBounds().height}),
-                              grass_tiles,
-                              10,
-                              15);
+    engine->pitch_grass.init (
+        match->resources.match_texture,
+        global::to_int_rect (grass_sprite.getGlobalBounds()),
+        global::to_int_vector ({grass_sprite.getLocalBounds().width, grass_sprite.getLocalBounds().height}),
+        grass_tiles,
+        10,
+        15);
 
 
     // tell the engine to use the mega texture for the pitch lines
-    engine->pitch_lines.init (match->resources.match_texture,
-                             global::to_int_rect (lines_sprite.getGlobalBounds()),
-                             {32, 32},
-                             pitch_line_tiles,
-                             50,
-                             80,
-                             0);
+    engine->pitch_lines.init (
+        match->resources.match_texture,
+        global::to_int_rect (lines_sprite.getGlobalBounds()),
+        sf::Vector2u (32, 32),
+        pitch_line_tiles,
+        50,
+        80,
+        0);
 
     // add the players
     sprite::SpriteDefinition player_sprite_def = graphics::make_player_sprite_definition (&match->resources.match_texture.getTexture(), {home_team_sprite.getGlobalBounds().left, home_team_sprite.getGlobalBounds().top});
@@ -113,20 +115,17 @@ void init_match_resources (Match* match, engine::MatchEngine* engine) {
         sprite::init (sprite, &player_sprite_def);
         sprite->sprite.setPosition ({100 + i * 10.f, 100 + i * 10.f});
     }
-    
+
     // add the ball
-    sprite::SpriteDefinition ball_sprite_def = graphics::make_ball_sprite_definition(&match->resources.match_texture.getTexture(), {ball_sprite.getGlobalBounds().left, ball_sprite.getGlobalBounds().top});
-    int ball_id = engine::acquire_sprite(engine);
-    auto sprite = engine::sprite(engine, ball_id);
-    sprite::init(sprite, &ball_sprite_def);
-    sprite->sprite.setPosition(500, 500);
+    sprite::SpriteDefinition ball_sprite_def = graphics::make_ball_sprite_definition (&match->resources.match_texture.getTexture(), {ball_sprite.getGlobalBounds().left, ball_sprite.getGlobalBounds().top});
+    match->ball.id = engine::acquire_sprite (engine);
+    auto sprite = engine::sprite (engine, match->ball.id);
+    sprite::init (sprite, &ball_sprite_def);
+    sprite->sprite.setPosition (500, 500);
+    engine->ball.movable.movable3.position = {500, 500, 0};
 }
 
 void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) {
-    // test match megatexture
-    window->clear (sf::Color::Magenta);
-    window->draw (match->match_sprite.sprite);
-    window->display();
 
     //while (match->state != Finished) {
     while (true) {
@@ -144,7 +143,19 @@ void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) 
         case Finished:  break;
         }
 
-        engine::frame (engine, window, 0.01f);
+        
+        //
+        // 1. handle input
+        // 
+        engine::handle_input (engine, window);
+        //
+        // 2. simulate
+        //
+        engine::simulate (engine, 0.01f);
+        //
+        // 3. draw screen
+        //
+        engine::draw (engine, window);
     }
 }
 
@@ -217,3 +228,5 @@ void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) 
 // }
 // }// namespace game
 // }// namespace ss
+
+

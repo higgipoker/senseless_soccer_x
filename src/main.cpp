@@ -28,6 +28,7 @@ int main(int argc, char* argv[]) {
 
     // test engine
     engine::MatchEngine* engine = new engine::MatchEngine();
+    engine::init(engine);
     
     match::Match* match = new match::Match();
     match::init_match_resources(match, engine);
