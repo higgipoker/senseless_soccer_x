@@ -1,8 +1,12 @@
-#include "Texture.hpp"
+#include "texture.h"
 
 namespace ss {
-void Texture::swapColors (const std::vector<std::pair<sf::Color, sf::Color> >& palette) {
-    sf::Image img = copyToImage();
+namespace graphics {
+
+using namespace sf;
+
+void swapColors (Texture* tex, const std::vector<std::pair<sf::Color, sf::Color> >& palette) {
+    sf::Image img = tex->copyToImage();
     for (auto& colours : palette) {
         for (unsigned int x = 0; x < img.getSize().x; ++x) {
             for (unsigned int y = 0; y < img.getSize().y; ++y) {
@@ -12,6 +16,8 @@ void Texture::swapColors (const std::vector<std::pair<sf::Color, sf::Color> >& p
             }
         }
     }
-    loadFromImage (img);
+    tex->loadFromImage (img);
 }
-}
+
+} // namespace
+}// namespace

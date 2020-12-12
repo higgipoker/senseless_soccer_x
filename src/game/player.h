@@ -12,20 +12,19 @@ struct MatchEngine;
 
 namespace player {
 
+struct Attributes {
+    float speed = 10.f;
+    float acceleration = 1.f;
+};
 
 enum State {Standing, Running, Strafing };
 
 struct Player {
-    State       state           = State::Standing;
-    int         id              = -1;
-
-    struct {
-        float       speed           = 10;
-        float       acceleration    = 0.1f;
-    } attributes;
+    State state = State::Standing;
+    int  id     = -1;
 };
 
-void update(Player* player, engine::MatchEngine* engine);
+void update (Player* player, engine::MatchEngine* engine);
 void handle_input (Player* player, const ControllerState& controller);
 }// namespace player
 }// namespace ss

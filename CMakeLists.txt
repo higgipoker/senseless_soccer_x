@@ -33,7 +33,7 @@ add_executable(senseless_soccer3
     src/game/Movable.cpp
     src/game/Renderable.cpp
     src/game/Gamestate.cpp
-    src/game/Match.cpp
+    src/game/match.cpp
     src/game/MatchState.cpp
     src/game/MatchPlay.cpp
     src/game/player.cpp
@@ -45,7 +45,7 @@ add_executable(senseless_soccer3
     src/graphics/Sprite.cpp
     src/graphics/SpriteAnimation.cpp
     src/graphics/TileMap.cpp
-    src/graphics/Texture.cpp
+    src/graphics/texture.cpp
     src/menu/widgets.cpp
     src/menu/menu.cpp
     src/menu/settings_page.cpp

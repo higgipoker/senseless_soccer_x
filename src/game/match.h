@@ -1,5 +1,8 @@
 #pragma once
 #include "engine.h"
+#include "player.h"
+#include "team.h"
+
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 namespace ss {
@@ -10,13 +13,20 @@ namespace match {
     };
    
     enum State      {Prematch, Lineup, Kickoff, Play, Goalkick, Throwin, Corner, Penalty, Postmatch, Finished};
+    
     struct Match {
-        Resources   resources;
-        State       state       = Prematch;
+        Resources resources;
+        State state = Prematch;
+        
+        team::Team teams[2];
+        player::Player players[22];
+        player::Attributes player_attributes[22];
+        
+        // just to duisplay the mega texture for debugging
+        sprite::Sprite match_sprite;
     };
-    void init_match           (Match* match);
-    void init_match_resources (Resources* resources);
-    void frame                (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window);
+    void init_match_resources (Match* match, engine::MatchEngine* engine);
+    void play                 (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window);
 
 } // namespace
 } // namespace

@@ -2,8 +2,8 @@
 #include "files/files.h"
 #include "game/Gamestate.hpp"
 #include "menu/menu.cpp"
+#include "game/match.h"
 #include "input/Gamepad.hpp"
-#include "game/Match.hpp"
 #include "game/engine.h"
 #include "input/controller_tools.hpp"
 #include <SFML/Graphics.hpp>
@@ -17,17 +17,26 @@ void wait_for_no_key (sf::RenderWindow& window) {
     while (window.pollEvent (event));
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    
     global::log ("Senseless soccer started");
     global::Resources::load();
     sf::RenderWindow window (sf::VideoMode{1280, 720}, "Senseless Soccer");
     Controller gamepad; // defaults to a gamepad style controller
-    //Menu menu (window, gamepad);
     Menu main_menu;
     window.setFramerateLimit (60);
-    
+
     // test engine
     engine::MatchEngine* engine = new engine::MatchEngine();
+    
+    match::Match* match = new match::Match();
+    match::init_match_resources(match, engine);
+    
+    match::play(match, engine, &window);
+    
+    delete match;
+    
+
     
     while (window.isOpen()) {
         engine::frame(engine, &window, 0.01f);
@@ -44,5 +53,5 @@ int main() {
     }
     delete engine;
     global::log ("Senseless Soccer finished");
-    return 0;
+    return EXIT_SUCCESS;
 }

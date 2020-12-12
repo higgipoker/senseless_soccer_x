@@ -11,6 +11,10 @@ namespace engine {
 using namespace sprite;
 using namespace graphics;
 
+struct Camera {
+   sf::View view; 
+};
+
 struct Movable {
     sf::Vector2f position;
     sf::Vector2f velocity;
@@ -40,17 +44,19 @@ struct MatchEngine {
     // resources
     sprite::Sprite               sprite_pool            [MAX_SPRITES];    // sprites
     SpriteAnimation              animations             [MAX_SPRITES];    // sprite animations
-    Movable                      players                [MAX_PLAYERS];    // players
+    Movable                      movables               [MAX_PLAYERS];    // players
     Controller                   controllers            [MAX_CONTROLLERS];// controllers
     int                          controller_assignments [MAX_CONTROLLERS];// maps entries in controller pool to sprite pool
 
     // resource counters
     int used_sprites      = 0;
     int used_animations   = 0;
-    int used_players      = 0;
+    int used_movables     = 0;
     int used_controllers  = 0;
 
-    TileMap          pitch;
+    Camera           camera;
+    TileMap          pitch_grass;
+    TileMap          pitch_lines;
     Movable_Ball     ball;
 };
 
@@ -67,8 +73,8 @@ inline int acquire_sprite (MatchEngine* engine) {
     engine->used_sprites++;
     return id;
 }
-inline int acquire_player (MatchEngine* engine) {
-    return engine->used_players++;
+inline int acquire_movable (MatchEngine* engine) {
+    return engine->used_movables++;
 }
 inline int acquire_animation (MatchEngine* engine) {
     return engine->used_animations++;
@@ -80,7 +86,7 @@ inline int acquire_controller (MatchEngine* engine) {
 // resource access
 //
 inline Movable* player (MatchEngine* engine, int id) {
-    return &engine->players[id];
+    return &engine->movables[id];
 }
 inline Sprite* sprite(MatchEngine* engine, int id){
     return &engine->sprite_pool[id];
