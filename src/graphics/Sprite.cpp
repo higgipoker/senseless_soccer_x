@@ -3,10 +3,10 @@
 
 namespace ss {
 namespace sprite {
-    
+
 void init (Sprite* sprite, const SpriteDefinition* def) {
     assert (def->total_frames <= MAX_FRAMES);
-    sprite->sprite.setTexture(*def->texture);
+    sprite->sprite.setTexture (*def->texture);
 
     int x           = def->texture_origin.x;
     int y           = def->texture_origin.y;
@@ -40,10 +40,10 @@ void set_frame (Sprite* sprite, const int frame) {
     sprite->sprite.setTextureRect (sprite->frames[frame]);
 }
 
-void init_animation(Sprite* sprite, const int id, const AnimationDefinition* anim_def){
+void init_animation (SpriteAnimation* animation, const AnimationDefinition* anim_def) {
 }
 
-void set_animation(Sprite* sprite, const int id){
+void set_animation (Sprite* sprite, const int id) {
 //   if(sprite->current_animation){
 //     sprite->current_animation->stop();
 //   }
@@ -51,15 +51,20 @@ void set_animation(Sprite* sprite, const int id){
 //   sprite->current_animation->start();
 }
 
-void animate(Sprite* sprite){
-//   if(sprite->current_animation){
-//     sprite->current_animation->update();
-//     set_frame(sprite, sprite->current_animation->act_frame);
-//     if(sprite->current_animation->running == false){
-//       sprite->current_animation->stop();
-//       sprite->current_animation = nullptr;
-//     }
-//   }
+void animate (SpriteAnimation* anim) {
+    if (++anim->current_ticks >= anim->ticks_per_frame) {
+        anim->current_ticks = 0;
+        anim->current_frame++;
+        if (anim->current_frame >= anim->number_frames) {
+            if (anim->loop) {
+                anim->current_frame = 0;
+            } else {
+                anim->current_frame = anim->number_frames-1;
+                anim->running = false;
+            }
+        }
+    }
+    anim->act_frame = anim->frames[anim->current_frame];
 }
 
 }// namespace

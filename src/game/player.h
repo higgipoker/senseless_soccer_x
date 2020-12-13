@@ -18,15 +18,18 @@ struct Attributes {
     float acceleration = 1.f;
 };
 
-enum State {Standing, Running, Strafing };
+
 
 struct Player {
-    State state = State::Standing;
-    engine::Movable movable;
-    int  id     = -1;
+    enum State {Standing, Running, Strafing } state = Standing; 
+    int id = -1;
 };
-void init(Player* player);
-void simulate (Player* player, engine::MatchEngine* engine, const float dt);
-void handle_input (Player* player, const ControllerState& controller);
+void init(Player* player, engine::MatchEngine* engine);
+void update (Player* player, engine::MatchEngine* engine);
+void handle_input (Player* player, const ControllerState& controller, engine::MatchEngine* engine);
+void change_state(Player* player, const Player::State state, engine::MatchEngine* engine);
+void on_state_started(Player* player, engine::MatchEngine* engine);
+void on_state_ended(Player* player, engine::MatchEngine* engine);
+bool state_over(Player*player, engine::MatchEngine* engine);
 }// namespace player
 }// namespace ss

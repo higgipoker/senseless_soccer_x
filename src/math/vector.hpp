@@ -54,6 +54,13 @@ inline static sf::Vector3f vec_reversed (const sf::Vector3f& vec) {
     return v;
 }
 
+inline static sf::Vector2f vec_reversed(const sf::Vector2f& vec){
+   sf::Vector2f v = vec;
+   if (greater_than (fabsf (v.x), 0))  v.x = -v.x;
+   if (greater_than (fabsf (v.y), 0))  v.y = -v.y;
+   return v;
+}
+
 inline static sf::Vector3f vec_normalized (const sf::Vector3f& vec) {
     if (equal (vec_magnitude (vec), 0)) return vec;
 

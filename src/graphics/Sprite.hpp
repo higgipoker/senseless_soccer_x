@@ -35,10 +35,13 @@ struct AnimationDefinition {
 // ********************
 struct SpriteAnimation {
   int  frames          [MAX_ANIMATION_FRAMES];
+  int  number_frames   {0};
   int  current_frame   {0};
+  int  act_frame       {0};
   bool loop            {true};
   int  ticks_per_frame {0};
   int  current_ticks   {0};
+  bool running         {false};
 };
 // ********************
 // Sprite 
@@ -48,16 +51,15 @@ struct Sprite {
     int             z                 {0};
     int             current_animation {0};
     sf::IntRect     frames            [MAX_FRAMES];
-    SpriteAnimation animations        [MAX_ANIMATIONS];
 };
 // ********************
 // Functions 
 // ********************
 void    init            (Sprite* sprite, const SpriteDefinition* def);
 void    set_frame       (Sprite* sprite, const int frame);
-void    init_animation  (Sprite* sprite, const int id, const AnimationDefinition* anim_def);
+void    init_animation  (SpriteAnimation* animation, const AnimationDefinition* anim_def);
 void    set_animation   (Sprite* sprite, const int id);
-void    animate         (Sprite* sprite);
+void    animate         (SpriteAnimation* anim);
 
 } // namepsace sprite
 }// namespace senseless

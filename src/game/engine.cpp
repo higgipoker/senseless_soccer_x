@@ -17,84 +17,75 @@ static void sort_sprites (sprite::Sprite* sprites) {
 
 }
 
-void init(MatchEngine* engine){
-    // gamepads 
+void init (MatchEngine* engine) {
+    // gamepads
     std::map<int,  Calibration> calibrations;
-    input::load_gamepads(engine->controllers);
-    
+    input::load_gamepads (engine->controllers);
+
     // assigned controllers
-    for(size_t i=0;i<MAX_CONTROLLERS;++i){
-       engine->controller_assignments[i] =-1;
-        
+    for (size_t i = 0; i < MAX_CONTROLLERS; ++i) {
+        engine->controller_assignments[i] = -1;
+
     }
-    attach_controller(engine, 0, 0);
-   
-    // ball
-    ball::init(&engine->ball);
     
+
+    // ball
+    ball::init (&engine->ball);
+
     // camera
-    engine->camera.view.setSize(1280, 720);
-    attach_to(&engine->camera, &engine->ball.movable);
-}
-
-
-
-static void simulate_player (Movable* movable, MatchEngine* engine, const float dt) {
-    movable->movable2.acceleration =  movable->movable2.acceleration + movable->movable2.applied_force; // acceleration is applied by controller input
-    movable->movable2.velocity += movable->movable2.acceleration;                              // TODO limit to player top speed attribute
-    movable->movable2.position = movable->movable2.position + movable->movable2.velocity;
-
-    // damp very low velocities
-    static const float DAMP_VELOCITY = 0.1f;
-    if (less_than (vec_magnitude (movable->movable2.velocity), DAMP_VELOCITY)) {
-        vec_reset (movable->movable2.velocity);
-    }
-    // reset force for next frames input
-    vec_reset (movable->movable2.applied_force);
+    engine->camera.view.setSize (1280, 720);
+    //attach_to(&engine->camera, &player(engine, 0)->movable);
 }
 
 void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
-    // window events
-    static sf::Event event;
-    while (window->pollEvent (event)) {
-        if (event.type == sf::Event::Closed) {
-            window->close();
-        }
+    // controllables
+    sf::Joystick::update();
+    for (int i = 0; i < engine->used_sprites; ++i) {
+        if (engine->sprites.controllable[i].input == -1) continue;
+        // update the controller attached to this controllable
+        engine->controllers[engine->sprites.controllable[i].input].update();
+        // update the player associated with this entity id
+        player::handle_input (&engine->players[i], engine->controllers[engine->sprites.controllable[i].input].state, engine);
     }
 
-    // controllers
-    for (int i = 0; i < engine->used_controllers; ++i) {
-        engine->controllers[i].update();
-        if (engine->controller_assignments[i] >= 0) {
-            player::handle_input (&engine->players[engine->controller_assignments[i]], engine->controllers[i].state);
-        }
-    }
 }
 
 void simulate (MatchEngine* engine, const float dt) {
-    // palyers
-    for (int i = 0; i < engine->used_movables; ++i) {
-        player::simulate(&engine->players[i], engine, dt);
+    // movables
+    for (int i = 0; i < engine->used_sprites; ++i) {
+        simulate (&engine->sprites.movable[i], dt);
     }
-    ball::simulate (&engine->ball, dt);
+    // palyers
+    for (int i = 0; i < engine->used_players; ++i) {
+        player::update (&engine->players[i], engine);
+    }
 }
 
 void draw (MatchEngine* engine, sf::RenderWindow* window) {
-    
+
     // TODO test camera
- //   engine->camera.view.move(0, 10);
-    engine->camera.view.setSize(1280,720);
-    update(&engine->camera);
-    
-    window->setView(engine->camera.view);
-    
-    
-    window->clear (sf::Color::Red);
-    window->draw  (engine->pitch_grass);
-    window->draw  (engine->pitch_lines);
-    sort_sprites  (*engine->sprites);
+    engine->camera.view.setSize (1280, 720);
+    update (&engine->camera);
+    window->setView (engine->camera.view);
+
+    // update sprite animations
     for (int i = 0; i < engine->used_sprites; ++i) {
-        window->draw (engine->sprites[i]->sprite);
+        animate (&engine->sprites.animation[i]);
+        if (engine->sprites.animation[i].running) {
+            int current_frame = engine->sprites.animation[i].act_frame;
+            sf::IntRect rect = engine->sprites.drawable[i].frames[current_frame];
+            engine->sprites.drawable[i].sprite.setTextureRect(rect);
+        }
+    }
+
+    
+    // draw everyting
+//    window->clear (sf::Color::Red);
+    window->draw (engine->pitch_grass);
+    window->draw (engine->pitch_lines);
+    sort_sprites (*engine->sorted_sprites);
+    for (int i = 0; i < engine->used_sprites; ++i) {
+        window->draw (engine->sorted_sprites[i]->sprite);
     }
     window->display();
 }
@@ -106,7 +97,7 @@ void frame (MatchEngine* engine, sf::RenderWindow* window, const float dt) {
 }
 
 void attach_controller (MatchEngine* engine, const int controller, const int player) {
-    engine->controller_assignments[controller] = player;
+    engine->sprites.controllable[player].input = controller;
 }
 
 void detatch_controller (MatchEngine* engine, const int controller) {

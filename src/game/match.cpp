@@ -109,20 +109,26 @@ void init_match_resources (Match* match, engine::MatchEngine* engine) {
 
     // add the players
     sprite::SpriteDefinition player_sprite_def = graphics::make_player_sprite_definition (&match->resources.match_texture.getTexture(), {home_team_sprite.getGlobalBounds().left, home_team_sprite.getGlobalBounds().top});
-    for (int i = 0; i < 22; ++i) {
-        match->players[i].id = engine::acquire_sprite (engine);
-        auto sprite = engine::sprite (engine, match->players[i].id);
+    for (int i = 0; i < 1; ++i) {
+        int id = engine::add_player (engine);
+        sprite::Sprite* sprite = &engine->sprites.drawable[id];
         sprite::init (sprite, &player_sprite_def);
-        sprite->sprite.setPosition ({100 + i * 10.f, 100 + i * 10.f});
+        engine->sprites.movable[id].movable2.position = {300 + i * 10.f, 300 + i * 10.f};
+        attach_controller (engine, 0, id);
+        attach_to (&engine->camera, &engine->sprites.movable[id]);
+        init (&engine->players[id], engine);
+
     }
 
     // add the ball
+    int ball = acquire_sprite (engine);
     sprite::SpriteDefinition ball_sprite_def = graphics::make_ball_sprite_definition (&match->resources.match_texture.getTexture(), {ball_sprite.getGlobalBounds().left, ball_sprite.getGlobalBounds().top});
-    match->ball.id = engine::acquire_sprite (engine);
-    auto sprite = engine::sprite (engine, match->ball.id);
+    auto sprite = &engine->sprites.drawable[ball];
     sprite::init (sprite, &ball_sprite_def);
     sprite->sprite.setPosition (500, 500);
-    engine->ball.movable.movable3.position = {500, 500, 0};
+    engine->sprites.movable[ball].movable3.position = {500, 500, 0};
+    sprite->sprite.setScale (0.4, 0.4);
+    graphics::make_roll_animation (&engine->sprites.animation[ball]);
 }
 
 void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) {
@@ -143,10 +149,10 @@ void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) 
         case Finished:  break;
         }
 
-        
+
         //
         // 1. handle input
-        // 
+        //
         engine::handle_input (engine, window);
         //
         // 2. simulate

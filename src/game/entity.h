@@ -26,12 +26,17 @@ struct Movable_3d {
 struct Movable {
     enum {Two_D, Three_D} type = Two_D;
 
-    //union{
+    //union{ // can't have nice things because sfml oo stuff
     Movable_2d movable2;
     Movable_3d movable3;
     // };
-
 };
+
+struct Controllable {
+    int input = -1;   
+};
+
+void simulate(Movable* movable, const float dt);
 
 sf::Vector2f position (Movable* movable);
 

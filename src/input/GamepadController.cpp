@@ -173,8 +173,8 @@ std::pair<sf::Vector2f, sf::Vector2f> GamepadController::get_axis_vector (const 
 
     // raw vals are lower than calibreated dead zone -> set them to zero
     sf::Vector2f dead_zone = stick ==  Stick::Left ? calibration.left_stick.inner_dead_zone : calibration.right_stick.inner_dead_zone;
-    if(less_than_or_equal(vec_magnitude(ret.second), vec_magnitude(dead_zone))){
-        vec_reset(ret.second);
+    if (less_than_or_equal (vec_magnitude (ret.second), vec_magnitude (dead_zone))) {
+        vec_reset (ret.second);
     }
 
 //     dead_zone = stick ==  Stick::Left ? calibration.left_stick.outer_dead_zone : calibration.right_stick.outer_dead_zone;
