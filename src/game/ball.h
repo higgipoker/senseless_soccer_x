@@ -1,6 +1,7 @@
 #pragma once
 #include "entity.h"
 #include "Movable.hpp"
+#include <SFML/Graphics/CircleShape.hpp>
 
 namespace ss {
 namespace engine {
@@ -13,11 +14,12 @@ namespace ball {
 // ********************
 struct Ball {
     int id = -1;
-    engine::Movable movable;
+    float radius = 32;
+    sf::CircleShape collider;
 };
-void init(Ball* ball);
+
+void init(Ball* ball, engine::MatchEngine* engine);
 void update (Ball* ball, engine::MatchEngine* engine);
-void simulate (Ball* ball, const float dt);
 
 } // namespace
 } // namespace

@@ -3,6 +3,8 @@
 #include "../graphics/sprite_definitions.h"
 #include "../global.hpp"
 #include "../graphics/texture.h"
+#include "../physics/collisions.h"
+#include "../math/vector.hpp"
 namespace ss {
 namespace match {
 
@@ -71,9 +73,6 @@ void init_match_resources (Match* match, engine::MatchEngine* engine) {
     grass_sprite.move (0, ball_sprite.getGlobalBounds().top + ball_sprite.getLocalBounds().height);
     lines_sprite.move (0, grass_sprite.getGlobalBounds().top + grass_sprite.getLocalBounds().height);
 
-    // player1_origin = home_team_sprite.getPosition();
-    // player2_origin = away_team_sprite.getPosition();
-
     // draw stuff to the mega texture
     match->resources.match_texture.clear ({0, 0, 0, 0});
     match->resources.match_texture.draw (home_team_sprite);
@@ -109,26 +108,27 @@ void init_match_resources (Match* match, engine::MatchEngine* engine) {
 
     // add the players
     sprite::SpriteDefinition player_sprite_def = graphics::make_player_sprite_definition (&match->resources.match_texture.getTexture(), {home_team_sprite.getGlobalBounds().left, home_team_sprite.getGlobalBounds().top});
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < 4; ++i) {
         int id = engine::add_player (engine);
         sprite::Sprite* sprite = &engine->sprites.drawable[id];
         sprite::init (sprite, &player_sprite_def);
         engine->sprites.movable[id].movable2.position = {300 + i * 10.f, 300 + i * 10.f};
-        attach_controller (engine, 0, id);
-        attach_to (&engine->camera, &engine->sprites.movable[id]);
+        if (i == 0) {
+            attach_controller (engine, 0, id);
+            attach_to (&engine->camera, &engine->sprites.movable[id]);
+        }
         init (&engine->players[id], engine);
-
     }
 
-    // add the ball
-    int ball = acquire_sprite (engine);
+    // config the ball
+    add_ball(engine);
     sprite::SpriteDefinition ball_sprite_def = graphics::make_ball_sprite_definition (&match->resources.match_texture.getTexture(), {ball_sprite.getGlobalBounds().left, ball_sprite.getGlobalBounds().top});
-    auto sprite = &engine->sprites.drawable[ball];
+    auto sprite = &engine->sprites.drawable[engine->ball.id];
     sprite::init (sprite, &ball_sprite_def);
     sprite->sprite.setPosition (500, 500);
-    engine->sprites.movable[ball].movable3.position = {500, 500, 0};
-    sprite->sprite.setScale (0.4, 0.4);
-    graphics::make_roll_animation (&engine->sprites.animation[ball]);
+    engine->sprites.movable[engine->ball.id].movable3.position = {500, 500, 0};
+//    sprite->sprite.setScale (0.4, 0.4);
+    graphics::make_roll_animation (&engine->sprites.animation[engine->ball.id]);
 }
 
 void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) {
@@ -137,31 +137,28 @@ void play (Match* match, engine::MatchEngine* engine, sf::RenderWindow* window) 
     while (true) {
 
         switch (match->state) {
-        case Prematch:  break;
-        case Lineup:    break;
-        case Kickoff:   break;
-        case Play:      break;
-        case Goalkick:  break;
-        case Throwin:   break;
-        case Corner:    break;
-        case Penalty:   break;
-        case Postmatch: break;
-        case Finished:  break;
+        case Prematch:    break;
+        case Lineup:      break;
+        case Kickoff:     break;
+        case Play:        break;
+        case Goalkick:    break;
+        case Throwin:     break;
+        case Corner:      break;
+        case Penalty:     break;
+        case Postmatch:   break;
+        case Finished:    break;
+        }
+        
+        // check collisions players with ball
+        for(int i=0;i<engine->used_players; ++i){
+            if(physics::collides(&engine->players[i].feet, &engine->ball.collider)){
+                engine->sprites.movable[engine->ball.id].movable3.applied_force = vec_to_3d(engine->sprites.movable[engine->players[i].id].movable2.velocity)*1.f;
+                std::cout << "collision" << std::endl;
+            }
+                
         }
 
-
-        //
-        // 1. handle input
-        //
-        engine::handle_input (engine, window);
-        //
-        // 2. simulate
-        //
-        engine::simulate (engine, 0.01f);
-        //
-        // 3. draw screen
-        //
-        engine::draw (engine, window);
+        engine::frame (engine, window,  0.01f);
     }
 }
 

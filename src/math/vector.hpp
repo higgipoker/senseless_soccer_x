@@ -22,6 +22,14 @@ inline static void vec_reset(sf::Vector2f& v){
     v.x = v.y = 0;
 }
 
+inline static sf::Vector2f vec_to_2d(const sf::Vector3f& v){
+    return {v.x, v.y};
+}
+
+inline static sf::Vector3f vec_to_3d(const sf::Vector2f& v){
+    return {v.x, v.y, 0};
+}
+
 inline static void vec_dampen (sf::Vector3f& v) {
     if (less_than_or_equal (fabsf (v.x), 0)) v.x = 0;
     if (less_than_or_equal (fabsf (v.y), 0)) v.y = 0;

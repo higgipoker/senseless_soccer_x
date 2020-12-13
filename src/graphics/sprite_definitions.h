@@ -8,7 +8,7 @@ inline sprite::SpriteDefinition make_player_sprite_definition (const sf::Texture
         tex,
         origin,
         14,
-        32, 32,
+        64, 64,
         7
     };
 }

@@ -37,6 +37,7 @@ struct MatchEngine {
     
     // players
     player::Player players[MAX_PLAYERS];
+    ball::Ball ball;
     int used_players = 0;
 
     // resource counters
@@ -46,15 +47,15 @@ struct MatchEngine {
     Camera           camera;
     TileMap          pitch_grass;
     TileMap          pitch_lines;
-    ball::Ball       ball;
 };
 void init (MatchEngine* engine);
+void add_ball(MatchEngine* engine);
 void frame (MatchEngine* engine, sf::RenderWindow* window, const float dt = 0.01f);
 void handle_input (MatchEngine* engine, sf::RenderWindow* window);
 void simulate (MatchEngine* engine, const float dt);
 void draw (MatchEngine* engine, sf::RenderWindow* window);
 void attach_controller (MatchEngine* engine, const int controller, const int player);
-void detatch_controller (MatchEngine* engine, const int controller);
+void detatch_controller (MatchEngine* engine, const int player);
 //
 // resource acquisition
 //

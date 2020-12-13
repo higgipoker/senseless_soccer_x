@@ -27,14 +27,15 @@ void init (MatchEngine* engine) {
         engine->controller_assignments[i] = -1;
 
     }
-    
-
-    // ball
-    ball::init (&engine->ball);
-
     // camera
     engine->camera.view.setSize (1280, 720);
     //attach_to(&engine->camera, &player(engine, 0)->movable);
+    
+}
+
+void add_ball(MatchEngine* engine){
+    engine->ball.id = acquire_sprite(engine);
+    ball::init(&engine->ball, engine);
 }
 
 void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
@@ -45,7 +46,7 @@ void handle_input (MatchEngine* engine, sf::RenderWindow* window) {
         // update the controller attached to this controllable
         engine->controllers[engine->sprites.controllable[i].input].update();
         // update the player associated with this entity id
-        player::handle_input (&engine->players[i], engine->controllers[engine->sprites.controllable[i].input].state, engine);
+        player::handle_input (&engine->players[i], engine, engine->controllers[engine->sprites.controllable[i].input].state);
     }
 
 }
@@ -59,6 +60,9 @@ void simulate (MatchEngine* engine, const float dt) {
     for (int i = 0; i < engine->used_players; ++i) {
         player::update (&engine->players[i], engine);
     }
+    
+    // ball
+    ball::update(&engine->ball, engine);
 }
 
 void draw (MatchEngine* engine, sf::RenderWindow* window) {
@@ -74,11 +78,11 @@ void draw (MatchEngine* engine, sf::RenderWindow* window) {
         if (engine->sprites.animation[i].running) {
             int current_frame = engine->sprites.animation[i].act_frame;
             sf::IntRect rect = engine->sprites.drawable[i].frames[current_frame];
-            engine->sprites.drawable[i].sprite.setTextureRect(rect);
+            engine->sprites.drawable[i].sprite.setTextureRect (rect);
         }
     }
 
-    
+
     // draw everyting
 //    window->clear (sf::Color::Red);
     window->draw (engine->pitch_grass);
@@ -87,6 +91,14 @@ void draw (MatchEngine* engine, sf::RenderWindow* window) {
     for (int i = 0; i < engine->used_sprites; ++i) {
         window->draw (engine->sorted_sprites[i]->sprite);
     }
+
+    // debug
+#ifndef NDEBUG
+    for (int i = 0; i < engine->used_players; ++i) {
+        window->draw (engine->players[i].feet);
+    }
+#endif
+
     window->display();
 }
 
@@ -100,8 +112,8 @@ void attach_controller (MatchEngine* engine, const int controller, const int pla
     engine->sprites.controllable[player].input = controller;
 }
 
-void detatch_controller (MatchEngine* engine, const int controller) {
-    engine->controller_assignments[controller] = -1;
+void detatch_controller (MatchEngine* engine, const int player) {
+    engine->sprites.controllable[player].input = -1;
 }
 
 }// namespace game
